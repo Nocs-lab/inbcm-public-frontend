@@ -120,12 +120,12 @@ const NovoDeclaracaoPage = () => {
       }
 
       await request(`/api/uploads/${data.museu}/${data.ano}`, {
-        method: "PUT",
+        method: "POST",
         body: formData
       })
     },
     onSuccess: () => {
-      navigate("/submissoes")
+      navigate("/declaracoes")
     }
   })
 
@@ -167,30 +167,32 @@ const NovoDeclaracaoPage = () => {
   const [modalOpen, setModalOpen] = useState(false)
 
   const handlerError = (err: unknown) => {
-    if (err instanceof String) {
-      switch (err) {
-        case "XLSX_ERROR":
-          return setErrorMessage({
-            title: "Erro ao ler o arquivo.",
-            body: "Verifique se o arquivo abre corretamente no Excel ou similar"
-          })
-        case "INVALID_HEADERS":
-          return setErrorMessage({
-            title: "A planilha está fora do padrão definido pelo IBRAM.",
-            body: "Envie os bens de acordo com o formato definido."
-          })
-        case "EMPTY_ROWS":
-          return setErrorMessage({
-            title: "A planilha está vazia.",
-            body: "Envie o arquivo com os bens do museu."
-          })
-      }
+    switch (err) {
+      case "XLSX_ERROR":
+        setErrorMessage({
+          title: "Erro ao ler o arquivo.",
+          body: "Verifique se o arquivo abre corretamente no Excel ou similar."
+        })
+        break
+      case "INVALID_HEADERS":
+        setErrorMessage({
+          title: "A planilha está fora do padrão definido pelo IBRAM.",
+          body: "Envie os bens de acordo com o formato definido."
+        })
+        break
+      case "EMPTY_ROWS":
+        setErrorMessage({
+          title: "A planilha está vazia.",
+          body: "Envie o arquivo com os bens do museu."
+        })
+        break
+      default:
+        setErrorMessage({
+          title: "Ocorreu um erro.",
+          body: "Ocorreu um erro ao validar o arquivo. Tente novamente."
+        })
+        break
     }
-
-    setErrorMessage({
-      title: "Ocorreu um erro",
-      body: "Ocorreu um erro ao validar o arquivo. Tente novamente."
-    })
   }
 
   useEffect(() => {
@@ -400,7 +402,7 @@ const NovoDeclaracaoPage = () => {
                 <a href={`/api/recibo/${declaracao?._id}`}>clique aqui</a>. Caso
                 deseje fazer alguma alteração, você deve enviar uma declaração
                 retificadora{" "}
-                <Link to={`/submissoes/retificar/${declaracao?._id}`}>
+                <Link to={`/declaracoes/retificar/${declaracao?._id}`}>
                   clicando aqui
                 </Link>
                 .
@@ -462,6 +464,13 @@ const NovoDeclaracaoPage = () => {
             {...register("museologico")}
             accept=".xlsx"
             disabled={isLoading || retificacao}
+            file={museologico?.[0] ?? null}
+            setFile={(file) =>
+              setValue(
+                "museologico",
+                file ? ([file] as unknown as FileList) : null
+              )
+            }
           />
           <Input
             label="Bibliográfico"
@@ -470,6 +479,13 @@ const NovoDeclaracaoPage = () => {
             {...register("bibliografico")}
             accept=".xlsx"
             disabled={isLoading || retificacao}
+            file={bibliografico?.[0] ?? null}
+            setFile={(file) =>
+              setValue(
+                "bibliografico",
+                file ? ([file] as unknown as FileList) : null
+              )
+            }
           />
           <Input
             label="Arquivístico"
@@ -478,6 +494,13 @@ const NovoDeclaracaoPage = () => {
             {...register("arquivistico")}
             accept=".xlsx"
             disabled={isLoading || retificacao}
+            file={arquivistico?.[0] ?? null}
+            setFile={(file) =>
+              setValue(
+                "arquivistico",
+                file ? ([file] as unknown as FileList) : null
+              )
+            }
           />
         </div>
         <button

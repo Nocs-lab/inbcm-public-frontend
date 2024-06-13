@@ -86,40 +86,40 @@ const MismatchsModal: React.FC<{
         {musologicoErrors.length > 0 && (
           <>
             <h2 className="text-lg font-bold">Acervo museológico</h2>
-            Os campos{" "}
+            Existem linhas em que campos obrigatórios não foram preenchidos. São
+            eles:{" "}
             {musologicoErrors
               .map(
                 (field) =>
                   `"${museologicoFields[field as keyof typeof museologicoFields] ?? field}"`
               )
               .join(", ")}{" "}
-            não foram totalmente preenchidos e são obrigatórios
           </>
         )}
         {bibliograficoErrors.length > 0 && (
           <>
             <h2 className="text-lg font-bold">Acervo ibliográfico</h2>
-            Os campos{" "}
+            Existem linhas em que campos obrigatórios não foram preenchidos. São
+            eles:{" "}
             {bibliograficoErrors
               .map(
                 (field) =>
                   `"${bibliograficoFields[field as keyof typeof bibliograficoFields]}"`
               )
               .join(", ")}{" "}
-            não foram totalmente preenchidos e são obrigatórios
           </>
         )}
         {arquivisticoErrors.length > 0 && (
           <>
             <h2 className="text-lg font-bold">Acervo arquivístico</h2>
-            Os campos{" "}
+            Existem linhas em que campos obrigatórios não foram preenchidos. São
+            eles:{" "}
             {arquivisticoErrors
               .map(
                 (field) =>
                   `"${arquivisticoFields[field as keyof typeof arquivisticoFields]}"`
               )
               .join(", ")}{" "}
-            não foram totalmente preenchidos e são obrigatórios
           </>
         )}
       </Modal.Body>

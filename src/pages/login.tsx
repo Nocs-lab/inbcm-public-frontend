@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useStore } from "../utils/store"
+import useStore from "../utils/store"
 import clsx from "clsx"
 import { useNavigate } from "react-router"
 import { useMutation } from "@tanstack/react-query"

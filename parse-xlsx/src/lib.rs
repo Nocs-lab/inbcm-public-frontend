@@ -5,12 +5,14 @@ use wasm_bindgen_futures::JsFuture;
 use gloo_utils::format::JsValueSerdeExt;
 use serde_json::json;
 use slug::slugify;
-use std::collections::{HashSet, HashMap};
+use std::collections::HashMap;
+use web_sys::File;
+use js_sys::Uint8Array;
 
-async fn read_excel_file(file: web_sys::File, headers_schema: HashSet<&str>) -> Result<Vec<HashMap<String, String>>, JsValue> {
+async fn read_excel_file(file: File, headers_schema: &[&str]) -> Result<Vec<HashMap<String, String>>, JsValue> {
   let buffer = file.slice()?;
   let buffer = JsFuture::from(buffer.array_buffer()).await?;
-  let buffer = js_sys::Uint8Array::new(&buffer).to_vec();
+  let buffer = Uint8Array::new(&buffer).to_vec();
   let cursor = Cursor::new(buffer);
   let mut xl = open_workbook_auto_from_rs(cursor)
     .map_err(|_| JsValue::from_str("XLSX_ERROR"))?;
@@ -23,12 +25,10 @@ async fn read_excel_file(file: web_sys::File, headers_schema: HashSet<&str>) -> 
   let range = xl.worksheet_range(&sheet_name).unwrap();
   let headers: Vec<String> = range.rows().next().unwrap()
     .iter()
-    .map(|cell| slugify(cell.to_string()).replace("_", ""))
+    .map(|cell| slugify(cell.to_string()).replace("-", ""))
     .collect();
 
-  let headers_set: HashSet<&str> = headers.iter().map(|s| s.as_str()).collect();
-
-  if headers_schema != headers_set {
+  if !headers.iter().zip(headers_schema.iter()).all(|(a, b)| a.to_string() == b.to_string()) || headers.len() != headers_schema.len() {
     return Err(JsValue::from_str("INVALID_HEADERS"));
   }
 
@@ -47,16 +47,16 @@ async fn read_excel_file(file: web_sys::File, headers_schema: HashSet<&str>) -> 
   Ok(result)
 }
 
-async fn validate_from_schema(file: web_sys::File, headers_schema: HashSet<&str>, required_fields: &[&str]) -> Result<JsValue, JsValue> {
+async fn validate_from_schema(file: File, headers_schema: &[&str], required_fields: &[&str]) -> Result<JsValue, JsValue> {
   let result = read_excel_file(file, headers_schema).await?;
 
   let mut mapped_wrong_fields = Vec::new();
 
-  for (i, row) in result.iter().enumerate() {
+  for row in result.iter() {
     for field in required_fields {
       if row.get(*field).unwrap().is_empty() {
-        if !mapped_wrong_fields.contains(&i) {
-          mapped_wrong_fields.push(i);
+        if !mapped_wrong_fields.contains(&field) {
+          mapped_wrong_fields.push(field);
         }
       }
     }
@@ -66,20 +66,20 @@ async fn validate_from_schema(file: web_sys::File, headers_schema: HashSet<&str>
 }
 
 #[wasm_bindgen]
-pub async fn validate_museologico(file: web_sys::File) -> Result<JsValue, JsValue> {
+pub async fn validate_museologico(file: File) -> Result<JsValue, JsValue> {
   const REQUIRED_FIELDS: &[&str] = &[
-    "nderegistro",
+    "noderegistro",
     "situacao",
     "denominacao",
     "autor",
     "resumodescritivo",
     "dimensoes",
     "materialtecnica",
-    "estadodeconsrvacao",
+    "estadodeconservacao",
     "condicoesdereproducao"
   ];
-  let headers_schema = HashSet::from([
-    "nderegistro",
+  const SCHEMA: &[&str] = &[
+    "noderegistro",
     "outrosnumeros",
     "situacao",
     "denominacao",
@@ -91,8 +91,8 @@ pub async fn validate_museologico(file: web_sys::File) -> Result<JsValue, JsValu
     "altura",
     "largura",
     "profundidade",
-    "diâmetro",
-    "espressura",
+    "diametro",
+    "espessura",
     "uniddepesagem",
     "peso",
     "materialtecnica",
@@ -101,15 +101,15 @@ pub async fn validate_museologico(file: web_sys::File) -> Result<JsValue, JsValu
     "datadeproducao",
     "condicoesdereproducao",
     "midiasrelacionadas"
-  ]);
+  ];
 
-  Ok(validate_from_schema(file, headers_schema, REQUIRED_FIELDS).await?)
+  Ok(validate_from_schema(file, SCHEMA, REQUIRED_FIELDS).await?)
 }
 
 #[wasm_bindgen]
-pub async fn validate_bibliografico(file: web_sys::File) -> Result<JsValue, JsValue> {
+pub async fn validate_bibliografico(file: File) -> Result<JsValue, JsValue> {
   const REQUIRED_FIELDS: &[&str] = &[
-    "numeroderegistro",
+    "noderegistro",
     "situacao",
     "titulo",
     "tipo",
@@ -125,8 +125,8 @@ pub async fn validate_bibliografico(file: web_sys::File) -> Result<JsValue, JsVa
     "assuntoprincipal",
     "condicoesdereproducao"
   ];
-  let headers_schema = HashSet::from([
-    "nderegistro",
+  const SCHEMA: &[&str] = &[
+    "noderegistro",
     "outrosnumeros",
     "situacao",
     "titulo",
@@ -145,13 +145,13 @@ pub async fn validate_bibliografico(file: web_sys::File) -> Result<JsValue, JsVa
     "assuntogeografico",
     "condicoesdereproducao",
     "midiasrelacionadas"
-  ]);
+  ];
 
-  Ok(validate_from_schema(file, headers_schema, REQUIRED_FIELDS).await?)
+  Ok(validate_from_schema(file, SCHEMA, REQUIRED_FIELDS).await?)
 }
 
 #[wasm_bindgen]
-pub async fn validate_arquivistico(file: web_sys::File) -> Result<JsValue, JsValue> {
+pub async fn validate_arquivistico(file: File) -> Result<JsValue, JsValue> {
   const REQUIRED_FIELDS: &[&str] = &[
     "coddereferencia",
     "titulo",
@@ -160,7 +160,7 @@ pub async fn validate_arquivistico(file: web_sys::File) -> Result<JsValue, JsVal
     "dimensaoesuporte",
     "nomedoprodutor"
   ];
-  let headers_schema = HashSet::from([
+  const SCHEMA: &[&str] = &[
     "coddereferencia",
     "titulo",
     "data",
@@ -177,7 +177,7 @@ pub async fn validate_arquivistico(file: web_sys::File) -> Result<JsValue, JsVal
     "notassobreconservacao",
     "pontosacessoeindexacaodeassuntos",
     "midiasrelacionadas"
-  ]);
+  ];
 
-  Ok(validate_from_schema(file, headers_schema, REQUIRED_FIELDS).await?)
+  Ok(validate_from_schema(file, SCHEMA, REQUIRED_FIELDS).await?)
 }

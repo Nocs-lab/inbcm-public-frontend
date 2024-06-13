@@ -18,6 +18,7 @@ import {
 } from "@tanstack/react-table"
 import { format } from "date-fns"
 import React, { useEffect, useMemo, useState } from "react"
+import MismatchsModal from "../../components/MismatchsModal"
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -40,12 +41,15 @@ const columnHelper = createColumnHelper<{
   status: string
   museologico: {
     status: string
+    pendencias: string[]
   }
   bibliografico: {
     status: string
+    pendencias: string[]
   }
   arquivistico: {
     status: string
+    pendencias: string[]
   }
   refificacao: boolean
 }>()
@@ -143,7 +147,40 @@ const columns = [
   columnHelper.accessor("_id", {
     header: "Ações",
     enableColumnFilter: false,
-    cell: (info) => <a href={`/api/recibo/${info.getValue()}`}>Recibo</a>
+    cell: (info) => {
+      // eslint-disable-next-line react-hooks/rules-of-hooks
+      const [showModal, setShowModal] = useState(false)
+
+      return (
+        <div className="flex gap-1 items-center">
+          <a href={`/api/recibo/${info.getValue()}`}>
+            <i className="fas fa-file-pdf" aria-hidden="true"></i>
+          </a>
+          {(info.row.original.museologico.pendencias.length > 0 ||
+            info.row.original.bibliografico.pendencias.length > 0 ||
+            info.row.original.arquivistico.pendencias.length > 0) && (
+            <>
+              <button
+                className="br-button circle small"
+                onClick={() => setShowModal(true)}
+              >
+                <i
+                  className="fas fa-exclamation-triangle"
+                  aria-hidden="true"
+                ></i>
+              </button>
+              <MismatchsModal
+                opened={showModal}
+                onClose={() => setShowModal(false)}
+                musologicoErrors={info.row.original.museologico.pendencias}
+                bibliograficoErrors={info.row.original.bibliografico.pendencias}
+                arquivisticoErrors={info.row.original.arquivistico.pendencias}
+              />
+            </>
+          )}
+        </div>
+      )
+    }
   })
 ]
 
@@ -151,11 +188,17 @@ function DebouncedInput({
   value: initialValue,
   onChange,
   debounce = 500,
+  type = "text",
+  placeholder,
+  list,
   ...props
 }: {
   value: string | number
   onChange: (value: string | number) => void
   debounce?: number
+  type?: "text" | "number"
+  placeholder?: string
+  list?: string
 } & Omit<React.HTMLAttributes<HTMLInputElement>, "onChange">) {
   const [value, setValue] = useState(initialValue)
 
@@ -175,6 +218,9 @@ function DebouncedInput({
     <input
       {...props}
       value={value}
+      type={type}
+      placeholder={placeholder}
+      list={list}
       onChange={(e) => setValue(e.currentTarget.value)}
     />
   )
@@ -220,14 +266,16 @@ function Filter({ column }: { column: Column<unknown, unknown> }) {
   )
 }
 
-export default function Submissoes() {
+export default function Declaracoes() {
   const { data } = useSuspenseQuery({
-    queryKey: ["submissoes"],
+    queryKey: ["declaracoes"],
     queryFn: async () => {
       const response = await request("/api/declaracoes")
       return response.json()
     }
   })
+
+  console.log(data)
 
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
@@ -412,11 +460,9 @@ export default function Submissoes() {
                               desc: " 🔽"
                             }[header.column.getIsSorted() as string] ?? null}
                           </div>
-                          {header.column.getCanFilter() ? (
-                            <div>
-                              <Filter column={header.column} />
-                            </div>
-                          ) : null}
+                          <Filter
+                            column={header.column as Column<unknown, unknown>}
+                          />
                         </>
                       )}
                     </th>

@@ -11,10 +11,12 @@ import {
 type Props = ComponentProps<"input"> & {
   label: string
   error?: FieldError
+  file?: File | null
+  setFile?: (file: File | null) => void
 }
 
 const Input = forwardRef<HTMLInputElement, Props>(
-  ({ label, name, type, error, ...rest }, outerRef) => {
+  ({ label, name, type, error, file, setFile, ...rest }, outerRef) => {
     const innerRef = useRef<HTMLInputElement>(null)
     useImperativeHandle(outerRef, () => innerRef.current!, [])
 
@@ -23,8 +25,6 @@ const Input = forwardRef<HTMLInputElement, Props>(
     const isPassword = type === "password"
     const isFile = type === "file"
     const inputType = isPassword && seePassword ? "text" : type
-
-    const [file, setFile] = useState<File | null>(null)
 
     return (
       <div
@@ -45,12 +45,6 @@ const Input = forwardRef<HTMLInputElement, Props>(
           ref={innerRef}
           name={name}
           id={name}
-          onChange={(e) => {
-            rest.onChange?.(e)
-            if (isFile) {
-              setFile(e.currentTarget.files?.[0] ?? null)
-            }
-          }}
         />
         {isPassword && (
           <button
@@ -118,8 +112,7 @@ const Input = forwardRef<HTMLInputElement, Props>(
                       type="button"
                       aria-label={`Remover ${file.name}`}
                       onClick={() => {
-                        innerRef.current!.value = ""
-                        setFile(null)
+                        setFile?.(null)
                       }}
                     >
                       <i className="fa fa-trash"></i>
