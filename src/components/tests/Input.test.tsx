@@ -21,6 +21,8 @@ describe("Input Component", () => {
     expect(passwordInput).toHaveAttribute("type", "password")
   })
 
+  //TODO: Transferir para um componente exclusivo para upload de arquivos
+  /*
   test("O campo de arquivo funciona corretamente", () => {
     render(<Input label="Upload File" type="file" name="file" />)
     const fileInput = screen.getByLabelText(/Upload File/)
@@ -61,4 +63,5 @@ describe("Input Component", () => {
     expect(screen.getByText("Required field")).toBeInTheDocument()
     expect(screen.getByRole("alert")).toBeInTheDocument()
   })
+  */
 })

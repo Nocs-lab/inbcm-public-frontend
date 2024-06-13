@@ -15,6 +15,7 @@ type Props = ComponentProps<"input"> & {
   setFile?: (file: File | null) => void
 }
 
+// TODO: Criar um componente exclusivo para upload de arquivos
 const Input = forwardRef<HTMLInputElement, Props>(
   ({ label, name, type, error, file, setFile, ...rest }, outerRef) => {
     const innerRef = useRef<HTMLInputElement>(null)
