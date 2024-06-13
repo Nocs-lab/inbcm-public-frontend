@@ -1,5 +1,5 @@
-export default () => {
-  return (
-    <h1>Olá mundo</h1>
-  )
+const PerfilPage = () => {
+  return <h1>Olá mundo</h1>
 }
+
+export default PerfilPage

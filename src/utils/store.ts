@@ -1,5 +1,5 @@
-import { create } from 'zustand'
-import { persist, createJSONStorage } from 'zustand/middleware'
+import { create } from "zustand"
+import { persist, createJSONStorage } from "zustand/middleware"
 
 interface User {
   email: string
@@ -11,17 +11,17 @@ interface State {
   setUser: (user: User | null) => void
 }
 
-export const useStore = create(
+const useStore = create(
   persist<State>(
     (set) => ({
       user: null,
-      setUser: (user) => set({ user }),
+      setUser: (user) => set({ user })
     }),
     {
-      name: 'storage',
-      storage: createJSONStorage(() => localStorage),
-    },
-  ),
+      name: "storage",
+      storage: createJSONStorage(() => localStorage)
+    }
+  )
 )
 
 export default useStore
