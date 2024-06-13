@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
 import { defineConfig } from "vite"
 import million from "million/compiler"
-import MillionLint from "@million/lint"
+// import MillionLint from "@million/lint"
 import react from "@vitejs/plugin-react-swc"
 import UnoCSS from "unocss/vite"
 import Pages from "vite-plugin-pages"
@@ -11,7 +11,7 @@ import wasmPack from "vite-plugin-wasm-pack"
 
 export default defineConfig({
   plugins: [
-    MillionLint.vite(),
+    // MillionLint.vite(),
     million.vite({ auto: true }),
     react(),
     wasm(),
@@ -34,6 +34,11 @@ export default defineConfig({
     setupFiles: "./src/setupVitest.ts",
     coverage: {
       provider: "v8"
+    },
+    server: {
+      deps: {
+        inline: ["@govbr-ds/core"]
+      }
     }
   }
 })

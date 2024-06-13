@@ -70,7 +70,7 @@
     "wasm-pack": "^0.12.1"
   },
   "lint-staged": {
-    "*.{ts,tsx}": [
+    "*.tsx": [
       "eslint --fix",
       "vitest related --run"
     ]

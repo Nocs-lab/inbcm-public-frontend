@@ -1,6 +1,6 @@
-import { useSuspenseQuery } from "@tanstack/react-query";
-import DefaultLayout from "../../layouts/default";
-import request from "../../utils/request";
+import { useSuspenseQuery } from "@tanstack/react-query"
+import DefaultLayout from "../../layouts/default"
+import request from "../../utils/request"
 import {
   Column,
   ColumnFiltersState,
@@ -14,127 +14,138 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   createColumnHelper,
-  useReactTable,
-} from "@tanstack/react-table";
-import { format } from "date-fns";
-import React, { useEffect, useMemo, useState } from "react";
+  useReactTable
+} from "@tanstack/react-table"
+import { format } from "date-fns"
+import React, { useEffect, useMemo, useState } from "react"
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
-    filterVariant?: "text" | "select";
+    filterVariant?: "text" | "select"
   }
 }
 
 const columnHelper = createColumnHelper<{
-  _id: string;
-  dataCriacao: Date;
-  anoDeclaracao: string;
+  _id: string
+  dataCriacao: Date
+  anoDeclaracao: string
   museu_id: {
-    _id: string;
-    nome: string;
-  },
-  responsavelEnvio: {
-    nome: string;
+    _id: string
+    nome: string
   }
-  status: string;
+  responsavelEnvio: {
+    nome: string
+  }
+  status: string
   museologico: {
-    status: string;
+    status: string
   }
   bibliografico: {
-    status: string;
+    status: string
   }
   arquivistico: {
-    status: string;
+    status: string
   }
-  refificacao: boolean;
-}>();
+  refificacao: boolean
+}>()
 
 const columns = [
   columnHelper.accessor("dataCriacao", {
     header: "Data de envio",
-    cell: (info) => format(new Date(info.getValue()), "dd/MM/yyyy - HH:mm")
+    cell: (info) => format(new Date(info.getValue()), "dd/MM/yyyy - HH:mm"),
+    enableColumnFilter: false
   }),
   columnHelper.accessor("anoDeclaracao", {
     header: "Ano",
     meta: {
-      filterVariant: "select",
-    },
+      filterVariant: "select"
+    }
   }),
   columnHelper.accessor("museu_id.nome", {
     header: "Museu",
     meta: {
-      filterVariant: "select",
-    },
+      filterVariant: "select"
+    }
   }),
   columnHelper.accessor("status", {
     header: "Status",
     meta: {
-      filterVariant: "select",
-    },
+      filterVariant: "select"
+    }
   }),
   columnHelper.accessor("museologico.status", {
-    header: "Status museológico",
+    header: "Museológico",
     cell: (info) => (
       <>
         {info.getValue() !== "não enviado" ? (
           <>
             {info.getValue()}{" "}
-            <a href={`/api/download/${info.row.original.museu_id._id}/${info.row.getValue("anoDeclaracao")}/museologico`}>(Baixar)</a>
+            <a
+              href={`/api/download/${info.row.original.museu_id._id}/${info.row.getValue("anoDeclaracao")}/museologico`}
+            >
+              (Baixar)
+            </a>
           </>
         ) : (
           "-"
         )}
       </>
     ),
-    meta: {
-      filterVariant: "select",
-    },
+    enableColumnFilter: false
   }),
   columnHelper.accessor("bibliografico.status", {
-    header: "Status bibliográfico",
+    header: "Bibliográfico",
     meta: {
-      filterVariant: "select",
+      filterVariant: "select"
     },
     cell: (info) => (
       <>
         {info.getValue() !== "não enviado" ? (
           <>
             {info.getValue()}{" "}
-            <a href={`/api/download/${info.row.original.museu_id._id}/${info.row.getValue("anoDeclaracao")}/bibliografico`}>(Baixar)</a>
+            <a
+              href={`/api/download/${info.row.original.museu_id._id}/${info.row.getValue("anoDeclaracao")}/bibliografico`}
+            >
+              (Baixar)
+            </a>
           </>
         ) : (
           "-"
         )}
       </>
     ),
+    enableColumnFilter: false
   }),
   columnHelper.accessor("arquivistico.status", {
-    header: "Status arquivístico",
+    header: "Arquivístico",
     meta: {
-      filterVariant: "select",
+      filterVariant: "select"
     },
     cell: (info) => (
       <>
         {info.getValue() !== "não enviado" ? (
           <>
             {info.getValue()}{" "}
-            <a href={`/api/download/${info.row.original.museu_id._id}/${info.row.getValue("anoDeclaracao")}/arquivistico`}>(Baixar)</a>
+            <a
+              href={`/api/download/${info.row.original.museu_id._id}/${info.row.getValue("anoDeclaracao")}/arquivistico`}
+            >
+              (Baixar)
+            </a>
           </>
         ) : (
           "-"
         )}
       </>
     ),
+    enableColumnFilter: false
   }),
   columnHelper.accessor("_id", {
     header: "Ações",
     enableColumnFilter: false,
-    cell: (info) => (
-      <a href={`/api/recibo/${info.getValue()}`}>Recibo</a>
-    ),
+    cell: (info) => <a href={`/api/recibo/${info.getValue()}`}>Recibo</a>
   })
-];
+]
 
 function DebouncedInput({
   value: initialValue,
@@ -142,44 +153,47 @@ function DebouncedInput({
   debounce = 500,
   ...props
 }: {
-  value: string | number;
-  onChange: (value: string | number) => void;
-  debounce?: number;
+  value: string | number
+  onChange: (value: string | number) => void
+  debounce?: number
 } & Omit<React.HTMLAttributes<HTMLInputElement>, "onChange">) {
-  const [value, setValue] = useState(initialValue);
+  const [value, setValue] = useState(initialValue)
 
   useEffect(() => {
-    setValue(initialValue);
-  }, [initialValue]);
+    setValue(initialValue)
+  }, [initialValue])
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      onChange(value);
-    }, debounce);
+      onChange(value)
+    }, debounce)
 
-    return () => clearTimeout(timeout);
-  }, [value, debounce, onChange]);
+    return () => clearTimeout(timeout)
+  }, [value, debounce, onChange])
 
   return (
-    <input {...props} value={value} onChange={(e) => setValue(e.currentTarget.value)} />
-  );
+    <input
+      {...props}
+      value={value}
+      onChange={(e) => setValue(e.currentTarget.value)}
+    />
+  )
 }
 
 function Filter({ column }: { column: Column<unknown, unknown> }) {
-  const { filterVariant } = column.columnDef.meta ?? {};
-  const columnFilterValue = column.getFilterValue();
+  const { filterVariant } = column.columnDef.meta ?? {}
+  const columnFilterValue = column.getFilterValue()
   const sortedUniqueValues = useMemo(
-    () =>
-      Array.from(column.getFacetedUniqueValues().keys()).sort(),
+    () => Array.from(column.getFacetedUniqueValues().keys()).sort(),
     [column.getFacetedUniqueValues(), column]
-  );
+  )
 
   return filterVariant === "select" ? (
     <select
       onChange={(e) => column.setFilterValue(e.currentTarget.value)}
       value={columnFilterValue?.toString()}
     >
-      <option value="">Todas</option>
+      <option value="">Todos</option>
       {sortedUniqueValues.map((value) => (
         <option value={value} key={value}>
           {value}
@@ -189,7 +203,7 @@ function Filter({ column }: { column: Column<unknown, unknown> }) {
   ) : (
     <>
       <datalist id={column.id + "list"}>
-        {sortedUniqueValues.map((value: any) => (
+        {sortedUniqueValues.map((value: string) => (
           <option value={value} key={value} />
         ))}
       </datalist>
@@ -203,7 +217,7 @@ function Filter({ column }: { column: Column<unknown, unknown> }) {
       />
       <div className="h-1" />
     </>
-  );
+  )
 }
 
 export default function Submissoes() {
@@ -215,15 +229,13 @@ export default function Submissoes() {
     }
   })
 
-  console.log(data)
-
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
   const table = useReactTable({
     data,
     columns,
     state: {
-      columnFilters,
+      columnFilters
     },
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -232,8 +244,8 @@ export default function Submissoes() {
     getPaginationRowModel: getPaginationRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    getFacetedMinMaxValues: getFacetedMinMaxValues(),
-  });
+    getFacetedMinMaxValues: getFacetedMinMaxValues()
+  })
 
   return (
     <DefaultLayout>
@@ -268,15 +280,30 @@ export default function Submissoes() {
                 aria-labelledby="button-dropdown-density"
                 hidden
               >
-                <button className="br-item" type="button" data-density="small" role="menuitem">
+                <button
+                  className="br-item"
+                  type="button"
+                  data-density="small"
+                  role="menuitem"
+                >
                   Densidade alta
                 </button>
                 <span className="br-divider"></span>
-                <button className="br-item" type="button" data-density="medium" role="menuitem">
+                <button
+                  className="br-item"
+                  type="button"
+                  data-density="medium"
+                  role="menuitem"
+                >
                   Densidade média
                 </button>
                 <span className="br-divider"></span>
-                <button className="br-item" type="button" data-density="large" role="menuitem">
+                <button
+                  className="br-item"
+                  type="button"
+                  data-density="large"
+                  role="menuitem"
+                >
                   Densidade baixa
                 </button>
               </div>
@@ -319,7 +346,8 @@ export default function Submissoes() {
           </div>
           <div className="selected-bar">
             <div className="info">
-              <span className="count">0</span><span className="text">item selecionado</span>
+              <span className="count">0</span>
+              <span className="text">item selecionado</span>
             </div>
             <div className="actions-trigger text-nowrap">
               <button
@@ -341,7 +369,12 @@ export default function Submissoes() {
                 aria-labelledby="button-dropdown-selection"
                 hidden
               >
-                <button className="br-item" type="button" data-toggle="" role="menuitem">
+                <button
+                  className="br-item"
+                  type="button"
+                  data-toggle=""
+                  role="menuitem"
+                >
                   Ação 1
                 </button>
                 <span className="br-divider"></span>
@@ -367,13 +400,16 @@ export default function Submissoes() {
                               className: header.column.getCanSort()
                                 ? "cursor-pointer select-none"
                                 : "",
-                              onClick: header.column.getToggleSortingHandler(),
+                              onClick: header.column.getToggleSortingHandler()
                             }}
                           >
-                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
                             {{
                               asc: " 🔼",
-                              desc: " 🔽",
+                              desc: " 🔽"
                             }[header.column.getIsSorted() as string] ?? null}
                           </div>
                           {header.column.getCanFilter() ? (
@@ -384,7 +420,7 @@ export default function Submissoes() {
                         </>
                       )}
                     </th>
-                  );
+                  )
                 })}
               </tr>
             ))}
@@ -412,8 +448,14 @@ export default function Submissoes() {
             <div className="pagination-per-page">
               <div className="br-select">
                 <div className="br-input">
-                  <label htmlFor="per-page-selection-random-90012">Exibir</label>
-                  <input id="per-page-selection-random-90012" type="text" placeholder=" " />
+                  <label htmlFor="per-page-selection-random-90012">
+                    Exibir
+                  </label>
+                  <input
+                    id="per-page-selection-random-90012"
+                    type="text"
+                    placeholder=" "
+                  />
                   <button
                     className="br-button"
                     type="button"
@@ -465,22 +507,30 @@ export default function Submissoes() {
             <span className="br-divider d-none d-sm-block mx-3"></span>
             <div className="pagination-information d-none d-sm-flex">
               <span className="current">
-                {table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}
+                {table.getState().pagination.pageIndex *
+                  table.getState().pagination.pageSize +
+                  1}
               </span>
               &ndash;
               <span className="per-page">
                 {Math.min(
-                  (table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize,
+                  (table.getState().pagination.pageIndex + 1) *
+                    table.getState().pagination.pageSize,
                   data.length
                 )}
               </span>
-              &nbsp;de&nbsp;<span className="total">{data.length}</span>&nbsp;itens
+              &nbsp;de&nbsp;<span className="total">{data.length}</span>
+              &nbsp;itens
             </div>
             <div className="pagination-go-to-page d-none d-sm-flex ml-auto">
               <div className="br-select">
                 <div className="br-input">
                   <label htmlFor="go-to-selection-random-55067">Página</label>
-                  <input id="go-to-selection-random-55067" type="text" placeholder=" " />
+                  <input
+                    id="go-to-selection-random-55067"
+                    type="text"
+                    placeholder=" "
+                  />
                   <button
                     className="br-button"
                     type="button"
@@ -554,5 +604,5 @@ export default function Submissoes() {
         </div>
       </div>
     </DefaultLayout>
-  );
+  )
 }

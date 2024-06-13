@@ -10,15 +10,17 @@ import React, { useState } from "react"
 import logoIbram from "../images/logo-ibram.png"
 
 const schema = z.object({
-  email: z.string()
-    .min(1, "Este campo é obrigatório"),
-  password: z.string()
-    .min(1, "Este campo é obrigatório")
+  email: z.string().min(1, "Este campo é obrigatório"),
+  password: z.string().min(1, "Este campo é obrigatório")
 })
 type FormData = z.infer<typeof schema>
 
 const LoginPage: React.FC = () => {
-  const { register, handleSubmit, formState: { errors, isSubmitting } } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting }
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: "onBlur"
   })
@@ -61,7 +63,10 @@ const LoginPage: React.FC = () => {
   return (
     <div className="flex h-screen">
       <div className="w-full lg:w-5/12">
-        <form className="flex flex-col gap-4 justify-center items-center h-full md:w-1/2 lg:w-2/3 xl:w-1/2 p-10 mx-auto" onSubmit={handleSubmit(onSubmit)}>
+        <form
+          className="flex flex-col gap-4 justify-center items-center h-full md:w-1/2 lg:w-2/3 xl:w-1/2 p-10 mx-auto"
+          onSubmit={handleSubmit(onSubmit)}
+        >
           <img src={logoIbram} alt="Logo do Ibram" className="mb-3" />
           {showError && isError && (
             <div className="br-message danger">
@@ -69,28 +74,77 @@ const LoginPage: React.FC = () => {
                 <i className="fas fa-times-circle fa-lg" aria-hidden="true"></i>
               </div>
               <div className="content" aria-label={error.message} role="alert">
-                <span className="message-title">{" "}Erro:{" "}</span>
+                <span className="message-title"> Erro: </span>
                 <span className="message-body">{error.message}</span>
               </div>
               <div className="close">
-                <button className="br-button circle small" type="button" aria-label="Fechar a messagem alterta" onClick={() => setShowError(false)}>
+                <button
+                  className="br-button circle small"
+                  type="button"
+                  aria-label="Fechar a messagem alterta"
+                  onClick={() => setShowError(false)}
+                >
                   <i className="fas fa-times" aria-hidden="true"></i>
                 </button>
               </div>
             </div>
           )}
-          <div className={clsx("br-input input-button w-full", errors.email && "input-danger")}>
+          <div
+            className={clsx(
+              "br-input input-button w-full",
+              errors.email && "input-danger"
+            )}
+          >
             <label htmlFor="email">Email</label>
-            <input type="email" placeholder="Digite seu email" {...register("email")} />
-            {errors.email && <span className="feedback danger" role="alert" id="danger"><i className="fas fa-times-circle" aria-hidden="true"></i>{errors.email.message}</span>}
+            <input
+              type="email"
+              placeholder="Digite seu email"
+              {...register("email")}
+            />
+            {errors.email && (
+              <span className="feedback danger" role="alert" id="danger">
+                <i className="fas fa-times-circle" aria-hidden="true"></i>
+                {errors.email.message}
+              </span>
+            )}
           </div>
-          <div className={clsx("br-input input-button w-full", errors.password && "input-danger")}>
+          <div
+            className={clsx(
+              "br-input input-button w-full",
+              errors.password && "input-danger"
+            )}
+          >
             <label htmlFor="password">Senha</label>
-            <input type="password" placeholder="Digite sua senha" {...register("password")} />
-            <button className="br-button" type="button" aria-label="Exibir senha" role="switch" aria-checked="false"><i className="fas fa-eye" aria-hidden="true"></i></button>
-            {errors.password && <span className="feedback danger" role="alert" id="danger"><i className="fas fa-times-circle" aria-hidden="true"></i>{errors.password.message}</span>}
+            <input
+              type="password"
+              placeholder="Digite sua senha"
+              {...register("password")}
+            />
+            <button
+              className="br-button"
+              type="button"
+              aria-label="Exibir senha"
+              role="switch"
+              aria-checked="false"
+            >
+              <i className="fas fa-eye" aria-hidden="true"></i>
+            </button>
+            {errors.password && (
+              <span className="feedback danger" role="alert" id="danger">
+                <i className="fas fa-times-circle" aria-hidden="true"></i>
+                {errors.password.message}
+              </span>
+            )}
           </div>
-          <button className={clsx("br-button block primary mt-3", isSubmitting && "loading")} type="submit">Entrar</button>
+          <button
+            className={clsx(
+              "br-button block primary mt-3",
+              isSubmitting && "loading"
+            )}
+            type="submit"
+          >
+            Entrar
+          </button>
         </form>
       </div>
       <div className="hidden lg:block w-7/12 bg-blue-700"></div>
