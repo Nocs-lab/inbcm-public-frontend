@@ -3,18 +3,19 @@ use std::io::Cursor;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen_futures::JsFuture;
 use gloo_utils::format::JsValueSerdeExt;
-use jsonschema::JSONSchema;
-use serde_json::{json, Value};
+use serde_json::json;
 use slug::slugify;
-use regex::Regex;
+use std::collections::HashMap;
+use web_sys::File;
+use js_sys::Uint8Array;
 
-async fn read_excel_file(file: web_sys::File) -> Result<Vec<std::collections::HashMap<String, String>>, JsValue> {
+async fn read_excel_file(file: File, headers_schema: &[&str]) -> Result<Vec<HashMap<String, String>>, JsValue> {
   let buffer = file.slice()?;
   let buffer = JsFuture::from(buffer.array_buffer()).await?;
-  let buffer = js_sys::Uint8Array::new(&buffer).to_vec();
+  let buffer = Uint8Array::new(&buffer).to_vec();
   let cursor = Cursor::new(buffer);
   let mut xl = open_workbook_auto_from_rs(cursor)
-    .map_err(|e| JsValue::from_str(&format!("Xlsx-error: {:?}", e)))?;
+    .map_err(|_| JsValue::from_str("XLSX_ERROR"))?;
 
   let mut result = Vec::new();
 
@@ -24,129 +25,159 @@ async fn read_excel_file(file: web_sys::File) -> Result<Vec<std::collections::Ha
   let range = xl.worksheet_range(&sheet_name).unwrap();
   let headers: Vec<String> = range.rows().next().unwrap()
     .iter()
-    .map(|cell| slugify(cell.to_string()).replace("_", ""))
+    .map(|cell| slugify(cell.to_string()).replace("-", ""))
     .collect();
+
+  if !headers.iter().zip(headers_schema.iter()).all(|(a, b)| a.to_string() == b.to_string()) || headers.len() != headers_schema.len() {
+    return Err(JsValue::from_str("INVALID_HEADERS"));
+  }
+
   for row in range.rows().skip(1) {
     let obj = headers.iter().zip(row.iter())
       .map(|(header, cell)| (header.clone(), cell.to_string()))
-      .collect::<std::collections::HashMap<String, String>>();
+      .collect::<HashMap<String, String>>();
 
     result.push(obj);
+  }
+
+  if result.is_empty() {
+    return Err(JsValue::from_str("EMPTY_ROWS"));
   }
 
   Ok(result)
 }
 
-async fn validate_from_schema(file: web_sys::File, schema: Value) -> Result<JsValue, JsValue> {
-  let result = read_excel_file(file).await?;
-  let json_result = serde_json::to_value(&result).unwrap();
-
-  let compiled = JSONSchema::compile(&schema).unwrap();
-
-  let result = compiled.validate(&json_result);
+async fn validate_from_schema(file: File, headers_schema: &[&str], required_fields: &[&str]) -> Result<JsValue, JsValue> {
+  let result = read_excel_file(file, headers_schema).await?;
 
   let mut mapped_wrong_fields = Vec::new();
-  let re = Regex::new(r#""(.+?)""#).unwrap();
 
-  if let Err(errors) = result {
-    for error in errors {
-      let field = re.captures(&error.to_string()).unwrap().get(1).unwrap().as_str().to_string();
-      if !mapped_wrong_fields.contains(&field) {
-        mapped_wrong_fields.push(field);
+  for row in result.iter() {
+    for field in required_fields {
+      if row.get(*field).unwrap().is_empty() {
+        if !mapped_wrong_fields.contains(&field) {
+          mapped_wrong_fields.push(field);
+        }
       }
     }
   }
 
-  Ok(JsValue::from_serde(&json!({ "data": json_result, "errors": mapped_wrong_fields })).unwrap())
+  Ok(JsValue::from_serde(&json!({ "data": serde_json::to_value(&result).unwrap(), "errors": mapped_wrong_fields })).unwrap())
 }
 
 #[wasm_bindgen]
-pub async fn validate_museologico(file: web_sys::File) -> Result<JsValue, JsValue> {
-  let schema = json!({
-    "type": "array",
-    "items": {
-      "type": "object",
-      "properties": {
-        "numeroderegistro": { "type": "string" },
-        "outrosnumeros": { "type": "string" },
-        "situacao": { "type": "string" },
-        "titulo": { "type": "string" },
-        "tipo": { "type": "string" },
-        "autor": { "type": "string" },
-        "localproducao": { "type": "string" },
-        "editora": { "type": "string" },
-        "datadeproducao": { "type": "string" },
-        "dimensoes": { "type": "string" },
-        "materialtecnica": { "type": "string" },
-        "estadodeconservacao": { "type": "string" },
-        "assuntoprincipal": { "type": "string" },
-        "condicoesreproducao": { "type": "string" },
-        "midiasrelacionadas": { "type": "string" }
-      },
-      "required": ["numeroderegistro", "situacao", "titulo", "identificacaoresponsabilidade", "dimensaofisica", "materialtecnica", "estadoconservacao"]
-    }
-  });
+pub async fn validate_museologico(file: File) -> Result<JsValue, JsValue> {
+  const REQUIRED_FIELDS: &[&str] = &[
+    "noderegistro",
+    "situacao",
+    "denominacao",
+    "autor",
+    "resumodescritivo",
+    "dimensoes",
+    "materialtecnica",
+    "estadodeconservacao",
+    "condicoesdereproducao"
+  ];
+  const SCHEMA: &[&str] = &[
+    "noderegistro",
+    "outrosnumeros",
+    "situacao",
+    "denominacao",
+    "titulo",
+    "autor",
+    "classificacao",
+    "resumodescritivo",
+    "dimensoes",
+    "altura",
+    "largura",
+    "profundidade",
+    "diametro",
+    "espessura",
+    "uniddepesagem",
+    "peso",
+    "materialtecnica",
+    "estadodeconservacao",
+    "localdeproducao",
+    "datadeproducao",
+    "condicoesdereproducao",
+    "midiasrelacionadas"
+  ];
 
-  Ok(validate_from_schema(file, schema).await?)
+  Ok(validate_from_schema(file, SCHEMA, REQUIRED_FIELDS).await?)
 }
 
 #[wasm_bindgen]
-pub async fn validate_bibliografico(file: web_sys::File) -> Result<JsValue, JsValue> {
-  let schema = json!({
-    "type": "array",
-    "items": {
-      "type": "object",
-      "properties": {
-        "numeroderegistro": { "type": "string" },
-        "outrosnumeros": { "type": "string" },
-        "situacao": { "type": "string" },
-        "titulo": { "type": "string" },
-        "tipo": { "type": "string" },
-        "identificacaoresponsabilidade": { "type": "string" },
-        "localproducao": { "type": "string" },
-        "editora": { "type": "string" },
-        "data": { "type": "string" },
-        "dimensoes": { "type": "string" },
-        "materialtecnica": { "type": "string" },
-        "estadoconservacao": { "type": "string" },
-        "assuntoprincipal": { "type": "string" },
-        "condicoesreproducao": { "type": "string" },
-        "midiasrelacionadas": { "type": "string" }
-      },
-      "required": ["numero_registro", "situacao", "titulo", "identificacao_responsabilidade", "dimensao_fisica", "material_tecnica", "estado_conservacao"]
-    }
-  });
+pub async fn validate_bibliografico(file: File) -> Result<JsValue, JsValue> {
+  const REQUIRED_FIELDS: &[&str] = &[
+    "noderegistro",
+    "situacao",
+    "titulo",
+    "tipo",
+    "identificacaoresponsabilidade",
+    "localdeproducao",
+    "editora",
+    "datadeproducao",
+    "dimensaofisica",
+    "materialtecnica",
+    "encardenacao",
+    "resumodescritivo",
+    "estadodeconservacao",
+    "assuntoprincipal",
+    "condicoesdereproducao"
+  ];
+  const SCHEMA: &[&str] = &[
+    "noderegistro",
+    "outrosnumeros",
+    "situacao",
+    "titulo",
+    "tipo",
+    "identificacaoresponsabilidade",
+    "localproducao",
+    "editora",
+    "datadeproducao",
+    "dimensaofisica",
+    "materialtecnica",
+    "encardenacao",
+    "resumodescritivo",
+    "estadodeconservacao",
+    "assuntoprincipal",
+    "assuntocronologico",
+    "assuntogeografico",
+    "condicoesdereproducao",
+    "midiasrelacionadas"
+  ];
 
-  Ok(validate_from_schema(file, schema).await?)
+  Ok(validate_from_schema(file, SCHEMA, REQUIRED_FIELDS).await?)
 }
 
 #[wasm_bindgen]
-pub async fn validate_arquivistico(file: web_sys::File) -> Result<JsValue, JsValue> {
-  let schema = json!({
-    "type": "array",
-    "items": {
-      "type": "object",
-      "properties": {
-        "codigoreferencia": { "type": "string" },
-        "titulo": { "type": "string" },
-        "data": { "type": "string" },
-        "niveldescricao": { "type": "string" },
-        "dimensaoesuporte": { "type": "string" },
-        "nomeprodutor": { "type": "string" },
-        "historiaadministrativabiografia": { "type": "string" },
-        "historiaarquivistica": { "type": "string" },
-        "procedencia": { "type": "string" },
-        "ambitoconteudo": { "type": "string" },
-        "sistemaarranjo": { "type": "string" },
-        "condicoesreproducao": { "type": "string" },
-        "existencialocalizacao_originais": { "type": "string" },
-        "notassobreconservacao": { "type": "string" },
-        "pontosacessoindexacaoassuntos": { "type": "string" },
-        "midiasrelacionadas": { "type": "string" }
-      },
-      "required": ["codigoreferencias", "titulo", "niveldescricao", "dimensaoesuporte", "nomeprodutor", "procedencia"]
-    }
-  });
+pub async fn validate_arquivistico(file: File) -> Result<JsValue, JsValue> {
+  const REQUIRED_FIELDS: &[&str] = &[
+    "coddereferencia",
+    "titulo",
+    "data",
+    "niveldedescricao",
+    "dimensaoesuporte",
+    "nomedoprodutor"
+  ];
+  const SCHEMA: &[&str] = &[
+    "coddereferencia",
+    "titulo",
+    "data",
+    "niveldedescricao",
+    "dimensaoesuporte",
+    "nomedoprodutor",
+    "historiaadministrativabiografia",
+    "historiaarquivistica",
+    "procedencia",
+    "ambitoeconteudo",
+    "sistemadearranjo",
+    "condicoesreproducao",
+    "existenciaelocalizacaodosoriginais",
+    "notassobreconservacao",
+    "pontosacessoeindexacaodeassuntos",
+    "midiasrelacionadas"
+  ];
 
-  Ok(validate_from_schema(file, schema).await?)
+  Ok(validate_from_schema(file, SCHEMA, REQUIRED_FIELDS).await?)
 }
