@@ -19,6 +19,7 @@ import {
 import { format } from "date-fns"
 import React, { useEffect, useMemo, useState } from "react"
 import MismatchsModal from "../../components/MismatchsModal"
+import { Tooltip } from "react-tooltip"
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -74,9 +75,7 @@ const columns = [
   }),
   columnHelper.accessor("status", {
     header: "Status",
-    meta: {
-      filterVariant: "select"
-    }
+    enableColumnFilter: false
   }),
   columnHelper.accessor("museologico.status", {
     header: "Museológico",
@@ -87,8 +86,9 @@ const columns = [
             {info.getValue()}{" "}
             <a
               href={`/api/download/${info.row.original.museu_id._id}/${info.row.getValue("anoDeclaracao")}/museologico`}
+              className="anchor__planilha"
             >
-              (Baixar)
+              <i className="fas fa-download" aria-hidden="true"></i>
             </a>
           </>
         ) : (
@@ -110,8 +110,9 @@ const columns = [
             {info.getValue()}{" "}
             <a
               href={`/api/download/${info.row.original.museu_id._id}/${info.row.getValue("anoDeclaracao")}/bibliografico`}
+              className="anchor__planilha"
             >
-              (Baixar)
+              <i className="fas fa-download" aria-hidden="true"></i>
             </a>
           </>
         ) : (
@@ -133,8 +134,9 @@ const columns = [
             {info.getValue()}{" "}
             <a
               href={`/api/download/${info.row.original.museu_id._id}/${info.row.getValue("anoDeclaracao")}/arquivistico`}
+              className="anchor__planilha"
             >
-              (Baixar)
+              <i className="fas fa-download" aria-hidden="true"></i>
             </a>
           </>
         ) : (
@@ -153,7 +155,7 @@ const columns = [
 
       return (
         <div className="flex gap-1 items-center">
-          <a href={`/api/recibo/${info.getValue()}`}>
+          <a href={`/api/recibo/${info.getValue()}`} className="anchor__recibo">
             <i className="fas fa-file-pdf" aria-hidden="true"></i>
           </a>
           {(info.row.original.museologico.pendencias.length > 0 ||
@@ -161,7 +163,7 @@ const columns = [
             info.row.original.arquivistico.pendencias.length > 0) && (
             <>
               <button
-                className="br-button circle small"
+                className="br-button circle small anchor__mismatchs"
                 onClick={() => setShowModal(true)}
               >
                 <i
@@ -275,8 +277,6 @@ export default function Declaracoes() {
     }
   })
 
-  console.log(data)
-
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
 
   const table = useReactTable({
@@ -304,70 +304,18 @@ export default function Declaracoes() {
         data-collapse="data-collapse"
         data-random="data-random"
       >
+        <Tooltip anchorSelect=".anchor__recibo" place="top" role="tooltip">
+          Baixar recibo
+        </Tooltip>
+        <Tooltip anchorSelect=".anchor__mismatchs" place="top" role="tooltip">
+          Verificar pendências
+        </Tooltip>
+        <Tooltip anchorSelect=".anchor__planilha" place="top" role="tooltip">
+          Baixar planilha
+        </Tooltip>
         <div className="table-header">
           <div className="top-bar">
-            <div className="table-title">Declarações recebidas</div>
-            <div className="actions-trigger text-nowrap">
-              <button
-                className="br-button circle"
-                type="button"
-                id="button-dropdown-density"
-                title="Ver mais opções"
-                data-toggle="dropdown"
-                data-target="target01-3415"
-                aria-label="Definir densidade da tabela"
-                aria-haspopup="true"
-                aria-live="polite"
-              >
-                <i className="fas fa-ellipsis-v" aria-hidden="true"></i>
-              </button>
-              <div
-                className="br-list"
-                id="target01-3415"
-                role="menu"
-                aria-labelledby="button-dropdown-density"
-                hidden
-              >
-                <button
-                  className="br-item"
-                  type="button"
-                  data-density="small"
-                  role="menuitem"
-                >
-                  Densidade alta
-                </button>
-                <span className="br-divider"></span>
-                <button
-                  className="br-item"
-                  type="button"
-                  data-density="medium"
-                  role="menuitem"
-                >
-                  Densidade média
-                </button>
-                <span className="br-divider"></span>
-                <button
-                  className="br-item"
-                  type="button"
-                  data-density="large"
-                  role="menuitem"
-                >
-                  Densidade baixa
-                </button>
-              </div>
-            </div>
-            <div className="search-trigger">
-              <button
-                className="br-button circle"
-                type="button"
-                id="button-input-search"
-                data-toggle="search"
-                aria-label="Abrir busca"
-                aria-controls="table-searchbox-3415"
-              >
-                <i className="fas fa-search" aria-hidden="true"></i>
-              </button>
-            </div>
+            <div className="table-title">Declarações enviadas</div>
           </div>
           <div className="search-bar">
             <div className="br-input">
@@ -460,9 +408,11 @@ export default function Declaracoes() {
                               desc: " 🔽"
                             }[header.column.getIsSorted() as string] ?? null}
                           </div>
-                          <Filter
-                            column={header.column as Column<unknown, unknown>}
-                          />
+                          {header.column.getCanFilter() && (
+                            <Filter
+                              column={header.column as Column<unknown, unknown>}
+                            />
+                          )}
                         </>
                       )}
                     </th>
