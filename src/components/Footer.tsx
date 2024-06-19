@@ -15,7 +15,7 @@ const Footer: React.FC = () => {
           data-sub="data-sub"
         >
           <div className="col-2">
-            <a className="br-item header" href="javascript:void(0)">
+            <a className="br-item header" href="#(0)">
               <div className="content text-down-01 text-bold text-uppercase">
                 Categoria 1
               </div>
@@ -25,17 +25,17 @@ const Footer: React.FC = () => {
             </a>
             <div className="br-list">
               <span className="br-divider d-md-none"></span>
-              <a className="br-item" href="javascript:void(0)">
+              <a className="br-item" href="#(0)">
                 <div className="content">Deserunt</div>
               </a>
-              <a className="br-item" href="javascript:void(0)">
+              <a className="br-item" href="#(0)">
                 <div className="content">Deserunt</div>
               </a>
               <span className="br-divider d-md-none"></span>
             </div>
           </div>
           <div className="col-2">
-            <a className="br-item header" href="javascript:void(0)">
+            <a className="br-item header" href="#(0)">
               <div className="content text-down-01 text-bold text-uppercase">
                 Categoria 2
               </div>
@@ -45,20 +45,20 @@ const Footer: React.FC = () => {
             </a>
             <div className="br-list">
               <span className="br-divider d-md-none"></span>
-              <a className="br-item" href="javascript:void(0)">
+              <a className="br-item" href="#(0)">
                 <div className="content">Deserunt</div>
               </a>
-              <a className="br-item" href="javascript:void(0)">
+              <a className="br-item" href="#(0)">
                 <div className="content">Ad deserunt nostrud</div>
               </a>
-              <a className="br-item" href="javascript:void(0)">
+              <a className="br-item" href="#(0)">
                 <div className="content">Est ex deserunt</div>
               </a>
               <span className="br-divider d-md-none"></span>
             </div>
           </div>
           <div className="col-2">
-            <a className="br-item header" href="javascript:void(0)">
+            <a className="br-item header" href="#(0)">
               <div className="content text-down-01 text-bold text-uppercase">
                 Categoria 3
               </div>
@@ -68,13 +68,13 @@ const Footer: React.FC = () => {
             </a>
             <div className="br-list">
               <span className="br-divider d-md-none"></span>
-              <a className="br-item" href="javascript:void(0)">
+              <a className="br-item" href="#(0)">
                 <div className="content">Est ex deserunt</div>
               </a>
-              <a className="br-item" href="javascript:void(0)">
+              <a className="br-item" href="#(0)">
                 <div className="content">Est ex deserunt</div>
               </a>
-              <a className="br-item" href="javascript:void(0)">
+              <a className="br-item" href="#(0)">
                 <div className="content">
                   Ex qui laborum consectetur aute commodo
                 </div>
@@ -83,7 +83,7 @@ const Footer: React.FC = () => {
             </div>
           </div>
           <div className="col-2">
-            <a className="br-item header" href="javascript:void(0)">
+            <a className="br-item header" href="#(0)">
               <div className="content text-down-01 text-bold text-uppercase">
                 Categoria 4
               </div>
@@ -93,17 +93,17 @@ const Footer: React.FC = () => {
             </a>
             <div className="br-list">
               <span className="br-divider d-md-none"></span>
-              <a className="br-item" href="javascript:void(0)">
+              <a className="br-item" href="#(0)">
                 <div className="content">Duis incididunt consectetur</div>
               </a>
-              <a className="br-item" href="javascript:void(0)">
+              <a className="br-item" href="#(0)">
                 <div className="content">Ad deserunt nostrud</div>
               </a>
               <span className="br-divider d-md-none"></span>
             </div>
           </div>
           <div className="col-2">
-            <a className="br-item header" href="javascript:void(0)">
+            <a className="br-item header" href="#(0)">
               <div className="content text-down-01 text-bold text-uppercase">
                 Categoria 5
               </div>
@@ -113,25 +113,25 @@ const Footer: React.FC = () => {
             </a>
             <div className="br-list">
               <span className="br-divider d-md-none"></span>
-              <a className="br-item" href="javascript:void(0)">
+              <a className="br-item" href="#(0)">
                 <div className="content">Nulla occaecat eiusmod</div>
               </a>
-              <a className="br-item" href="javascript:void(0)">
+              <a className="br-item" href="#(0)">
                 <div className="content">
                   Ex qui laborum consectetur aute commodo
                 </div>
               </a>
-              <a className="br-item" href="javascript:void(0)">
+              <a className="br-item" href="#(0)">
                 <div className="content">Deserunt</div>
               </a>
-              <a className="br-item" href="javascript:void(0)">
+              <a className="br-item" href="#(0)">
                 <div className="content">Est ex deserunt</div>
               </a>
               <span className="br-divider d-md-none"></span>
             </div>
           </div>
           <div className="col-2">
-            <a className="br-item header" href="javascript:void(0)">
+            <a className="br-item header" href="#(0)">
               <div className="content text-down-01 text-bold text-uppercase">
                 Categoria 6
               </div>
@@ -141,12 +141,12 @@ const Footer: React.FC = () => {
             </a>
             <div className="br-list">
               <span className="br-divider d-md-none"></span>
-              <a className="br-item" href="javascript:void(0)">
+              <a className="br-item" href="#(0)">
                 <div className="content">
                   Ex qui laborum consectetur aute commodo
                 </div>
               </a>
-              <a className="br-item" href="javascript:void(0)">
+              <a className="br-item" href="#(0)">
                 <div className="content">
                   Ex qui laborum consectetur aute commodo
                 </div>

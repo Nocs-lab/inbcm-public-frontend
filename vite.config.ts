@@ -5,20 +5,16 @@ import { defineConfig } from "vite"
 import react from "@vitejs/plugin-react-swc"
 import UnoCSS from "unocss/vite"
 import Pages from "vite-plugin-pages"
-import wasm from "vite-plugin-wasm"
 import basicSsl from "@vitejs/plugin-basic-ssl"
-import wasmPack from "vite-plugin-wasm-pack"
 
 export default defineConfig({
   plugins: [
     // MillionLint.vite(),
     // million.vite({ auto: true }),
     react(),
-    wasm(),
     UnoCSS(),
     Pages({ extensions: ["tsx"] }),
-    basicSsl(),
-    wasmPack("./parse-xlsx")
+    basicSsl()
   ],
   build: {
     commonjsOptions: { transformMixedEsModules: true }

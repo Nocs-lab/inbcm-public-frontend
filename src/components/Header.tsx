@@ -1,6 +1,6 @@
 import React from "react"
 import { Link, useNavigate, useLocation } from "react-router-dom"
-import logoImbramSimples from "../images/logo-ibram-simples.png"
+import logoIbramSimples from "../images/logo-ibram-simples.png"
 import useStore from "../utils/store"
 import { useState } from "react"
 
@@ -32,7 +32,7 @@ const Header: React.FC = () => {
       <div className="container-lg">
         <div className="header-top">
           <div className="header-logo">
-            <img src={logoImbramSimples} alt="logo" />
+            <img src={logoIbramSimples} alt="logo" />
             <span className="br-divider vertical"></span>
             <div className="header-sign">Instituto Brasileiro de Museus</div>
           </div>
@@ -139,21 +139,13 @@ const Header: React.FC = () => {
                 role="menu"
                 aria-labelledby="avatar-dropdown-trigger"
               >
-                <a
-                  className="br-item"
-                  href="javascript:void(0)"
-                  role="menuitem"
-                >
+                <a className="br-item" href="#(0)" role="menuitem">
                   Dados pessoais
                 </a>
                 <button className="br-item" onClick={logout} role="menuitem">
                   Sair
                 </button>
-                <a
-                  className="br-item"
-                  href="javascript:void(0)"
-                  role="menuitem"
-                >
+                <a className="br-item" href="#(0)" role="menuitem">
                   Notificações
                 </a>
               </div>

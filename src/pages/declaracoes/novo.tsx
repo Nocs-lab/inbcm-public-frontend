@@ -12,14 +12,12 @@ import request from "../../utils/request"
 import useStore from "../../utils/store"
 import { useEffect, useState } from "react"
 import { Link } from "react-router-dom"
-import init, {
-  validate_arquivistico,
-  validate_bibliografico,
-  validate_museologico
-} from "../../../parse-xlsx/pkg/parse_xlsx"
 import MismatchsModal from "../../components/MismatchsModal"
-
-init()
+import {
+  validate_museologico,
+  validate_bibliografico,
+  validate_arquivistico
+} from "../../parseXLSX"
 
 const schema = z
   .object({
@@ -167,32 +165,30 @@ const NovoDeclaracaoPage = () => {
   const [modalOpen, setModalOpen] = useState(false)
 
   const handlerError = (err: unknown) => {
-    switch (err) {
-      case "XLSX_ERROR":
-        setErrorMessage({
-          title: "Erro ao ler o arquivo.",
-          body: "Verifique se o arquivo abre corretamente no Excel ou similar."
-        })
-        break
-      case "INVALID_HEADERS":
-        setErrorMessage({
-          title: "A planilha está fora do padrão definido pelo IBRAM.",
-          body: "Envie os bens de acordo com o formato definido."
-        })
-        break
-      case "EMPTY_ROWS":
-        setErrorMessage({
-          title: "A planilha está vazia.",
-          body: "Envie o arquivo com os bens do museu."
-        })
-        break
-      default:
-        setErrorMessage({
-          title: "Ocorreu um erro.",
-          body: "Ocorreu um erro ao validar o arquivo. Tente novamente."
-        })
-        break
+    if (err instanceof Error) {
+      switch (err.message) {
+        case "XLSX_ERROR":
+          return setErrorMessage({
+            title: "Erro ao ler o arquivo.",
+            body: "Verifique se o arquivo abre corretamente no Excel ou similar."
+          })
+        case "INVALID_HEADERS":
+          return setErrorMessage({
+            title: "A planilha está fora do padrão definido pelo IBRAM.",
+            body: "Envie os bens de acordo com o formato definido."
+          })
+        case "EMPTY_ROWS":
+          return setErrorMessage({
+            title: "A planilha está vazia.",
+            body: "Envie o arquivo com os bens do museu."
+          })
+      }
     }
+
+    setErrorMessage({
+      title: "Ocorreu um erro.",
+      body: "Ocorreu um erro ao validar o arquivo. Tente novamente."
+    })
   }
 
   useEffect(() => {
@@ -273,48 +269,16 @@ const NovoDeclaracaoPage = () => {
         bibliograficoErrors={bibliograficoErrors}
         arquivisticoErrors={arquivisticoErrors}
       />
-      <h1>Submeter</h1>
-      As planilhas devem ser preenchidas possível os padrões estabelecidos, que
-      podem ser acessados{" "}
-      <a
-        href="https://www.gov.br/museus/pt-br/assuntos/legislacao-e-normas/outros-instrumentos-normativo/resolucao-normativa-ibram-no-6-de-31-de-agosto-de-2021"
-        target="_blank"
-      >
-        clicando aqui
+      <h1>Enviar declaração</h1>
+      As planilhas devem ser preenchidas de acordo com os modelos definidos na{" "}
+      <a href="https://www.gov.br/museus/pt-br/assuntos/legislacao-e-normas/outros-instrumentos-normativo/resolucao-normativa-ibram-no-6-de-31-de-agosto-de-2021">
+        Resolução Normativa do Ibram nº 6, de 31 de agosto de 2021
       </a>
-      . Devem ser enviados até 3 arquivos, sendo um para cada tipo de acervo. Um
-      modelo de planilha para cada tipo de acervo pode ser baixado clicando nos
-      links abaixo:
-      <ul className="list-disc list-inside pl-0 mt-2">
-        <li>
-          <a
-            href="https://www.gov.br/museus/pt-br/assuntos/legislacao-e-normas/outros-instrumentos-normativo/modelo-planilha-museologico.xlsx"
-            target="_blank"
-          >
-            Museológico
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://www.gov.br/museus/pt-br/assuntos/legislacao-e-normas/outros-instrumentos-normativo/modelo-planilha-bibliografico.xlsx"
-            target="_blank"
-          >
-            Bibliográfico
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://www.gov.br/museus/pt-br/assuntos/legislacao-e-normas/outros-instrumentos-normativo/modelo-planilha-arquivistico.xlsx"
-            target="_blank"
-          >
-            Arquivístico
-          </a>
-        </li>
-      </ul>
-      Não é necessário enviar todos os arquivos, apenas os que forem aplicáveis.
-      Também não é necessário enviar todos os arquivos de uma vez, você pode
-      enviar outros arquivos posteriormente, desde que seja dentro do prazo
-      estabelecido.
+      . Você pode enviar até 03 arquivos, sendo um para cada tipo de acervo. Um
+      modelo de planilha, para cada tipo de acervo, pode ser obtido clicando nos
+      seguintes hiperlinks: <a href="/INBCM_Museologia.xlsx">Museológico</a>,{" "}
+      <a href="/INBCM_Biblioteconomia.xlsx">Bibliográfico</a> e{" "}
+      <a href="/INBCM_Arquivologia.xlsx">Arquivístico</a>.
       <form onSubmit={handleSubmit(onSubmit)} className="mt-5">
         {showMessage && (
           <div className="br-message warning">
@@ -420,37 +384,39 @@ const NovoDeclaracaoPage = () => {
             </div>
           </div>
         )}
-        <Controller
-          control={control}
-          name="ano"
-          render={({ field }) => (
-            <Select
-              label="Ano"
-              options={[
-                { label: "2024", value: "2024" },
-                { label: "2023", value: "2023" },
-                { label: "2022", value: "2022" }
-              ]}
-              {...field}
-            />
-          )}
-        />
-        {museus.length > 0 && (
+        <div className="flex gap-2">
           <Controller
             control={control}
-            name="museu"
+            name="ano"
             render={({ field }) => (
               <Select
-                label="Museu"
-                options={museus?.map((museu) => ({
-                  label: museu.nome,
-                  value: museu._id
-                }))}
+                label="Ano"
+                options={[
+                  { label: "2024", value: "2024" },
+                  { label: "2023", value: "2023" },
+                  { label: "2022", value: "2022" }
+                ]}
                 {...field}
               />
             )}
           />
-        )}
+          {museus.length > 0 && (
+            <Controller
+              control={control}
+              name="museu"
+              render={({ field }) => (
+                <Select
+                  label="Museu"
+                  options={museus?.map((museu) => ({
+                    label: museu.nome,
+                    value: museu._id
+                  }))}
+                  {...field}
+                />
+              )}
+            />
+          )}
+        </div>
         <div
           className={clsx(
             "grid grid-cols-1 gap-4 md:grid-cols-3 mt-3",
