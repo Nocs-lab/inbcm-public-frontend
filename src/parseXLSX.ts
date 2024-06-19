@@ -1,5 +1,10 @@
 import * as XLSX from "xlsx"
 
+/**
+ * Transforma um texto em uma string slug
+ * @param text - Texto a ser transformado
+ * @returns String slug
+ */
 function slugify(text: string): string {
   return text
     .normalize("NFD")
@@ -10,16 +15,12 @@ function slugify(text: string): string {
     .replace(/(\d)$/, "$1")
 }
 
-/*
-
-  Função que verifica se as colunas do arquivo excel são válidas
-
-  headers: Lista de headers do arquivo excel
-  headersSchema: Lista de headers do schema
-
-  return: Booleano indicando se os headers são válidos
-
-*/
+/**
+ * Verifica se as colunas do arquivo excel são válidas
+ * @param headers - Lista de colunas do arquivo excel
+ * @param headersSchema - Lista de colunas do schema
+ * @returns Booleano indicando se os colunas são válidos
+ */
 function validateHeaders(headers: string[], headersSchema: string[]): boolean {
   return (
     headers.length === headersSchema.length &&
@@ -27,18 +28,14 @@ function validateHeaders(headers: string[], headersSchema: string[]): boolean {
   )
 }
 
-/*
-
-  Função que valida as linhas do arquivo excel, verificando se os campos obrigatórios estão preenchidos
-
-  rows: Lista de linhas do arquivo excel
-  headers: Lista de headers do arquivo excel
-  requiredFields: Lista de campos obrigatórios
-  json: Lista de objetos gerados a partir das linhas
-
-  return: Objeto com a lista de objetos e a lista de erros
-
-*/
+/**
+ * vvAlida as linhas do arquivo excel, verificando se os campos obrigatórios estão preenchidos
+ * @param rows - Lista de linhas do arquivo excel
+ * @param headers - Lista de colunas do arquivo excel
+ * @param requiredFields - Lista de campos obrigatórios
+ * @param json - Lista de objetos gerados a partir das linhas
+ * @returns Objeto com a lista de objetos e a lista de erros
+ */
 function validateRows(
   rows: string[][],
   headers: string[],
@@ -71,6 +68,11 @@ function validateRows(
   }
 }
 
+/**
+ * Lê um arquivo e retorna seu conteúdo como ArrayBuffer
+ * @param file - Arquivo a ser lido
+ * @returns Conteúdo do arquivo como ArrayBuffer
+ */
 async function readFile(file: File): Promise<ArrayBuffer> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -80,17 +82,13 @@ async function readFile(file: File): Promise<ArrayBuffer> {
   })
 }
 
-/*
-
-  Função que valida um arquivo excel de acordo com o schema passado
-
-  file: Arquivo excel a ser validado
-  headersSchema: Lista de headers do arquivo excel
-  requiredFields: Lista de campos obrigatórios
-
-  return: Objeto com a lista de objetos e a lista de erros
-
-*/
+/**
+ * Valida um arquivo excel de acordo com o schema passado
+ * @param file - Arquivo excel a ser validado
+ * @param headersSchema - Lista de colunas do arquivo excel
+ * @param requiredFields - Lista de campos obrigatórios
+ * @returns Objeto com a lista de objetos e a lista de erros
+ */
 async function parseExcelFile(
   file: File,
   headersSchema: string[],
@@ -125,15 +123,11 @@ async function parseExcelFile(
   return validateRows(rows, headers, requiredFields, json)
 }
 
-/*
-
-  Função que valida um arquivo excel do acervo museológico
-
-  file: Arquivo excel a ser validado
-
-  return: Objeto com a lista de objetos e a lista de erros
-
-*/
+/**
+ * Valida um arquivo excel do acervo museológico
+ * @param file - Arquivo excel a ser validado
+ * @returns Objeto com a lista de objetos e a lista de erros
+ */
 export async function validate_museologico(
   file: File
 ): Promise<{ data: { [key: string]: string }[]; errors: string[] }> {
@@ -176,15 +170,11 @@ export async function validate_museologico(
   return parseExcelFile(file, SCHEMA, REQUIRED_FIELDS)
 }
 
-/*
-
-  Função que valida um arquivo excel do acervo bibliográfico
-
-  file: Arquivo excel a ser validado
-
-  return: Objeto com a lista de objetos e a lista de erros
-
-*/
+/**
+ * Valida um arquivo excel do acervo bibliográfico
+ * @param file - Arquivo excel a ser validado
+ * @returns Objeto com a lista de objetos e a lista de erros
+ */
 export async function validate_bibliografico(
   file: File
 ): Promise<{ data: { [key: string]: string }[]; errors: string[] }> {
@@ -230,15 +220,11 @@ export async function validate_bibliografico(
   return parseExcelFile(file, SCHEMA, REQUIRED_FIELDS)
 }
 
-/*
-
-  Função que valida um arquivo excel do acervo arquivístico
-
-  file: Arquivo excel a ser validado
-
-  return: Objeto com a lista de objetos e a lista de erros
-
-*/
+/**
+ * Valida um arquivo excel do acervo arquivístico
+ * @param file - Arquivo excel a ser validado
+ * @returns Objeto com a lista de objetos e a lista de erros
+ */
 export async function validate_arquivistico(
   file: File
 ): Promise<{ data: { [key: string]: string }[]; errors: string[] }> {
