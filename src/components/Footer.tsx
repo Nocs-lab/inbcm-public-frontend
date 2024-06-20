@@ -185,10 +185,10 @@ const Footer: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="col assigns flex items-center justify-center">
+            <div className="flex items-center justify-center font-bold">
               Desenvolvido por:
-              <img className="ml-4" src={logoIfrn} alt="Imagem" />
-              <img className="ml-4" src={logoNocs} alt="Imagem" />
+              <img className="ml-4 h-20" src={logoIfrn} alt="Imagem" />
+              <img className="ml-4 h-10" src={logoNocs} alt="Imagem" />
             </div>
           </div>
         </div>

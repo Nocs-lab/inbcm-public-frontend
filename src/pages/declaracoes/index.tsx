@@ -18,8 +18,8 @@ import {
 } from "@tanstack/react-table"
 import { format } from "date-fns"
 import React, { useEffect, useMemo, useState } from "react"
-import MismatchsModal from "../../components/MismatchsModal"
 import { Tooltip } from "react-tooltip"
+import { Link } from "react-router-dom"
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -77,112 +77,16 @@ const columns = [
     header: "Status",
     enableColumnFilter: false
   }),
-  columnHelper.accessor("museologico.status", {
-    header: "Museológico",
-    cell: (info) => (
-      <>
-        {info.getValue() !== "não enviado" ? (
-          <>
-            {info.getValue()}{" "}
-            <a
-              href={`/api/download/${info.row.original.museu_id._id}/${info.row.getValue("anoDeclaracao")}/museologico`}
-              className="anchor__planilha"
-            >
-              <i className="fas fa-download" aria-hidden="true"></i>
-            </a>
-          </>
-        ) : (
-          "-"
-        )}
-      </>
-    ),
-    enableColumnFilter: false
-  }),
-  columnHelper.accessor("bibliografico.status", {
-    header: "Bibliográfico",
-    meta: {
-      filterVariant: "select"
-    },
-    cell: (info) => (
-      <>
-        {info.getValue() !== "não enviado" ? (
-          <>
-            {info.getValue()}{" "}
-            <a
-              href={`/api/download/${info.row.original.museu_id._id}/${info.row.getValue("anoDeclaracao")}/bibliografico`}
-              className="anchor__planilha"
-            >
-              <i className="fas fa-download" aria-hidden="true"></i>
-            </a>
-          </>
-        ) : (
-          "-"
-        )}
-      </>
-    ),
-    enableColumnFilter: false
-  }),
-  columnHelper.accessor("arquivistico.status", {
-    header: "Arquivístico",
-    meta: {
-      filterVariant: "select"
-    },
-    cell: (info) => (
-      <>
-        {info.getValue() !== "não enviado" ? (
-          <>
-            {info.getValue()}{" "}
-            <a
-              href={`/api/download/${info.row.original.museu_id._id}/${info.row.getValue("anoDeclaracao")}/arquivistico`}
-              className="anchor__planilha"
-            >
-              <i className="fas fa-download" aria-hidden="true"></i>
-            </a>
-          </>
-        ) : (
-          "-"
-        )}
-      </>
-    ),
-    enableColumnFilter: false
-  }),
   columnHelper.accessor("_id", {
     header: "Ações",
     enableColumnFilter: false,
-    cell: (info) => {
-      // eslint-disable-next-line react-hooks/rules-of-hooks
-      const [showModal, setShowModal] = useState(false)
-
-      return (
-        <div className="flex gap-1 items-center">
-          <a href={`/api/recibo/${info.getValue()}`} className="anchor__recibo">
-            <i className="fas fa-file-pdf" aria-hidden="true"></i>
-          </a>
-          {(info.row.original.museologico.pendencias.length > 0 ||
-            info.row.original.bibliografico.pendencias.length > 0 ||
-            info.row.original.arquivistico.pendencias.length > 0) && (
-            <>
-              <button
-                className="br-button circle small anchor__mismatchs"
-                onClick={() => setShowModal(true)}
-              >
-                <i
-                  className="fas fa-exclamation-triangle"
-                  aria-hidden="true"
-                ></i>
-              </button>
-              <MismatchsModal
-                opened={showModal}
-                onClose={() => setShowModal(false)}
-                musologicoErrors={info.row.original.museologico.pendencias}
-                bibliograficoErrors={info.row.original.bibliografico.pendencias}
-                arquivisticoErrors={info.row.original.arquivistico.pendencias}
-              />
-            </>
-          )}
-        </div>
-      )
-    }
+    cell: (info) => (
+      <div className="flex gap-1 items-center">
+        <Link to={`/declaracoes/${info.getValue()}`}>
+          <i className="fas fa-eye" aria-hidden="true"></i>
+        </Link>
+      </div>
+    )
   })
 ]
 
@@ -297,6 +201,7 @@ export default function Declaracoes() {
 
   return (
     <DefaultLayout>
+      <h2>Minhas declarações</h2>
       <div
         className="br-table overflow-auto"
         data-search="data-search"
@@ -313,76 +218,7 @@ export default function Declaracoes() {
         <Tooltip anchorSelect=".anchor__planilha" place="top" role="tooltip">
           Baixar planilha
         </Tooltip>
-        <div className="table-header">
-          <div className="top-bar">
-            <div className="table-title">Declarações enviadas</div>
-          </div>
-          <div className="search-bar">
-            <div className="br-input">
-              <label htmlFor="table-searchbox-3415">Buscar na tabela</label>
-              <input
-                id="table-searchbox-3415"
-                type="search"
-                placeholder="Buscar na tabela"
-                aria-labelledby="button-input-search"
-                aria-label="Buscar na tabela"
-              />
-              <button className="br-button" type="button" aria-label="Buscar">
-                <i className="fas fa-search" aria-hidden="true"></i>
-              </button>
-            </div>
-            <button
-              className="br-button circle"
-              type="button"
-              data-dismiss="search"
-              aria-label="Fechar busca"
-            >
-              <i className="fas fa-times" aria-hidden="true"></i>
-            </button>
-          </div>
-          <div className="selected-bar">
-            <div className="info">
-              <span className="count">0</span>
-              <span className="text">item selecionado</span>
-            </div>
-            <div className="actions-trigger text-nowrap">
-              <button
-                className="br-button circle inverted"
-                type="button"
-                id="button-dropdown-selection"
-                data-toggle="dropdown"
-                data-target="target02-3415"
-                aria-controls="target02-3415"
-                aria-label="Ver mais opções de ação"
-                aria-haspopup="true"
-              >
-                <i className="fas fa-ellipsis-v" aria-hidden="true"></i>
-              </button>
-              <div
-                className="br-list"
-                id="target02-3415"
-                role="menu"
-                aria-labelledby="button-dropdown-selection"
-                hidden
-              >
-                <button
-                  className="br-item"
-                  type="button"
-                  data-toggle=""
-                  role="menuitem"
-                >
-                  Ação 1
-                </button>
-                <span className="br-divider"></span>
-                <button className="br-item" type="button" role="menuitem">
-                  Ação 2
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
         <table>
-          <caption>Título da Tabela</caption>
           <thead>
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>

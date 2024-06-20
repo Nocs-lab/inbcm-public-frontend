@@ -9,13 +9,11 @@ import { useNavigate, useParams } from "react-router"
 import request from "../../../utils/request"
 import { useEffect, useState } from "react"
 import MismatchsModal from "../../../components/MismatchsModal"
-import init, {
+import {
   validate_arquivistico,
   validate_bibliografico,
   validate_museologico
-} from "../../../../parse-xlsx/pkg/parse_xlsx"
-
-init()
+} from "../../../utils/parseXLSX"
 
 const schema = z
   .object({
@@ -38,7 +36,7 @@ export default function RetificarDeclaracao() {
   const navigate = useNavigate()
 
   const params = useParams()
-  const id = params.declaracaoId!
+  const id = params.id!
 
   const { data: declaracao } = useSuspenseQuery<{
     museu_id: { _id: string; nome: string }
@@ -255,48 +253,19 @@ export default function RetificarDeclaracao() {
         bibliograficoErrors={bibliograficoErrors}
         arquivisticoErrors={arquivisticoErrors}
       />
-      <h1>Retificar Declaração</h1>
-      As planilhas devem ser preenchidas possível os padrões estabelecidos, que
-      podem ser acessados{" "}
+      <h2>Retificar declaração</h2>
+      As planilhas devem ser preenchidas de acordo com os modelos definidos na{" "}
       <a
-        href="https://www.gov.br/museus/pt-br/assuntos/legislacao-e-normas/outros-instrumentos-normativo/resolucao-normativa-ibram-no-6-de-31-de-agosto-de-2021"
         target="_blank"
+        href="https://www.gov.br/museus/pt-br/assuntos/legislacao-e-normas/outros-instrumentos-normativo/resolucao-normativa-ibram-no-6-de-31-de-agosto-de-2021"
       >
-        clicando aqui
+        Resolução Normativa do Ibram nº 6, de 31 de agosto de 2021
       </a>
-      . Devem ser enviados até 3 arquivos, sendo um para cada tipo de acervo. Um
-      modelo de planilha para cada tipo de acervo pode ser baixado clicando nos
-      links abaixo:
-      <ul className="list-disc list-inside pl-0 mt-2">
-        <li>
-          <a
-            href="https://www.gov.br/museus/pt-br/assuntos/legislacao-e-normas/outros-instrumentos-normativo/modelo-planilha-museologico.xlsx"
-            target="_blank"
-          >
-            Museológico
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://www.gov.br/museus/pt-br/assuntos/legislacao-e-normas/outros-instrumentos-normativo/modelo-planilha-bibliografico.xlsx"
-            target="_blank"
-          >
-            Bibliográfico
-          </a>
-        </li>
-        <li>
-          <a
-            href="https://www.gov.br/museus/pt-br/assuntos/legislacao-e-normas/outros-instrumentos-normativo/modelo-planilha-arquivistico.xlsx"
-            target="_blank"
-          >
-            Arquivístico
-          </a>
-        </li>
-      </ul>
-      Não é necessário enviar todos os arquivos, apenas os que forem aplicáveis.
-      Também não é necessário enviar todos os arquivos de uma vez, você pode
-      enviar outros arquivos posteriormente, desde que seja dentro do prazo
-      estabelecido.
+      . Você pode enviar até 03 arquivos, sendo um para cada tipo de acervo. Um
+      modelo de planilha, para cada tipo de acervo, pode ser obtido clicando nos
+      seguintes hiperlinks: <a href="/INBCM_Museologia.xlsx">Museológico</a>,{" "}
+      <a href="/INBCM_Biblioteconomia.xlsx">Bibliográfico</a> e{" "}
+      <a href="/INBCM_Arquivologia.xlsx">Arquivístico</a>.
       <form onSubmit={handleSubmit(onSubmit)} className="mt-5">
         {showMessage && (
           <div className="br-message warning">

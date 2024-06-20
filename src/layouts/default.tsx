@@ -16,7 +16,7 @@ const DefaultLayout: React.FC<{ children: React.ReactNode }> = ({
   return (
     <>
       <Header />
-      <main className="container py-10">{children}</main>
+      <main className="container py-20 min-h-150">{children}</main>
       <Footer />
     </>
   )

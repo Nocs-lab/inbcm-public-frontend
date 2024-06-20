@@ -17,7 +17,7 @@ import {
   validate_museologico,
   validate_bibliografico,
   validate_arquivistico
-} from "../../parseXLSX"
+} from "../../utils/parseXLSX"
 
 const schema = z
   .object({
@@ -189,6 +189,7 @@ const NovoDeclaracaoPage = () => {
       title: "Ocorreu um erro.",
       body: "Ocorreu um erro ao validar o arquivo. Tente novamente."
     })
+    console.error(err)
   }
 
   useEffect(() => {
@@ -269,9 +270,12 @@ const NovoDeclaracaoPage = () => {
         bibliograficoErrors={bibliograficoErrors}
         arquivisticoErrors={arquivisticoErrors}
       />
-      <h1>Enviar declaração</h1>
+      <h2>Nova declaração</h2>
       As planilhas devem ser preenchidas de acordo com os modelos definidos na{" "}
-      <a href="https://www.gov.br/museus/pt-br/assuntos/legislacao-e-normas/outros-instrumentos-normativo/resolucao-normativa-ibram-no-6-de-31-de-agosto-de-2021">
+      <a
+        target="_blank"
+        href="https://www.gov.br/museus/pt-br/assuntos/legislacao-e-normas/outros-instrumentos-normativo/resolucao-normativa-ibram-no-6-de-31-de-agosto-de-2021"
+      >
         Resolução Normativa do Ibram nº 6, de 31 de agosto de 2021
       </a>
       . Você pode enviar até 03 arquivos, sendo um para cada tipo de acervo. Um
@@ -366,21 +370,11 @@ const NovoDeclaracaoPage = () => {
                 <a href={`/api/recibo/${declaracao?._id}`}>clique aqui</a>. Caso
                 deseje fazer alguma alteração, você deve enviar uma declaração
                 retificadora{" "}
-                <Link to={`/declaracoes/retificar/${declaracao?._id}`}>
+                <Link to={`/declaracoes/${declaracao?._id}/retificar`}>
                   clicando aqui
                 </Link>
                 .
               </span>
-            </div>
-            <div className="close">
-              <button
-                className="br-button circle small"
-                type="button"
-                aria-label="Fechar a messagem alterta"
-                onClick={() => setShowMessage(false)}
-              >
-                <i className="fas fa-times" aria-hidden="true"></i>
-              </button>
             </div>
           </div>
         )}

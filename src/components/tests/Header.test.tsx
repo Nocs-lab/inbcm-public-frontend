@@ -28,7 +28,7 @@ describe("Header", () => {
       </MemoryRouter>
     )
 
-    expect(screen.getByTestId("username")).toHaveTextContent("Olá, Test")
+    expect(screen.getByTestId("username")).toHaveTextContent("Test")
   })
 
   test("Consegue abrir e fechar o menu", () => {
