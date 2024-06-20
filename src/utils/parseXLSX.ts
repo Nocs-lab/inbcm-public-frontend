@@ -111,7 +111,7 @@ async function parseExcelFile(
   if (!rows.length) throw new Error("EMPTY_ROWS")
 
   const json = rows.map((row) => {
-    if (row.length !== headers.length) throw new Error("INVALID_ROW")
+    if (row.length > headers.length) throw new Error("INVALID_ROW")
 
     const obj: { [key: string]: string } = {}
     headers.forEach((header, idx) => {
