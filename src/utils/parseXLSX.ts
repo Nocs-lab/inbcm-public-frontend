@@ -138,6 +138,7 @@ export async function validate_museologico(
     "autor",
     "resumodescritivo",
     "dimensoes",
+    "peso",
     "materialtecnica",
     "estadodeconservacao",
     "condicoesdereproducao"

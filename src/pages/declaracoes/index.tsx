@@ -16,7 +16,6 @@ import {
   createColumnHelper,
   useReactTable
 } from "@tanstack/react-table"
-import { format } from "date-fns"
 import React, { useEffect, useMemo, useState } from "react"
 import { Tooltip } from "react-tooltip"
 import { Link } from "react-router-dom"
@@ -58,7 +57,7 @@ const columnHelper = createColumnHelper<{
 const columns = [
   columnHelper.accessor("dataCriacao", {
     header: "Data de envio",
-    cell: (info) => format(new Date(info.getValue()), "dd/MM/yyyy - HH:mm"),
+    cell: (info) => info.getValue(),
     enableColumnFilter: false
   }),
   columnHelper.accessor("anoDeclaracao", {
@@ -82,8 +81,12 @@ const columns = [
     enableColumnFilter: false,
     cell: (info) => (
       <div className="flex gap-1 items-center">
-        <Link to={`/declaracoes/${info.getValue()}`}>
+        <Link
+          to={`/declaracoes/${info.getValue()}`}
+          className="flex items-center justify-center gap-1"
+        >
           <i className="fas fa-eye" aria-hidden="true"></i>
+          Expandir
         </Link>
       </div>
     )
