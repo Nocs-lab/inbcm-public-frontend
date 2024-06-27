@@ -18,6 +18,7 @@ import {
   validate_bibliografico,
   validate_arquivistico
 } from "../../utils/parseXLSX"
+import toast from "react-hot-toast"
 
 const schema = z
   .object({
@@ -123,6 +124,7 @@ const NovoDeclaracaoPage = () => {
       })
     },
     onSuccess: () => {
+      toast.success("Declaração enviada com sucesso!")
       navigate("/declaracoes")
     }
   })

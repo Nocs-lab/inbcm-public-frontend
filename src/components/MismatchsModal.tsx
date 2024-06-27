@@ -98,7 +98,7 @@ const MismatchsModal: React.FC<{
         )}
         {bibliograficoErrors.length > 0 && (
           <>
-            <h2 className="text-lg font-bold">Acervo ibliográfico</h2>
+            <h2 className="text-lg font-bold">Acervo bibliográfico</h2>
             Existem linhas em que campos obrigatórios não foram preenchidos. São
             eles:{" "}
             {bibliograficoErrors
