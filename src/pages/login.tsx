@@ -8,6 +8,7 @@ import { useMutation } from "@tanstack/react-query"
 import request from "../utils/request"
 import React, { useState } from "react"
 import logoIbram from "../images/logo-ibram.png"
+import Input from "../components/Input"
 
 const schema = z.object({
   email: z.string().min(1, "Este campo é obrigatório"),
@@ -89,53 +90,20 @@ const LoginPage: React.FC = () => {
               </div>
             </div>
           )}
-          <div
-            className={clsx(
-              "br-input input-button w-full",
-              errors.email && "input-danger"
-            )}
-          >
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              placeholder="Digite seu email"
-              {...register("email")}
-            />
-            {errors.email && (
-              <span className="feedback danger" role="alert" id="danger">
-                <i className="fas fa-times-circle" aria-hidden="true"></i>
-                {errors.email.message}
-              </span>
-            )}
-          </div>
-          <div
-            className={clsx(
-              "br-input input-button w-full",
-              errors.password && "input-danger"
-            )}
-          >
-            <label htmlFor="password">Senha</label>
-            <input
-              type="password"
-              placeholder="Digite sua senha"
-              {...register("password")}
-            />
-            <button
-              className="br-button"
-              type="button"
-              aria-label="Exibir senha"
-              role="switch"
-              aria-checked="false"
-            >
-              <i className="fas fa-eye" aria-hidden="true"></i>
-            </button>
-            {errors.password && (
-              <span className="feedback danger" role="alert" id="danger">
-                <i className="fas fa-times-circle" aria-hidden="true"></i>
-                {errors.password.message}
-              </span>
-            )}
-          </div>
+          <Input
+            type="email"
+            label="Email"
+            placeholder="Digite seu email"
+            error={errors.email}
+            {...register("email")}
+          />
+          <Input
+            type="password"
+            label="Senha"
+            placeholder="Digite sua senha"
+            error={errors.password}
+            {...register("password")}
+          />
           <button
             className={clsx(
               "br-button block primary mt-3",
