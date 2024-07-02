@@ -19,6 +19,7 @@ import {
 import React, { useEffect, useMemo, useState } from "react"
 import { Tooltip } from "react-tooltip"
 import { Link } from "react-router-dom"
+import { format } from "date-fns"
 
 declare module "@tanstack/react-table" {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -57,7 +58,7 @@ const columnHelper = createColumnHelper<{
 const columns = [
   columnHelper.accessor("dataCriacao", {
     header: "Data de envio",
-    cell: (info) => info.getValue(),
+    cell: (info) => format(info.getValue(), "dd/MM/yyyy HH:mm"),
     enableColumnFilter: false
   }),
   columnHelper.accessor("anoDeclaracao", {
@@ -86,7 +87,7 @@ const columns = [
           className="flex items-center justify-center gap-1"
         >
           <i className="fas fa-eye" aria-hidden="true"></i>
-          Expandir
+          Detalhar
         </Link>
       </div>
     )

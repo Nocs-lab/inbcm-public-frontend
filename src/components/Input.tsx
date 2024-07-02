@@ -30,6 +30,7 @@ const Input = forwardRef<HTMLInputElement, Props>(
     return (
       <div
         className={clsx(
+          "w-full",
           isFile ? "br-upload" : "br-input",
           error && !isFile && "danger",
           isPassword && "input-button"

@@ -6,6 +6,7 @@ import request from "../../../utils/request"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { Link } from "react-router-dom"
 import MismatchsModal from "../../../components/MismatchsModal"
+import { format } from "date-fns"
 
 export default function DeclaracaoPage() {
   const params = useParams()
@@ -34,12 +35,12 @@ export default function DeclaracaoPage() {
       <h2 className="mt-3 mb-0">Declaração #{id}</h2>
       <span className="br-tag mb-5">{data.status}</span>
       <div className="flex gap-4">
-        <Link to={`/declaracoes/${id}/recibo`} className="text-xl">
-          <i className="fas fa-file-pdf" aria-hidden="true"></i> Baixar recibo
-        </Link>
         <a href={`/api/recibo/${id}`} className="text-xl">
-          <i className="fas fa-edit" aria-hidden="true"></i> Retificar
+          <i className="fas fa-file-pdf" aria-hidden="true"></i> Baixar recibo
         </a>
+        <Link to={`/declaracoes/${id}/retificar`} className="text-xl">
+          <i className="fas fa-edit" aria-hidden="true"></i> Retificar
+        </Link>
         {(data.museologico?.pendencias.length > 0 ||
           data.bibliografico?.pendencias.length > 0 ||
           data.arquivistico?.pendencias.length > 0) && (
@@ -66,7 +67,7 @@ export default function DeclaracaoPage() {
       <div className="flex gap-10 text-lg mt-5">
         <span>
           <span className="font-bold">Data de envio: </span>
-          {data.dataCriacao}
+          {format(data.dataCriacao, "dd/MM/yyyy HH:mm")}
         </span>
         <span>
           <span className="font-bold">Ano: </span>
