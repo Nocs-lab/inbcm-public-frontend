@@ -13,7 +13,8 @@ import {
   validate_arquivistico,
   validate_bibliografico,
   validate_museologico
-} from "../../../utils/parseXLSX"
+} from "inbcm-xlsx-validator"
+import { Link } from "react-router-dom"
 
 const schema = z
   .object({
@@ -253,6 +254,10 @@ export default function RetificarDeclaracao() {
         bibliograficoErrors={bibliograficoErrors}
         arquivisticoErrors={arquivisticoErrors}
       />
+      <Link to={`/declaracoes/${id}`} className="text-lg">
+        <i className="fas fa-arrow-left" aria-hidden="true"></i>
+        Voltar
+      </Link>
       <h2>Retificar declaração</h2>
       As planilhas devem ser preenchidas de acordo com os modelos definidos na{" "}
       <a
@@ -278,17 +283,19 @@ export default function RetificarDeclaracao() {
               role="alert"
             >
               <span className="message-title">
-                Foram detectados erros nos arquivos submetidos.
+                Encontramos inconsistências no(s) arquivo(s) enviado(s).{" "}
               </span>
               <span className="message-body">
-                Você pode prosseguir mesmo assim, mas recomendamos que você veja
-                as inconsistências{" "}
+                Você pode corrigi-las antes de enviar ou, se preferir 1) cancele
+                o envio; 2) preencha os campos corretamente e; 3) mais tarde,
+                retorne para enviar sua declaração. Para visualizar as
+                inconsistências,{" "}
                 <button
                   className="text-blue-600"
                   onClick={() => setModalOpen(true)}
                   type="button"
                 >
-                  clicando aqui
+                  clique aqui
                 </button>
                 .
               </span>

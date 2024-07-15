@@ -7,6 +7,7 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { Link } from "react-router-dom"
 import MismatchsModal from "../../../components/MismatchsModal"
 import { format } from "date-fns"
+import TableItens from "../../../components/TableItens"
 
 export default function DeclaracaoPage() {
   const params = useParams()
@@ -28,7 +29,7 @@ export default function DeclaracaoPage() {
 
   return (
     <DefaultLayout>
-      <Link to="/declaracoes" className="text-lg">
+      <Link to="/" className="text-lg">
         <i className="fas fa-arrow-left" aria-hidden="true"></i>
         Voltar
       </Link>
@@ -57,9 +58,9 @@ export default function DeclaracaoPage() {
             <MismatchsModal
               opened={showModal}
               onClose={() => setShowModal(false)}
-              musologicoErrors={data.museologico.pendencias}
-              bibliograficoErrors={data.bibliografico.pendencias}
-              arquivisticoErrors={data.arquivistico.pendencias}
+              musologicoErrors={data.museologico?.pendencias ?? []}
+              bibliograficoErrors={data.bibliografico?.pendencias ?? []}
+              arquivisticoErrors={data.arquivistico?.pendencias ?? []}
             />
           </>
         )}
@@ -81,114 +82,151 @@ export default function DeclaracaoPage() {
       <div className="br-tab mt-10" data-counter="true">
         <nav className="tab-nav">
           <ul>
-            {data.museologico.status !== "não enviado" && (
-              <li
-                className={clsx(
-                  "tab-item",
-                  currentTab === "museologico" && "is-active"
-                )}
-                title="Acervo museológico"
-              >
-                <button
-                  type="button"
-                  onClick={() => setCurrentTab("museologico")}
+            {data.museologico?.status &&
+              data.museologico.status !== "Não enviada" && (
+                <li
+                  className={clsx(
+                    "tab-item",
+                    currentTab === "museologico" && "is-active"
+                  )}
+                  title="Acervo museológico"
                 >
-                  <span className="name">Acervo museológico (10)</span>
-                </button>
-              </li>
-            )}
-            {data.bibliografico.status !== "não enviado" && (
-              <li
-                className={clsx(
-                  "tab-item",
-                  currentTab === "bibliografico" && "is-active"
-                )}
-                title="Acervo bibliográfico"
-              >
-                <button
-                  type="button"
-                  onClick={() => setCurrentTab("bibliografico")}
+                  <button
+                    type="button"
+                    onClick={() => setCurrentTab("museologico")}
+                  >
+                    <span className="name">
+                      Acervo museológico ({data.museologico?.quantidadeItens})
+                    </span>
+                  </button>
+                </li>
+              )}
+            {data.bibliografico?.status &&
+              data.bibliografico.status !== "Não enviada" && (
+                <li
+                  className={clsx(
+                    "tab-item",
+                    currentTab === "bibliografico" && "is-active"
+                  )}
+                  title="Acervo bibliográfico"
                 >
-                  <span className="name">Acervo bibliográfico (20)</span>
-                </button>
-              </li>
-            )}
-            {data.arquivistico.status !== "não enviado" && (
-              <li
-                className={clsx(
-                  "tab-item",
-                  currentTab === "arquivistico" && "is-active"
-                )}
-                title="Arcevo arquivístico"
-              >
-                <button
-                  type="button"
-                  onClick={() => setCurrentTab("arquivistico")}
+                  <button
+                    type="button"
+                    onClick={() => setCurrentTab("bibliografico")}
+                  >
+                    <span className="name">
+                      Acervo bibliográfico (
+                      {data.bibliografico?.quantidadeItens})
+                    </span>
+                  </button>
+                </li>
+              )}
+            {data.arquivistico?.status &&
+              data.arquivistico.status !== "Não enviada" && (
+                <li
+                  className={clsx(
+                    "tab-item",
+                    currentTab === "arquivistico" && "is-active"
+                  )}
+                  title="Arcevo arquivístico"
                 >
-                  <span className="name">Acervo arquivistico (30)</span>
-                </button>
-              </li>
-            )}
+                  <button
+                    type="button"
+                    onClick={() => setCurrentTab("arquivistico")}
+                  >
+                    <span className="name">
+                      Acervo arquivistico ({data.arquivistico?.quantidadeItens})
+                    </span>
+                  </button>
+                </li>
+              )}
           </ul>
         </nav>
         <div className="tab-content">
-          {data.museologico.status !== "não enviado" && (
-            <div
-              className={clsx(
-                "tab-panel",
-                currentTab === "museologico" && "active"
-              )}
-            >
-              <span className="mb-3 flex items-center justify-start gap-1">
-                <span className="font-bold">Status: </span>
-                <span className="br-tag">{data.museologico.status}</span>
-              </span>
-              <a
-                href={`/api/download/${data.museu_id._id}/${data.anoDeclaracao}/museologico`}
+          {data.museologico?.status &&
+            data.museologico.status !== "Não enviada" && (
+              <div
+                className={clsx(
+                  "tab-panel",
+                  currentTab === "museologico" && "active"
+                )}
               >
-                <i className="fas fa-download" aria-hidden="true"></i> Baixar
-                planilha
-              </a>
-            </div>
-          )}
-          {data.bibliografico.status !== "não enviado" && (
-            <div
-              className={clsx(
-                "tab-panel",
-                currentTab === "bibliografico" && "active"
-              )}
-            >
-              <span className="mb-3 flex items-center justify-start gap-1">
-                <span className="font-bold">Status: </span>
-                <span className="br-tag">{data.bibliografico.status}</span>
-              </span>
-              <a
-                href={`/api/download/${data.museu_id._id}/${data.anoDeclaracao}/bibliografico`}
+                <div className="flex items-center justify-between">
+                  <span className="mb-3 flex items-center justify-start gap-1">
+                    <span className="font-bold">Status: </span>
+                    <span className="br-tag">{data.museologico?.status}</span>
+                  </span>
+                  <a
+                    href={`/api/download/${data.museu_id._id}/${data.anoDeclaracao}/museologico`}
+                    className="mb-2"
+                  >
+                    <i className="fas fa-download" aria-hidden="true"></i>{" "}
+                    Baixar planilha
+                  </a>
+                </div>
+                <TableItens
+                  acervo="museologico"
+                  ano={data.anoDeclaracao}
+                  museuId={data.museu_id._id}
+                />
+              </div>
+            )}
+          {data.bibliografico?.status &&
+            data.bibliografico.status !== "Não enviada" && (
+              <div
+                className={clsx(
+                  "tab-panel",
+                  currentTab === "bibliografico" && "active"
+                )}
               >
-                <i className="fas fa-download" aria-hidden="true"></i> Baixar
-                planilha
-              </a>
-            </div>
-          )}
-          {data.arquivistico.status !== "não enviado" && (
-            <div
-              className={clsx(
-                "tab-panel",
-                currentTab === "arquivistico" && "active"
-              )}
-            >
-              <span className="mb-3 flex items-center justify-start gap-1">
-                <span className="font-bold">Status: </span>
-                <span className="br-tag">{data.arquivistico.status}</span>
-              </span>
-              <a
-                href={`/api/download/${data.museu_id._id}/${data.anoDeclaracao}/arquivistico`}
+                <div className="flex items-center justify-between">
+                  <span className="mb-3 flex items-center justify-start gap-1">
+                    <span className="font-bold">Status: </span>
+                    <span className="br-tag">{data.bibliografico?.status}</span>
+                  </span>
+                  <a
+                    href={`/api/download/${data.museu_id._id}/${data.anoDeclaracao}/bibliografico`}
+                    className="mb-2"
+                  >
+                    <i className="fas fa-download" aria-hidden="true"></i>{" "}
+                    Baixar planilha
+                  </a>
+                </div>
+                <TableItens
+                  acervo="bibliografico"
+                  ano={data.anoDeclaracao}
+                  museuId={data.museu_id._id}
+                />
+              </div>
+            )}
+          {data.arquivistico?.status &&
+            data.arquivistico.status !== "Não enviada" && (
+              <div
+                className={clsx(
+                  "tab-panel",
+                  currentTab === "arquivistico" && "active"
+                )}
               >
-                <i className="fas fa-download" aria-hidden="true"></i> Baixar
-                planilha
-              </a>
-            </div>
-          )}
+                <div className="flex items-center justify-between">
+                  <span className="mb-3 flex items-center justify-start gap-1">
+                    <span className="font-bold">Status: </span>
+                    <span className="br-tag">{data.arquivistico?.status}</span>
+                  </span>
+                  <a
+                    href={`/api/download/${data.museu_id._id}/${data.anoDeclaracao}/arquivistico`}
+                    className="mb-2"
+                  >
+                    <i className="fas fa-download" aria-hidden="true"></i>{" "}
+                    Baixar planilha
+                  </a>
+                </div>
+                <TableItens
+                  acervo="arquivistico"
+                  ano={data.anoDeclaracao}
+                  museuId={data.museu_id._id}
+                />
+              </div>
+            )}
         </div>
       </div>
     </DefaultLayout>

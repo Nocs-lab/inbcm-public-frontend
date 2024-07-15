@@ -64,14 +64,4 @@ describe("Header", () => {
     expect(mockSetUser).toHaveBeenCalledWith(null)
     expect(mockNavigate).toHaveBeenCalledWith("/login")
   })
-
-  test("Mostra o nome da página corretamente", () => {
-    render(
-      <MemoryRouter initialEntries={["/declaracoes"]}>
-        <Header />
-      </MemoryRouter>
-    )
-
-    expect(screen.getByText("Minhas declarações")).toBeInTheDocument()
-  })
 })

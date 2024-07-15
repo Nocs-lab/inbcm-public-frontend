@@ -1,25 +1,19 @@
 import React from "react"
-import { Link, useLocation, useNavigate } from "react-router-dom"
+import { useNavigate } from "react-router-dom"
 import logoIbramSimples from "../images/logo-ibram-simples.png"
 import useStore from "../utils/store"
 import { useState } from "react"
-import usePaths from "../utils/usePaths"
-import clsx from "clsx"
 
 const Header: React.FC = () => {
   const { setUser, ...rest } = useStore()
   const user = rest.user!
   const navigate = useNavigate()
 
-  const { pathname } = useLocation()
-  const { pathList } = usePaths()
-
   const logout = () => {
     setUser(null)
     navigate("/login")
   }
 
-  const [menuOpen, setMenuOpen] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
   return (
@@ -30,35 +24,6 @@ const Header: React.FC = () => {
             <img src={logoIbramSimples} alt="logo" />
           </div>
           <div className="header-actions">
-            <div className={clsx("header-links dropdown", menuOpen && "show")}>
-              <button
-                className={clsx("br-button circle small", menuOpen && "active")}
-                type="button"
-                data-toggle="dropdown"
-                aria-label="Abrir Acesso Rápido"
-                onClick={() => setMenuOpen((old) => !old)}
-              >
-                <i className="fas fa-ellipsis-v" aria-hidden="true"></i>
-              </button>
-              <div className="br-list">
-                <div className="header">
-                  <div className="title">Acesso Rápido</div>
-                </div>
-                {pathList.map(({ path, name }) => (
-                  <Link
-                    className={clsx(
-                      "br-item",
-                      pathname === path && "underline"
-                    )}
-                    to={path}
-                    key={path}
-                  >
-                    {name}
-                  </Link>
-                ))}
-              </div>
-            </div>
-            <span className="br-divider vertical mx-half mx-sm-1"></span>
             <div className="header-login">
               <div>
                 <button

@@ -17,7 +17,8 @@ import {
   validate_museologico,
   validate_bibliografico,
   validate_arquivistico
-} from "../../utils/parseXLSX"
+} from "inbcm-xlsx-validator"
+
 import toast from "react-hot-toast"
 
 const schema = z
@@ -26,7 +27,8 @@ const schema = z
     museologico: z.instanceof(FileList).nullable(),
     bibliografico: z.instanceof(FileList).nullable(),
     arquivistico: z.instanceof(FileList).nullable(),
-    museu: z.string().min(1, "Este campo é obrigatório")
+    museu: z.string().min(1, "Este campo é obrigatório"),
+    fields: z.array(z.enum(["museologico", "bibliografico", "arquivistico"]))
   })
   .superRefine(({ museologico, bibliografico, arquivistico }, ctx) => {
     if (
@@ -71,7 +73,8 @@ const NovoDeclaracaoPage = () => {
       museu: museus?.[0]?._id,
       museologico: null,
       bibliografico: null,
-      arquivistico: null
+      arquivistico: null,
+      fields: []
     }
   })
 
@@ -98,24 +101,15 @@ const NovoDeclaracaoPage = () => {
       const formData = new FormData()
 
       if (data.museologico?.length && data.museologico.length > 0) {
-        formData.append("museologicoArquivo", data.museologico[0])
-        formData.append("museologico", JSON.stringify(museologicoData))
-        formData.append("museologicoErros", JSON.stringify(musologicoErrors))
+        formData.append("museologico", data.museologico[0])
       }
 
       if (data.bibliografico?.length && data.bibliografico.length > 0) {
-        formData.append("bibliograficoArquivo", data.bibliografico[0])
-        formData.append("bibliografico", JSON.stringify(bibliograficoData))
-        formData.append(
-          "bibliograficoErros",
-          JSON.stringify(bibliograficoErrors)
-        )
+        formData.append("bibliografico", data.bibliografico[0])
       }
 
       if (data.arquivistico?.length && data.arquivistico.length > 0) {
-        formData.append("arquivisticoArquivo", data.arquivistico[0])
-        formData.append("arquivistico", JSON.stringify(arquivisticoData))
-        formData.append("arquivisticoErros", JSON.stringify(arquivisticoErrors))
+        formData.append("arquivistico", data.arquivistico[0])
       }
 
       await request(`/api/uploads/${data.museu}/${data.ano}`, {
@@ -139,6 +133,8 @@ const NovoDeclaracaoPage = () => {
     "arquivistico"
   ])
 
+  const fields = watch("fields")
+
   const totalFiles = [museologico, bibliografico, arquivistico].filter(
     (file) => file?.length
   ).length
@@ -149,16 +145,6 @@ const NovoDeclaracaoPage = () => {
     body: string
   } | null>(null)
   const [isValidating, setIsValidating] = useState(false)
-
-  const [museologicoData, setMuseologicoData] = useState<
-    { [key: string]: string }[]
-  >([])
-  const [bibliograficoData, setBibliograficoData] = useState<
-    { [key: string]: string }[]
-  >([])
-  const [arquivisticoData, setArquivisticoData] = useState<
-    { [key: string]: string }[]
-  >([])
 
   const [musologicoErrors, setMuseologicoErrors] = useState<string[]>([])
   const [bibliograficoErrors, setBibliograficoErrors] = useState<string[]>([])
@@ -206,7 +192,6 @@ const NovoDeclaracaoPage = () => {
               setMuseologicoErrors(result.errors as string[])
               setShowMessage(true)
             }
-            setMuseologicoData(result.data as { [key: string]: string }[])
             setIsValidating(false)
           }
         )
@@ -229,7 +214,6 @@ const NovoDeclaracaoPage = () => {
               setBibliograficoErrors(result.errors as string[])
               setShowMessage(true)
             }
-            setBibliograficoData(result.data as { [key: string]: string }[])
             setIsValidating(false)
           }
         )
@@ -252,7 +236,6 @@ const NovoDeclaracaoPage = () => {
               setArquivisticoErrors(result.errors as string[])
               setShowMessage(true)
             }
-            setArquivisticoData(result.data as { [key: string]: string }[])
             setIsValidating(false)
           }
         )
@@ -272,6 +255,10 @@ const NovoDeclaracaoPage = () => {
         bibliograficoErrors={bibliograficoErrors}
         arquivisticoErrors={arquivisticoErrors}
       />
+      <Link to="/" className="text-lg">
+        <i className="fas fa-arrow-left" aria-hidden="true"></i>
+        Voltar
+      </Link>
       <h2>Nova declaração</h2>
       As planilhas devem ser preenchidas de acordo com os modelos definidos na{" "}
       <a
@@ -380,13 +367,14 @@ const NovoDeclaracaoPage = () => {
             </div>
           </div>
         )}
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full">
           <Controller
             control={control}
             name="ano"
             render={({ field }) => (
               <Select
                 label="Ano"
+                className="!w-full"
                 options={[
                   { label: "2024", value: "2024" },
                   { label: "2023", value: "2023" },
@@ -403,6 +391,7 @@ const NovoDeclaracaoPage = () => {
               render={({ field }) => (
                 <Select
                   label="Museu"
+                  className="!w-full"
                   options={museus?.map((museu) => ({
                     label: museu.nome,
                     value: museu._id
@@ -412,6 +401,24 @@ const NovoDeclaracaoPage = () => {
               )}
             />
           )}
+          <Controller
+            control={control}
+            name="fields"
+            render={({ field }) => (
+              <Select
+                label="Tipos de acervo"
+                type="multiple"
+                placeholder="Seleciona o(s) tipo(s)"
+                options={[
+                  { label: "Museológico", value: "museologico" },
+                  { label: "Bibliográfico", value: "bibliografico" },
+                  { label: "Arquivistico", value: "arquivistico" }
+                ]}
+                className="!w-full"
+                {...field}
+              />
+            )}
+          />
         </div>
         <div
           className={clsx(
@@ -419,51 +426,57 @@ const NovoDeclaracaoPage = () => {
             isLoading || (retificacao && "opacity-50 cursor-not-allowed")
           )}
         >
-          <Input
-            label="Museológico"
-            type="file"
-            error={errors.museologico as FieldError}
-            {...register("museologico")}
-            accept=".xlsx"
-            disabled={isLoading || retificacao}
-            file={museologico?.[0] ?? null}
-            setFile={(file) =>
-              setValue(
-                "museologico",
-                file ? ([file] as unknown as FileList) : null
-              )
-            }
-          />
-          <Input
-            label="Bibliográfico"
-            type="file"
-            error={errors.bibliografico as FieldError}
-            {...register("bibliografico")}
-            accept=".xlsx"
-            disabled={isLoading || retificacao}
-            file={bibliografico?.[0] ?? null}
-            setFile={(file) =>
-              setValue(
-                "bibliografico",
-                file ? ([file] as unknown as FileList) : null
-              )
-            }
-          />
-          <Input
-            label="Arquivístico"
-            type="file"
-            error={errors.arquivistico as FieldError}
-            {...register("arquivistico")}
-            accept=".xlsx"
-            disabled={isLoading || retificacao}
-            file={arquivistico?.[0] ?? null}
-            setFile={(file) =>
-              setValue(
-                "arquivistico",
-                file ? ([file] as unknown as FileList) : null
-              )
-            }
-          />
+          {fields.includes("museologico") && (
+            <Input
+              label="Museológico"
+              type="file"
+              error={errors.museologico as FieldError}
+              {...register("museologico")}
+              accept=".xlsx"
+              disabled={isLoading || retificacao}
+              file={museologico?.[0] ?? null}
+              setFile={(file) =>
+                setValue(
+                  "museologico",
+                  file ? ([file] as unknown as FileList) : null
+                )
+              }
+            />
+          )}
+          {fields.includes("bibliografico") && (
+            <Input
+              label="Bibliográfico"
+              type="file"
+              error={errors.bibliografico as FieldError}
+              {...register("bibliografico")}
+              accept=".xlsx"
+              disabled={isLoading || retificacao}
+              file={bibliografico?.[0] ?? null}
+              setFile={(file) =>
+                setValue(
+                  "bibliografico",
+                  file ? ([file] as unknown as FileList) : null
+                )
+              }
+            />
+          )}
+          {fields.includes("arquivistico") && (
+            <Input
+              label="Arquivístico"
+              type="file"
+              error={errors.arquivistico as FieldError}
+              {...register("arquivistico")}
+              accept=".xlsx"
+              disabled={isLoading || retificacao}
+              file={arquivistico?.[0] ?? null}
+              setFile={(file) =>
+                setValue(
+                  "arquivistico",
+                  file ? ([file] as unknown as FileList) : null
+                )
+              }
+            />
+          )}
         </div>
         <button
           type="submit"
