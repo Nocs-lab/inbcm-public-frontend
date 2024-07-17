@@ -119,7 +119,7 @@ const NovoDeclaracaoPage = () => {
     },
     onSuccess: () => {
       toast.success("Declaração enviada com sucesso!")
-      navigate("/declaracoes")
+      navigate("/")
     }
   })
 

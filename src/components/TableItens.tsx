@@ -71,7 +71,9 @@ const TableItens: React.FC<{
   const { data } = useSuspenseQuery({
     queryKey: ["itens", acervo],
     queryFn: async () => {
-      const res = await request(`/api/${acervo}/${museuId}/${ano}/`)
+      const res = await request(
+        `/api/listar-itens/${museuId}/${ano}/${acervo}/`
+      )
 
       return await res.json()
     }
