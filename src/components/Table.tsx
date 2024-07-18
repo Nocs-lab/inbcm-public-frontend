@@ -13,7 +13,8 @@ import {
   getFacetedUniqueValues,
   getFacetedMinMaxValues,
   ColumnDef,
-  flexRender
+  flexRender,
+  VisibilityState
 } from "@tanstack/react-table"
 
 declare module "@tanstack/react-table" {
@@ -112,20 +113,17 @@ const Table: React.FC<{
   columns: ColumnDef<unknown>[]
 }> = ({ title, data, columns, actions }) => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10
-  })
+  const [visibility, setVisibility] = useState<VisibilityState>({})
 
   const table = useReactTable({
     data,
     columns,
     state: {
       columnFilters,
-      pagination
+      columnVisibility: visibility
     },
     onColumnFiltersChange: setColumnFilters,
-    onPaginationChange: setPagination,
+    onColumnVisibilityChange: setVisibility,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
