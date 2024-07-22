@@ -18,7 +18,8 @@ export default function DeclaracaoPage() {
     queryFn: async () => {
       const response = await request(`/api/declaracoes/${id}`)
       return response.json()
-    }
+    },
+    networkMode: "online"
   })
 
   const [showModal, setShowModal] = useState(false)
