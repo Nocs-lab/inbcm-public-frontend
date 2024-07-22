@@ -1,6 +1,6 @@
 import DefaultLayout from "../../../layouts/default"
 import { useMutation, useSuspenseQueries } from "@tanstack/react-query"
-import { useParams } from "react-router"
+import { useNavigate, useParams } from "react-router"
 import request from "../../../utils/request"
 import { Link } from "react-router-dom"
 import Uploader from "../../../components/Uploader"
@@ -11,6 +11,8 @@ export default function RetificarDeclaracao() {
   const id = params.id!
 
   const user = useStore((state) => state.user)
+
+  const navigate = useNavigate()
 
   const [{ data: museus }, { data: declaracao }] = useSuspenseQueries({
     queries: [
@@ -58,6 +60,9 @@ export default function RetificarDeclaracao() {
           body: formData
         }
       )
+    },
+    onSuccess: () => {
+      navigate(`/declaracoes/${id}`)
     }
   })
   return (
