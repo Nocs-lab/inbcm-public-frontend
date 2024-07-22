@@ -53,7 +53,7 @@ export default function RetificarDeclaracao() {
         formData.append("arquivistico", data.arquivistico[0])
       }
 
-      await request(
+      return await request(
         `/api/retificar/${declaracao.museu_id._id}/${declaracao.anoDeclaracao}/${id}`,
         {
           method: "PUT",
@@ -61,8 +61,9 @@ export default function RetificarDeclaracao() {
         }
       )
     },
-    onSuccess: () => {
-      navigate(`/declaracoes/${id}`)
+    onSuccess: async (res) => {
+      const data = await res.json()
+      navigate(`/declaracoes/${data._id}`)
     }
   })
   return (
