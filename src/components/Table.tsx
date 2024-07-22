@@ -3,7 +3,6 @@ import {
   Column,
   ColumnFiltersState,
   RowData,
-  PaginationState,
   useReactTable,
   getCoreRowModel,
   getFilteredRowModel,

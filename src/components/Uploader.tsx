@@ -42,7 +42,16 @@ const Uploader: React.FC<{
   onSubmit: (data: FormValues) => void
   isLoading: boolean
   disabled?: boolean
-}> = ({ museus, onSubmit, isLoading, disabled = false }) => {
+  onChangeAno?: (ano: string) => void
+  onChangeMuseu?: (museu: string) => void
+}> = ({
+  museus,
+  onSubmit,
+  isLoading,
+  disabled = false,
+  onChangeAno,
+  onChangeMuseu
+}) => {
   const {
     register,
     handleSubmit,
@@ -63,13 +72,26 @@ const Uploader: React.FC<{
     }
   })
 
-  const [museologico, bibliografico, arquivistico] = watch([
+  const [museologico, bibliografico, arquivistico, ano, museu, fields] = watch([
     "museologico",
     "bibliografico",
-    "arquivistico"
+    "arquivistico",
+    "ano",
+    "museu",
+    "fields"
   ])
 
-  const fields = watch("fields")
+  useEffect(() => {
+    if (onChangeAno) {
+      onChangeAno(ano)
+    }
+  }, [ano])
+
+  useEffect(() => {
+    if (onChangeMuseu) {
+      onChangeMuseu(museu)
+    }
+  }, [museu])
 
   const totalFiles = [museologico, bibliografico, arquivistico].filter(
     (file) => file?.length
@@ -391,7 +413,7 @@ const Uploader: React.FC<{
           )}
           disabled={
             isLoading ||
-            totalFiles === fields.length ||
+            totalFiles !== fields.length ||
             isValidating ||
             disabled
           }

@@ -7,6 +7,7 @@ import useStore from "../../utils/store"
 import { Link } from "react-router-dom"
 import toast from "react-hot-toast"
 import Uploader from "../../components/Uploader"
+import { useState } from "react"
 
 const NovoDeclaracaoPage = () => {
   const navigate = useNavigate()
@@ -20,6 +21,9 @@ const NovoDeclaracaoPage = () => {
       return await res.json()
     }
   })
+
+  const [ano, setAno] = useState("")
+  const [museu, setMuseu] = useState("")
 
   const { data: declaracao, isLoading } = useQuery<{ _id: string } | null>({
     queryKey: ["declaracao", ano, museu],
@@ -76,9 +80,36 @@ const NovoDeclaracaoPage = () => {
         Voltar
       </Link>
       <h2>Nova declaração</h2>
+      {retificacao && (
+        <div className="br-message warning">
+          <div className="icon">
+            <i className="fas fa-warning fa-lg" aria-hidden="true"></i>
+          </div>
+          <div
+            className="content"
+            aria-label="Data de início do afastamento inválida. A data não pode ser superior à data atual."
+            role="alert"
+          >
+            <span className="message-title">
+              Já foi enviada uma declaração de ajuste para o ano {ano}.{" "}
+            </span>
+            <span className="message-body">
+              Para baixar o recibo correspondente,{" "}
+              <a href={`/api/recibo/${declaracao?._id}`}>clique aqui</a>. Caso
+              deseje fazer alguma alteração, você deve enviar uma declaração
+              retificadora{" "}
+              <Link to={`/declaracoes/${declaracao?._id}/retificar`}>
+                clicando aqui
+              </Link>
+              .
+            </span>
+          </div>
+        </div>
+      )}
       <Uploader
+        onChangeAno={setAno}
+        onChangeMuseu={setMuseu}
         onSubmit={(data) => mutate(data)}
-        disabled={retificacao}
         isLoading={isPending || isLoading}
         museus={museus}
       />
