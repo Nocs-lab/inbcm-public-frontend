@@ -110,7 +110,7 @@ const Uploader: React.FC<{
 
   const [modalOpen, setModalOpen] = useState(false)
 
-  const handlerError = (err: unknown) => {
+  const handlerError = (err: unknown, typePlanilha: string) => {
     if (err instanceof Error) {
       switch (err.message) {
         case "XLSX_ERROR":
@@ -120,12 +120,12 @@ const Uploader: React.FC<{
           })
         case "INVALID_HEADERS":
           return setErrorMessage({
-            title: "A planilha está fora do padrão definido pelo IBRAM.",
+            title: `A planilha de bens ${typePlanilha} está fora do padrão definido pelo IBRAM.`,
             body: "Envie os bens de acordo com o formato definido."
           })
         case "EMPTY_ROWS":
           return setErrorMessage({
-            title: "A planilha está vazia.",
+            title: `A planilha de bens ${typePlanilha} está vazia.`,
             body: "Envie o arquivo com os bens do museu."
           })
       }
@@ -154,7 +154,7 @@ const Uploader: React.FC<{
         )
         .catch((err) => {
           setValue("museologico", null)
-          handlerError(err)
+          handlerError(err, "museológicos")
         })
     }
   }, [museologico])
@@ -176,7 +176,7 @@ const Uploader: React.FC<{
         )
         .catch((err) => {
           setValue("bibliografico", null)
-          handlerError(err)
+          handlerError(err, "bibliográficos")
         })
     }
   }, [bibliografico])
@@ -198,7 +198,7 @@ const Uploader: React.FC<{
         )
         .catch((err) => {
           setValue("arquivistico", null)
-          handlerError(err)
+          handlerError(err, "arquivísticos")
         })
     }
   }, [arquivistico])
