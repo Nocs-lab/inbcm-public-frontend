@@ -39,6 +39,8 @@ type FormValues = z.infer<typeof schema>
 
 const Uploader: React.FC<{
   museus: { _id: string; nome: string }[]
+  anoDeclaracao: string
+  isRetificar?: boolean
   onSubmit: (data: FormValues) => void
   isLoading: boolean
   disabled?: boolean
@@ -46,6 +48,8 @@ const Uploader: React.FC<{
   onChangeMuseu?: (museu: string) => void
 }> = ({
   museus,
+  anoDeclaracao,
+  isRetificar,
   onSubmit,
   isLoading,
   disabled = false,
@@ -63,7 +67,7 @@ const Uploader: React.FC<{
     resolver: zodResolver(schema),
     mode: "onBlur",
     defaultValues: {
-      ano: "2024",
+      ano: anoDeclaracao || "2024",
       museu: museus[0]?._id,
       museologico: null,
       bibliografico: null,
@@ -301,6 +305,7 @@ const Uploader: React.FC<{
               <Select
                 label="Ano"
                 className="!w-full"
+                disabled={isRetificar}
                 options={[
                   { label: "2024", value: "2024" },
                   { label: "2023", value: "2023" },
@@ -318,6 +323,7 @@ const Uploader: React.FC<{
                 <Select
                   label="Museu"
                   className="!w-full"
+                  disabled={isRetificar}
                   options={museus?.map((museu) => ({
                     label: museu.nome,
                     value: museu._id

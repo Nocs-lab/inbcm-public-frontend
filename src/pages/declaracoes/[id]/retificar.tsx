@@ -85,6 +85,8 @@ export default function RetificarDeclaracao() {
         }
         isLoading={isPending}
         museus={museus}
+        anoDeclaracao={declaracao.anoDeclaracao}
+        isRetificar={true}
       />
     </DefaultLayout>
   )
