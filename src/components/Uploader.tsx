@@ -305,7 +305,7 @@ const Uploader: React.FC<{
               <Select
                 label="Ano"
                 className="!w-full"
-                disabled={isRetificar}
+                disabled={isRetificar} //desabilita parcialmente
                 options={[
                   { label: "2024", value: "2024" },
                   { label: "2023", value: "2023" },
@@ -323,7 +323,7 @@ const Uploader: React.FC<{
                 <Select
                   label="Museu"
                   className="!w-full"
-                  disabled={isRetificar}
+                  disabled={isRetificar} //desabilita parcialmente
                   options={museus?.map((museu) => ({
                     label: museu.nome,
                     value: museu._id
