@@ -302,17 +302,23 @@ const Uploader: React.FC<{
             control={control}
             name="ano"
             render={({ field }) => (
-              <Select
-                label="Ano"
-                className="!w-full"
-                disabled={isRetificar} //desabilita parcialmente
-                options={[
-                  { label: "2024", value: "2024" },
-                  { label: "2023", value: "2023" },
-                  { label: "2022", value: "2022" }
-                ]}
-                {...field}
-              />
+              <div
+                className={clsx(
+                  isRetificar && "cursor-not-allowed pointer-events-none"
+                )}
+              >
+                <Select
+                  label="Ano"
+                  className="!w-full"
+                  disabled={isRetificar} //desabilita parcialmente
+                  options={[
+                    { label: "2024", value: "2024" },
+                    { label: "2023", value: "2023" },
+                    { label: "2022", value: "2022" }
+                  ]}
+                  {...field}
+                />
+              </div>
             )}
           />
           {museus.length > 0 && (
@@ -320,17 +326,23 @@ const Uploader: React.FC<{
               control={control}
               name="museu"
               render={({ field }) => (
-                <Select
-                  label="Museu"
-                  className="!w-full"
-                  disabled={isRetificar} //desabilita parcialmente
-                  options={museus?.map((museu) => ({
-                    label: museu.nome,
-                    value: museu._id
-                  }))}
-                  onSelect={console.log}
-                  {...field}
-                />
+                <div
+                  className={clsx(
+                    isRetificar && "cursor-not-allowed pointer-events-none"
+                  )}
+                >
+                  <Select
+                    label="Museu"
+                    className="!w-full"
+                    disabled={isRetificar} //desabilita parcialmente
+                    options={museus?.map((museu) => ({
+                      label: museu.nome,
+                      value: museu._id
+                    }))}
+                    onSelect={console.log}
+                    {...field}
+                  />
+                </div>
               )}
             />
           )}
