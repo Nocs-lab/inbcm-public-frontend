@@ -138,6 +138,16 @@ const Uploader: React.FC<{
   }
 
   useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+
+      return () => clearTimeout(timer)
+    }
+  }, [errorMessage])
+
+  useEffect(() => {
     if (museologico?.length) {
       setIsValidating(true)
       validate_museologico(museologico[0])
