@@ -39,9 +39,17 @@ export default function DeclaracaoPage() {
         <a href={`/api/recibo/${id}`} className="text-xl">
           <i className="fas fa-file-pdf" aria-hidden="true"></i> Baixar recibo
         </a>
-        <Link to={`/declaracoes/${id}/retificar`} className="text-xl">
-          <i className="fas fa-edit" aria-hidden="true"></i> Retificar
-        </Link>
+
+        {data.status !== "Em conformidade" && data.status !== "Em análise" ? (
+          <Link to={`/declaracoes/${id}/retificar`} className="text-xl">
+            <i className="fas fa-edit" aria-hidden="true"></i> Retificar
+          </Link>
+        ) : (
+          <span className="text-xl text-gray-500 cursor-not-allowed">
+            <i className="fas fa-edit" aria-hidden="true"></i> Retificar
+          </span>
+        )}
+
         {(data.museologico?.pendencias.length > 0 ||
           data.bibliografico?.pendencias.length > 0 ||
           data.arquivistico?.pendencias.length > 0) && (
