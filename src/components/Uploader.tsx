@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { z } from "zod"
 import { Controller, FieldError, useForm } from "react-hook-form"
+import { useNavigate } from "react-router-dom"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Select } from "react-dsgov"
 import Input from "../components/Input"
@@ -213,6 +214,12 @@ const Uploader: React.FC<{
     }
   }, [arquivistico])
 
+  const navigate = useNavigate()
+
+  const handleCancelClick = () => {
+    navigate("/")
+  }
+
   return (
     <>
       <MismatchsModal
@@ -415,21 +422,33 @@ const Uploader: React.FC<{
             />
           )}
         </div>
-        <button
-          type="submit"
-          className={clsx(
-            "br-button primary mt-5",
-            isValidating || (isLoading && "loading")
-          )}
-          disabled={
-            isLoading ||
-            totalFiles !== fields.length ||
-            isValidating ||
-            disabled
-          }
-        >
-          Enviar
-        </button>
+        <div className="flex space-x-4">
+          <button
+            type="submit"
+            className={clsx(
+              "br-button primary mt-5",
+              isValidating || (isLoading && "loading")
+            )}
+            disabled={
+              isLoading ||
+              totalFiles !== fields.length ||
+              isValidating ||
+              disabled
+            }
+          >
+            Enviar
+          </button>
+
+          <button
+            className={clsx(
+              "rounded-full py-2 px-4 text-base font-extrabold mt-5",
+              "bg-gray-500 text-white hover:bg-gray-600"
+            )}
+            onClick={handleCancelClick}
+          >
+            Cancelar
+          </button>
+        </div>
       </form>
     </>
   )
