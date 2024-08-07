@@ -40,7 +40,7 @@ export default function DeclaracaoPage() {
           <i className="fas fa-file-pdf" aria-hidden="true"></i> Baixar recibo
         </a>
 
-        {data.status !== "Em conformidade" && data.status !== "Em análise" ? (
+        {data.status !== "Em análise" ? (
           <Link to={`/declaracoes/${id}/retificar`} className="text-xl">
             <i className="fas fa-edit" aria-hidden="true"></i> Retificar
           </Link>
@@ -74,6 +74,10 @@ export default function DeclaracaoPage() {
         )}
       </div>
       <div className="flex gap-10 text-lg mt-5">
+        <span>
+          <span className="font-bold">Tipo: </span>
+          {data.retificacao ? "Retificada" : "Original"}
+        </span>
         <span>
           <span className="font-bold">Data de envio: </span>
           {format(data.dataCriacao, "dd/MM/yyyy HH:mm")}
