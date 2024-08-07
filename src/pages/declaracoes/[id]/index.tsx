@@ -75,6 +75,10 @@ export default function DeclaracaoPage() {
       </div>
       <div className="flex gap-10 text-lg mt-5">
         <span>
+          <span className="font-bold">Tipo: </span>
+          {data.retificacao ? "Retificada" : "Original"}
+        </span>
+        <span>
           <span className="font-bold">Data de envio: </span>
           {format(data.dataCriacao, "dd/MM/yyyy HH:mm")}
         </span>
