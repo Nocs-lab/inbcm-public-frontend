@@ -86,6 +86,7 @@ export default function Declaracoes() {
       <div className="flex items-center justify-between">
         <h2>Minhas declarações</h2>
         <Link to="/declaracoes/novo" className="btn text-xl">
+          <i className="fa-solid fa-file-lines p-2"></i>
           Nova declaração
         </Link>
       </div>
