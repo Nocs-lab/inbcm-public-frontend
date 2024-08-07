@@ -40,7 +40,7 @@ export default function DeclaracaoPage() {
           <i className="fas fa-file-pdf" aria-hidden="true"></i> Baixar recibo
         </a>
 
-        {data.status !== "Em conformidade" && data.status !== "Em análise" ? (
+        {data.status !== "Em análise" ? (
           <Link to={`/declaracoes/${id}/retificar`} className="text-xl">
             <i className="fas fa-edit" aria-hidden="true"></i> Retificar
           </Link>
