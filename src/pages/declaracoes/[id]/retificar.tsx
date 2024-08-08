@@ -68,11 +68,22 @@ export default function RetificarDeclaracao() {
   })
   return (
     <DefaultLayout>
-      <Link to="/" className="text-lg">
+      <Link to={`/declaracoes/${id}`} className="text-lg">
         <i className="fas fa-arrow-left" aria-hidden="true"></i>
         Voltar
       </Link>
-      <h2>Retificar declaração</h2>
+      <h2>Retificar Declaração #{id}</h2>
+      <div className="flex gap-10 text-lg mt-5">
+        <span>
+          <span className="font-bold">Ano: </span>
+          {declaracao.anoDeclaracao}
+        </span>
+        <span>
+          <span className="font-bold">Museu: </span>
+          {declaracao.museu_id.nome}
+        </span>
+      </div>
+      <hr></hr>
       <Uploader
         onSubmit={(data) =>
           mutate(
@@ -85,6 +96,8 @@ export default function RetificarDeclaracao() {
         }
         isLoading={isPending}
         museus={museus}
+        anoDeclaracao={declaracao.anoDeclaracao}
+        isRetificar={true}
       />
     </DefaultLayout>
   )

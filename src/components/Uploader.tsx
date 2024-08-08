@@ -40,6 +40,8 @@ type FormValues = z.infer<typeof schema>
 
 const Uploader: React.FC<{
   museus: { _id: string; nome: string }[]
+  anoDeclaracao: string
+  isRetificar?: boolean
   onSubmit: (data: FormValues) => void
   isLoading: boolean
   disabled?: boolean
@@ -47,6 +49,8 @@ const Uploader: React.FC<{
   onChangeMuseu?: (museu: string) => void
 }> = ({
   museus,
+  anoDeclaracao,
+  isRetificar,
   onSubmit,
   isLoading,
   disabled = false,
@@ -64,7 +68,7 @@ const Uploader: React.FC<{
     resolver: zodResolver(schema),
     mode: "onBlur",
     defaultValues: {
-      ano: "2024",
+      ano: anoDeclaracao || "2024",
       museu: museus[0]?._id,
       museologico: null,
       bibliografico: null,
@@ -314,35 +318,44 @@ const Uploader: React.FC<{
           <Controller
             control={control}
             name="ano"
-            render={({ field }) => (
-              <Select
-                label="Ano"
-                className="!w-full"
-                options={[
-                  { label: "2024", value: "2024" },
-                  { label: "2023", value: "2023" },
-                  { label: "2022", value: "2022" }
-                ]}
-                {...field}
-              />
-            )}
+            render={({ field }) =>
+              !isRetificar ? (
+                <Select
+                  label="Ano"
+                  className="!w-full"
+                  options={[
+                    { label: "2024", value: "2024" },
+                    { label: "2023", value: "2023" },
+                    { label: "2022", value: "2022" }
+                  ]}
+                  {...field}
+                />
+              ) : (
+                <div />
+              )
+            }
           />
           {museus.length > 0 && (
             <Controller
               control={control}
               name="museu"
-              render={({ field }) => (
-                <Select
-                  label="Museu"
-                  className="!w-full"
-                  options={museus?.map((museu) => ({
-                    label: museu.nome,
-                    value: museu._id
-                  }))}
-                  onSelect={console.log}
-                  {...field}
-                />
-              )}
+              render={({ field }) =>
+                !isRetificar ? (
+                  <Select
+                    label="Museu"
+                    className="!w-full"
+                    disabled={isRetificar} //desabilita parcialmente
+                    options={museus?.map((museu) => ({
+                      label: museu.nome,
+                      value: museu._id
+                    }))}
+                    onSelect={console.log}
+                    {...field}
+                  />
+                ) : (
+                  <div />
+                )
+              }
             />
           )}
           <Controller
