@@ -301,16 +301,11 @@ const Uploader: React.FC<{
           <Controller
             control={control}
             name="ano"
-            render={({ field }) => (
-              <div
-                className={clsx(
-                  isRetificar && "cursor-not-allowed pointer-events-none"
-                )}
-              >
+            render={({ field }) =>
+              !isRetificar ? (
                 <Select
                   label="Ano"
                   className="!w-full"
-                  disabled={isRetificar} //desabilita parcialmente
                   options={[
                     { label: "2024", value: "2024" },
                     { label: "2023", value: "2023" },
@@ -318,19 +313,17 @@ const Uploader: React.FC<{
                   ]}
                   {...field}
                 />
-              </div>
-            )}
+              ) : (
+                <div />
+              )
+            }
           />
           {museus.length > 0 && (
             <Controller
               control={control}
               name="museu"
-              render={({ field }) => (
-                <div
-                  className={clsx(
-                    isRetificar && "cursor-not-allowed pointer-events-none"
-                  )}
-                >
+              render={({ field }) =>
+                !isRetificar ? (
                   <Select
                     label="Museu"
                     className="!w-full"
@@ -342,8 +335,10 @@ const Uploader: React.FC<{
                     onSelect={console.log}
                     {...field}
                   />
-                </div>
-              )}
+                ) : (
+                  <div />
+                )
+              }
             />
           )}
           <Controller
