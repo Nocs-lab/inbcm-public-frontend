@@ -16,7 +16,7 @@ import {
 
 const schema = z
   .object({
-    ano: z.enum(["2024", "2023", "2022"], { message: "Ano inválido" }),
+    ano: z.enum(["2024", "2023", "2022", "2021"], { message: "Ano inválido" }),
     museologico: z.instanceof(FileList).nullable(),
     bibliografico: z.instanceof(FileList).nullable(),
     arquivistico: z.instanceof(FileList).nullable(),
@@ -326,7 +326,8 @@ const Uploader: React.FC<{
                   options={[
                     { label: "2024", value: "2024" },
                     { label: "2023", value: "2023" },
-                    { label: "2022", value: "2022" }
+                    { label: "2022", value: "2022" },
+                    { label: "2021", value: "2021" }
                   ]}
                   {...field}
                 />

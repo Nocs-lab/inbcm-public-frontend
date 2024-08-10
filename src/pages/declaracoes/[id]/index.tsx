@@ -23,9 +23,21 @@ export default function DeclaracaoPage() {
 
   const [showModal, setShowModal] = useState(false)
 
+  const getDefaultTab = () => {
+    if (data.museologico?.status) {
+      return "museologico"
+    } else if (data.bibliografico?.status) {
+      return "bibliografico"
+    } else if (data.arquivistico?.status) {
+      return "arquivistico"
+    } else {
+      return "museologico"
+    }
+  }
+
   const [currentTab, setCurrentTab] = useState<
     "museologico" | "bibliografico" | "arquivistico"
-  >("museologico")
+  >(getDefaultTab())
 
   return (
     <DefaultLayout>
