@@ -42,6 +42,7 @@ const Uploader: React.FC<{
   museus: { _id: string; nome: string }[]
   anoDeclaracao: string
   isRetificar?: boolean
+  isExist?: boolean
   onSubmit: (data: FormValues) => void
   isLoading: boolean
   disabled?: boolean
@@ -55,7 +56,8 @@ const Uploader: React.FC<{
   isLoading,
   disabled = false,
   onChangeAno,
-  onChangeMuseu
+  onChangeMuseu,
+  isExist
 }) => {
   const {
     register,
@@ -445,6 +447,7 @@ const Uploader: React.FC<{
             )}
             disabled={
               isLoading ||
+              isExist ||
               totalFiles !== fields.length ||
               isValidating ||
               disabled
