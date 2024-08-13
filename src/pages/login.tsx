@@ -27,6 +27,7 @@ const LoginPage: React.FC = () => {
   })
 
   const [showError, setShowError] = useState(true)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const { mutate, error, isError } = useMutation({
     mutationFn: async ({ email, password }: FormData) => {
@@ -49,6 +50,13 @@ const LoginPage: React.FC = () => {
       navigate("/")
     },
     onError: () => {
+      if (error instanceof Error) {
+        setErrorMessage(error.message)
+      } else if (typeof error === "string") {
+        setErrorMessage(error)
+      } else {
+        setErrorMessage("Usuário ou senha incorreta")
+      }
       setShowError(true)
     }
   })
@@ -74,9 +82,13 @@ const LoginPage: React.FC = () => {
               <div className="icon">
                 <i className="fas fa-times-circle fa-lg" aria-hidden="true"></i>
               </div>
-              <div className="content" aria-label={error.message} role="alert">
+              <div
+                className="content"
+                aria-label={errorMessage ?? ""}
+                role="alert"
+              >
                 <span className="message-title"> Erro: </span>
-                <span className="message-body">{error.message}</span>
+                <span className="message-body">{errorMessage}</span>
               </div>
               <div className="close">
                 <button
