@@ -439,23 +439,23 @@ const Uploader: React.FC<{
           )}
         </div>
         <div className="flex space-x-4">
-          <button
-            type="submit"
-            className={clsx(
-              "br-button primary mt-5",
-              isValidating || (isLoading && "loading")
-            )}
-            disabled={
-              isLoading ||
-              isExist ||
-              totalFiles !== fields.length ||
-              isValidating ||
-              disabled
-            }
-          >
-            Enviar
-          </button>
-
+          {!isExist && (
+            <button
+              type="submit"
+              className={clsx(
+                "br-button primary mt-5",
+                isValidating || (isLoading && "loading")
+              )}
+              disabled={
+                isLoading ||
+                totalFiles !== fields.length ||
+                isValidating ||
+                disabled
+              }
+            >
+              Enviar
+            </button>
+          )}
           <button
             className={clsx(
               "rounded-full py-2 px-4 text-base font-extrabold mt-5",
