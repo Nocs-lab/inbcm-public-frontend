@@ -112,6 +112,7 @@ const NovoDeclaracaoPage = () => {
         onSubmit={(data) => mutate(data)}
         isLoading={isPending || isLoading}
         museus={museus}
+        isExist={retificacao}
       />
     </DefaultLayout>
   )
