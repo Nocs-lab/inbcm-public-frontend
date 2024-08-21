@@ -11,7 +11,8 @@ import MismatchsModal from "../components/MismatchsModal"
 import {
   validate_museologico,
   validate_bibliografico,
-  validate_arquivistico
+  validate_arquivistico,
+  readFile
 } from "inbcm-xlsx-validator"
 
 const schema = z
@@ -157,22 +158,24 @@ const Uploader: React.FC<{
   useEffect(() => {
     if (museologico?.length) {
       setIsValidating(true)
-      validate_museologico(museologico[0])
-        .then(
-          (result: {
-            [key: string]: (string | { [key: string]: string })[]
-          }) => {
-            if (result.errors.length > 0) {
-              setMuseologicoErrors(result.errors as string[])
-              setShowMessage(true)
+      readFile(museologico[0]).then((result) =>
+        validate_museologico(result)
+          .then(
+            (result: {
+              [key: string]: (string | { [key: string]: string })[]
+            }) => {
+              if (result.errors.length > 0) {
+                setMuseologicoErrors(result.errors as string[])
+                setShowMessage(true)
+              }
+              setIsValidating(false)
             }
-            setIsValidating(false)
-          }
-        )
-        .catch((err) => {
-          setValue("museologico", null)
-          handlerError(err, "museológicos")
-        })
+          )
+          .catch((err) => {
+            setValue("museologico", null)
+            handlerError(err, "museológicos")
+          })
+      )
     }
   }, [museologico])
 
@@ -180,43 +183,48 @@ const Uploader: React.FC<{
     if (bibliografico?.length) {
       setIsValidating(true)
       validate_bibliografico(bibliografico[0])
-        .then(
-          (result: {
-            [key: string]: (string | { [key: string]: string })[]
-          }) => {
-            if (result.errors.length > 0) {
-              setBibliograficoErrors(result.errors as string[])
-              setShowMessage(true)
+      readFile(bibliografico[0]).then((result) =>
+        validate_bibliografico(result)
+          .then(
+            (result: {
+              [key: string]: (string | { [key: string]: string })[]
+            }) => {
+              if (result.errors.length > 0) {
+                setBibliograficoErrors(result.errors as string[])
+                setShowMessage(true)
+              }
+              setIsValidating(false)
             }
-            setIsValidating(false)
-          }
-        )
-        .catch((err) => {
-          setValue("bibliografico", null)
-          handlerError(err, "bibliográficos")
-        })
+          )
+          .catch((err) => {
+            setValue("bibliografico", null)
+            handlerError(err, "bibliográficos")
+          })
+      )
     }
   }, [bibliografico])
 
   useEffect(() => {
     if (arquivistico?.length) {
       setIsValidating(true)
-      validate_arquivistico(arquivistico[0])
-        .then(
-          (result: {
-            [key: string]: (string | { [key: string]: string })[]
-          }) => {
-            if (result.errors.length > 0) {
-              setArquivisticoErrors(result.errors as string[])
-              setShowMessage(true)
+      readFile(arquivistico[0]).then((result) =>
+        validate_arquivistico(result)
+          .then(
+            (result: {
+              [key: string]: (string | { [key: string]: string })[]
+            }) => {
+              if (result.errors.length > 0) {
+                setArquivisticoErrors(result.errors as string[])
+                setShowMessage(true)
+              }
+              setIsValidating(false)
             }
-            setIsValidating(false)
-          }
-        )
-        .catch((err) => {
-          setValue("arquivistico", null)
-          handlerError(err, "arquivísticos")
-        })
+          )
+          .catch((err) => {
+            setValue("arquivistico", null)
+            handlerError(err, "arquivísticos")
+          })
+      )
     }
   }, [arquivistico])
 
