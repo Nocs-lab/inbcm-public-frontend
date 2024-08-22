@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { z } from "zod"
 import { Controller, FieldError, useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"

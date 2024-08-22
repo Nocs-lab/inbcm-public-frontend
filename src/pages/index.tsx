@@ -58,6 +58,7 @@ const columns = [
   columnHelper.accessor("_id", {
     header: "Ações",
     enableColumnFilter: false,
+    enableSorting: false,
     cell: (info) => (
       <div className="flex gap-1 items-center">
         <Link
