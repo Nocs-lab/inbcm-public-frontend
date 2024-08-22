@@ -10,6 +10,7 @@ const columnHelper = createColumnHelper<{
   _id: string
   dataCriacao: Date
   anoDeclaracao: string
+  retificacao: boolean
   museu_id: {
     _id: string
     nome: string
@@ -34,8 +35,13 @@ const columnHelper = createColumnHelper<{
 }>()
 
 const columns = [
+  columnHelper.accessor("retificacao", {
+    header: "Tipo",
+    cell: (info) => (info.getValue() ? "Retificada" : "Original"),
+    enableColumnFilter: false
+  }),
   columnHelper.accessor("dataCriacao", {
-    header: "Data de envio",
+    header: "Envio",
     cell: (info) => format(info.getValue(), "dd/MM/yyyy HH:mm"),
     enableColumnFilter: false
   }),
