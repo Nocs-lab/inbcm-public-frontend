@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { z } from "zod"
 import { Controller, FieldError, useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
@@ -11,8 +10,7 @@ import MismatchsModal from "../components/MismatchsModal"
 import {
   validate_museologico,
   validate_bibliografico,
-  validate_arquivistico,
-  readFile
+  validate_arquivistico
 } from "inbcm-xlsx-validator"
 
 const schema = z
@@ -43,7 +41,6 @@ const Uploader: React.FC<{
   museus: { _id: string; nome: string }[]
   anoDeclaracao: string
   isRetificar?: boolean
-  isExist?: boolean
   onSubmit: (data: FormValues) => void
   isLoading: boolean
   disabled?: boolean
@@ -57,8 +54,7 @@ const Uploader: React.FC<{
   isLoading,
   disabled = false,
   onChangeAno,
-  onChangeMuseu,
-  isExist
+  onChangeMuseu
 }) => {
   const {
     register,
@@ -158,24 +154,22 @@ const Uploader: React.FC<{
   useEffect(() => {
     if (museologico?.length) {
       setIsValidating(true)
-      readFile(museologico[0]).then((result) =>
-        validate_museologico(result)
-          .then(
-            (result: {
-              [key: string]: (string | { [key: string]: string })[]
-            }) => {
-              if (result.errors.length > 0) {
-                setMuseologicoErrors(result.errors as string[])
-                setShowMessage(true)
-              }
-              setIsValidating(false)
+      validate_museologico(museologico[0])
+        .then(
+          (result: {
+            [key: string]: (string | { [key: string]: string })[]
+          }) => {
+            if (result.errors.length > 0) {
+              setMuseologicoErrors(result.errors as string[])
+              setShowMessage(true)
             }
-          )
-          .catch((err) => {
-            setValue("museologico", null)
-            handlerError(err, "museológicos")
-          })
-      )
+            setIsValidating(false)
+          }
+        )
+        .catch((err) => {
+          setValue("museologico", null)
+          handlerError(err, "museológicos")
+        })
     }
   }, [museologico])
 
@@ -183,48 +177,43 @@ const Uploader: React.FC<{
     if (bibliografico?.length) {
       setIsValidating(true)
       validate_bibliografico(bibliografico[0])
-      readFile(bibliografico[0]).then((result) =>
-        validate_bibliografico(result)
-          .then(
-            (result: {
-              [key: string]: (string | { [key: string]: string })[]
-            }) => {
-              if (result.errors.length > 0) {
-                setBibliograficoErrors(result.errors as string[])
-                setShowMessage(true)
-              }
-              setIsValidating(false)
+        .then(
+          (result: {
+            [key: string]: (string | { [key: string]: string })[]
+          }) => {
+            if (result.errors.length > 0) {
+              setBibliograficoErrors(result.errors as string[])
+              setShowMessage(true)
             }
-          )
-          .catch((err) => {
-            setValue("bibliografico", null)
-            handlerError(err, "bibliográficos")
-          })
-      )
+            setIsValidating(false)
+          }
+        )
+        .catch((err) => {
+          setValue("bibliografico", null)
+          handlerError(err, "bibliográficos")
+        })
     }
   }, [bibliografico])
 
   useEffect(() => {
     if (arquivistico?.length) {
       setIsValidating(true)
-      readFile(arquivistico[0]).then((result) =>
-        validate_arquivistico(result)
-          .then(
-            (result: {
-              [key: string]: (string | { [key: string]: string })[]
-            }) => {
-              if (result.errors.length > 0) {
-                setArquivisticoErrors(result.errors as string[])
-                setShowMessage(true)
-              }
-              setIsValidating(false)
+      validate_arquivistico(arquivistico[0])
+        .then(
+          (result: {
+            [key: string]: (string | { [key: string]: string })[]
+          }) => {
+            if (result.errors.length > 0) {
+              setArquivisticoErrors(result.errors as string[])
+              setShowMessage(true)
             }
-          )
-          .catch((err) => {
-            setValue("arquivistico", null)
-            handlerError(err, "arquivísticos")
-          })
-      )
+            setIsValidating(false)
+          }
+        )
+        .catch((err) => {
+          setValue("arquivistico", null)
+          handlerError(err, "arquivísticos")
+        })
     }
   }, [arquivistico])
 
@@ -376,6 +365,7 @@ const Uploader: React.FC<{
               <Select
                 label="Tipos de acervo"
                 type="multiple"
+                selectAllText={""}
                 placeholder="Seleciona o(s) tipo(s)"
                 options={[
                   { label: "Museológico", value: "museologico" },
@@ -447,23 +437,22 @@ const Uploader: React.FC<{
           )}
         </div>
         <div className="flex space-x-4">
-          {!isExist && (
-            <button
-              type="submit"
-              className={clsx(
-                "br-button primary mt-5",
-                isValidating || (isLoading && "loading")
-              )}
-              disabled={
-                isLoading ||
-                totalFiles !== fields.length ||
-                isValidating ||
-                disabled
-              }
-            >
-              Enviar
-            </button>
-          )}
+          <button
+            type="submit"
+            className={clsx(
+              "br-button primary mt-5",
+              isValidating || (isLoading && "loading")
+            )}
+            disabled={
+              isLoading ||
+              totalFiles !== fields.length ||
+              isValidating ||
+              disabled
+            }
+          >
+            Enviar
+          </button>
+
           <button
             className={clsx(
               "rounded-full py-2 px-4 text-base font-extrabold mt-5",
