@@ -192,11 +192,66 @@ const Table: React.FC<{
         <tbody>
           {table.getRowModel().rows.map((row) => (
             <tr key={row.id}>
-              {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} data-th={cell.column.columnDef.header}>
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
+              {row.getVisibleCells().map((cell) => {
+                // Verifica se a coluna é a de status
+                const isStatusColumn = cell.column.id === "status"
+                const status = isStatusColumn ? cell.getValue() : null
+                let statusStyle = {}
+
+                // Define o estilo com base no valor do status
+                if (isStatusColumn) {
+                  switch (status) {
+                    case "Recebida":
+                      statusStyle = {
+                        color: "white",
+                        backgroundColor: "#071d41",
+                        padding: "4px 8px",
+                        borderRadius: "4px"
+                      }
+                      break
+                    case "Em análise":
+                      statusStyle = {
+                        color: "white",
+                        backgroundColor: "#C2BA0F",
+                        padding: "4px 8px",
+                        borderRadius: "4px"
+                      }
+                      break
+                    case "Em conformidade":
+                      statusStyle = {
+                        color: "white",
+                        backgroundColor: "#118316",
+                        padding: "4px 8px",
+                        borderRadius: "4px"
+                      }
+                      break
+                    case "Não conformidade":
+                      statusStyle = {
+                        color: "white",
+                        backgroundColor: "#D11111",
+                        padding: "4px 8px",
+                        borderRadius: "4px"
+                      }
+                      break
+                    default:
+                      statusStyle = {}
+                  }
+                }
+
+                return (
+                  <td key={cell.id} data-th={cell.column.columnDef.header}>
+                    <span
+                      style={isStatusColumn ? statusStyle : {}}
+                      className="font-serif text-base text-center"
+                    >
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
+                    </span>
+                  </td>
+                )
+              })}
             </tr>
           ))}
         </tbody>
