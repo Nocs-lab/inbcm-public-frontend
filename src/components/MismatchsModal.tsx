@@ -73,57 +73,97 @@ const MismatchsModal: React.FC<{
   bibliograficoErrors,
   arquivisticoErrors
 }) => {
+  const handleScrimClick = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>
+  ) => {
+    // Verifica se o clique foi no scrim e não dentro do modal
+    if (event.target === event.currentTarget) {
+      onClose()
+    }
+  }
   return (
     <Modal
-      title="INCONSISTÊNCIAS ENCONTRADAS"
       useScrim
-      showCloseButton
       modalOpened={opened}
       onCloseButtonClick={() => onClose()}
       className="min-w-1/2"
+      onClick={handleScrimClick}
     >
       <Modal.Body>
-        <p>Abaixo, as inconsistências são agrupadas por tipo de acervo. </p>
-        {musologicoErrors.length > 0 && (
-          <>
-            <h2 className="text-lg font-bold">Acervo museológico</h2>
-            Existem linhas em que campos obrigatórios não foram preenchidos. São
-            eles:{" "}
-            {musologicoErrors
-              .map(
-                (field) =>
-                  `"${museologicoFields[field as keyof typeof museologicoFields] ?? field}"`
-              )
-              .join(", ")}{" "}
-          </>
-        )}
-        {bibliograficoErrors.length > 0 && (
-          <>
-            <h2 className="text-lg font-bold">Acervo bibliográfico</h2>
-            Existem linhas em que campos obrigatórios não foram preenchidos. São
-            eles:{" "}
-            {bibliograficoErrors
-              .map(
-                (field) =>
-                  `"${bibliograficoFields[field as keyof typeof bibliograficoFields]}"`
-              )
-              .join(", ")}{" "}
-          </>
-        )}
-        {arquivisticoErrors.length > 0 && (
-          <>
-            <h2 className="text-lg font-bold">Acervo arquivístico</h2>
-            Existem linhas em que campos obrigatórios não foram preenchidos. São
-            eles:{" "}
-            {arquivisticoErrors
-              .map(
-                (field) =>
-                  `"${arquivisticoFields[field as keyof typeof arquivisticoFields]}"`
-              )
-              .join(", ")}{" "}
-          </>
-        )}
+        <h3 className="text-2xl font-semibold mb-4">Listagem de Pendências</h3>
+        <p className="text-gray-600 mb-6">
+          Abaixo, seguem as pendências que foram encontradas no envio da sua
+          declaração. Há linhas em que campos obrigatórios não foram
+          preenchidos. Observe o resumo a seguir:
+        </p>
+        <table className="w-full table-auto border-collapse mb-6 shadow-sm">
+          <thead className="bg-black">
+            <tr>
+              <th className="border-b border-gray-300 px-6 py-3 text-left bg-gray-500 text-white">
+                Tipo de Acervo
+              </th>
+              <th className="border-b border-gray-300 px-6 py-3 text-left bg-gray-500 text-white">
+                Campos não preenchidos
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {musologicoErrors.length > 0 && (
+              <tr>
+                <td className="border-t border-gray-200 px-6 py- bg-gray-20">
+                  Museológico
+                </td>
+                <td className="border-t border-gray-200 px-6 py-4 text-gray-800">
+                  {musologicoErrors
+                    .map(
+                      (field) =>
+                        `"${museologicoFields[field as keyof typeof museologicoFields] ?? field}"`
+                    )
+                    .join(", ")}
+                </td>
+              </tr>
+            )}
+            {bibliograficoErrors.length > 0 && (
+              <tr>
+                <td className="border-t border-gray-200 px-6 py-4 bg-gray-20">
+                  Bibliográfico
+                </td>
+                <td className="border-t border-gray-200 px-6 py-4 text-gray-800">
+                  {bibliograficoErrors
+                    .map(
+                      (field) =>
+                        `"${bibliograficoFields[field as keyof typeof bibliograficoFields]}"`
+                    )
+                    .join(", ")}
+                </td>
+              </tr>
+            )}
+            {arquivisticoErrors.length > 0 && (
+              <tr>
+                <td className="border-t border-gray-200 px-6 py-4 bg-gray-20">
+                  Arquivístico
+                </td>
+                <td className="border-t border-gray-200 px-6 py-4 text-gray-800">
+                  {arquivisticoErrors
+                    .map(
+                      (field) =>
+                        `"${arquivisticoFields[field as keyof typeof arquivisticoFields]}"`
+                    )
+                    .join(", ")}
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
       </Modal.Body>
+      <Modal.Footer>
+        <button
+          onClick={onClose}
+          className="border border-black px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-500 transition"
+        >
+          Cancelar
+        </button>
+      </Modal.Footer>
     </Modal>
   )
 }
