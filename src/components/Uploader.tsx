@@ -41,6 +41,7 @@ const Uploader: React.FC<{
   museus: { _id: string; nome: string }[]
   anoDeclaracao: string
   isRetificar?: boolean
+  isExist?: boolean
   onSubmit: (data: FormValues) => void
   isLoading: boolean
   disabled?: boolean
@@ -54,7 +55,8 @@ const Uploader: React.FC<{
   isLoading,
   disabled = false,
   onChangeAno,
-  onChangeMuseu
+  onChangeMuseu,
+  isExist
 }) => {
   const {
     register,
@@ -437,21 +439,23 @@ const Uploader: React.FC<{
           )}
         </div>
         <div className="flex space-x-4">
-          <button
-            type="submit"
-            className={clsx(
-              "br-button primary mt-5",
-              isValidating || (isLoading && "loading")
-            )}
-            disabled={
-              isLoading ||
-              totalFiles !== fields.length ||
-              isValidating ||
-              disabled
-            }
-          >
-            Enviar
-          </button>
+          {!isExist && (
+            <button
+              type="submit"
+              className={clsx(
+                "br-button primary mt-5",
+                isValidating || (isLoading && "loading")
+              )}
+              disabled={
+                isLoading ||
+                totalFiles !== fields.length ||
+                isValidating ||
+                disabled
+              }
+            >
+              Enviar
+            </button>
+          )}
 
           <button
             className={clsx(
