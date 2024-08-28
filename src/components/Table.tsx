@@ -247,7 +247,7 @@ const Table: React.FC<{
                   <td key={cell.id} data-th={cell.column.columnDef.header}>
                     <span
                       style={isStatusColumn ? statusStyle : {}}
-                      className="font-serif text-base text-center"
+                      className="text-base text-center"
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
