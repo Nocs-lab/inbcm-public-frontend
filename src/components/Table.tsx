@@ -155,6 +155,9 @@ const Table: React.FC<{
           {table.getHeaderGroups().map((headerGroup) => (
             <tr key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
+                const isActionsColumn =
+                  header.column.id === "_id" &&
+                  header.column.columnDef.header === "Ações"
                 return (
                   <th key={header.id} colSpan={header.colSpan} scope="col">
                     {header.isPlaceholder ? null : (
@@ -171,10 +174,12 @@ const Table: React.FC<{
                             header.column.columnDef.header,
                             header.getContext()
                           )}
-                          {{
-                            asc: " ⬆️",
-                            desc: " ⬇️"
-                          }[header.column.getIsSorted() as string] ?? " ➡️"}
+                          {!isActionsColumn &&
+                            ({
+                              asc: " ⬆️",
+                              desc: " ⬇️"
+                            }[header.column.getIsSorted() as string] ??
+                              " ➡️")}
                         </div>
                         {header.column.getCanFilter() && (
                           <Filter

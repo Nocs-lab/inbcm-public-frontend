@@ -99,10 +99,10 @@ const MismatchsModal: React.FC<{
         <table className="w-full table-auto border-collapse mb-6 shadow-sm">
           <thead className="bg-black">
             <tr>
-              <th className="border-b border-gray-300 px-6 py-3 text-left bg-gray-500 text-white">
+              <th className="border-bottom" border-left scope="col">
                 Tipo de Acervo
               </th>
-              <th className="border-b border-gray-300 px-6 py-3 text-left bg-gray-500 text-white">
+              <th className="border-bottom" border-left scope="col">
                 Campos não preenchidos
               </th>
             </tr>
@@ -110,10 +110,10 @@ const MismatchsModal: React.FC<{
           <tbody>
             {musologicoErrors.length > 0 && (
               <tr>
-                <td className="border-t border-gray-200 px-6 py- bg-gray-20">
+                <td className="border-right" scope="rowgroup">
                   Museológico
                 </td>
-                <td className="border-t border-gray-200 px-6 py-4 text-gray-800">
+                <td>
                   {musologicoErrors
                     .map(
                       (field) =>
@@ -125,10 +125,10 @@ const MismatchsModal: React.FC<{
             )}
             {bibliograficoErrors.length > 0 && (
               <tr>
-                <td className="border-t border-gray-200 px-6 py-4 bg-gray-20">
+                <td className="border-right" scope="rowgroup">
                   Bibliográfico
                 </td>
-                <td className="border-t border-gray-200 px-6 py-4 text-gray-800">
+                <td>
                   {bibliograficoErrors
                     .map(
                       (field) =>
@@ -140,10 +140,10 @@ const MismatchsModal: React.FC<{
             )}
             {arquivisticoErrors.length > 0 && (
               <tr>
-                <td className="border-t border-gray-200 px-6 py-4 bg-gray-20">
+                <td className="border-right" scope="rowgroup">
                   Arquivístico
                 </td>
-                <td className="border-t border-gray-200 px-6 py-4 text-gray-800">
+                <td>
                   {arquivisticoErrors
                     .map(
                       (field) =>
@@ -159,7 +159,7 @@ const MismatchsModal: React.FC<{
       <Modal.Footer>
         <button
           onClick={onClose}
-          className="border border-black px-6 py-2 bg-gray-600 text-white rounded-md hover:bg-gray-500 transition"
+          className="border px-6 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-500 transition"
         >
           Cancelar
         </button>
