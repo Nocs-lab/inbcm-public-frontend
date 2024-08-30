@@ -111,7 +111,7 @@ const Uploader: React.FC<{
   } | null>(null)
   const [isValidating, setIsValidating] = useState(false)
 
-  const [musologicoErrors, setMuseologicoErrors] = useState<string[]>([])
+  const [museologicoErrors, setMuseologicoErrors] = useState<string[]>([])
   const [bibliograficoErrors, setBibliograficoErrors] = useState<string[]>([])
   const [arquivisticoErrors, setArquivisticoErrors] = useState<string[]>([])
 
@@ -238,7 +238,7 @@ const Uploader: React.FC<{
       <MismatchsModal
         opened={modalOpen}
         onClose={() => setModalOpen(false)}
-        musologicoErrors={musologicoErrors}
+        museologicoErrors={museologicoErrors}
         bibliograficoErrors={bibliograficoErrors}
         arquivisticoErrors={arquivisticoErrors}
       />

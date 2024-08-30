@@ -63,13 +63,13 @@ const arquivisticoFields = {
 const MismatchsModal: React.FC<{
   opened: boolean
   onClose: () => void
-  musologicoErrors: string[]
+  museologicoErrors: string[]
   bibliograficoErrors: string[]
   arquivisticoErrors: string[]
 }> = ({
   opened,
   onClose,
-  musologicoErrors,
+  museologicoErrors,
   bibliograficoErrors,
   arquivisticoErrors
 }) => {
@@ -108,13 +108,13 @@ const MismatchsModal: React.FC<{
             </tr>
           </thead>
           <tbody>
-            {musologicoErrors.length > 0 && (
+            {museologicoErrors.length > 0 && (
               <tr>
                 <td className="border-right" scope="rowgroup">
                   Museológico
                 </td>
                 <td>
-                  {musologicoErrors
+                  {museologicoErrors
                     .map(
                       (field) =>
                         `"${museologicoFields[field as keyof typeof museologicoFields] ?? field}"`
