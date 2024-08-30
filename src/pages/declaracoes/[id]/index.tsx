@@ -78,7 +78,7 @@ export default function DeclaracaoPage() {
             <MismatchsModal
               opened={showModal}
               onClose={() => setShowModal(false)}
-              musologicoErrors={data.museologico?.pendencias ?? []}
+              museologicoErrors={data.museologico?.pendencias ?? []}
               bibliograficoErrors={data.bibliografico?.pendencias ?? []}
               arquivisticoErrors={data.arquivistico?.pendencias ?? []}
             />

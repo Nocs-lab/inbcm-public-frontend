@@ -2,7 +2,7 @@ import { z } from "zod"
 import { Controller, FieldError, useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Select } from "react-dsgov"
+import { Select, Button } from "react-dsgov"
 import Input from "../components/Input"
 import clsx from "clsx"
 import { useEffect, useState } from "react"
@@ -111,7 +111,7 @@ const Uploader: React.FC<{
   } | null>(null)
   const [isValidating, setIsValidating] = useState(false)
 
-  const [musologicoErrors, setMuseologicoErrors] = useState<string[]>([])
+  const [museologicoErrors, setMuseologicoErrors] = useState<string[]>([])
   const [bibliograficoErrors, setBibliograficoErrors] = useState<string[]>([])
   const [arquivisticoErrors, setArquivisticoErrors] = useState<string[]>([])
 
@@ -238,7 +238,7 @@ const Uploader: React.FC<{
       <MismatchsModal
         opened={modalOpen}
         onClose={() => setModalOpen(false)}
-        musologicoErrors={musologicoErrors}
+        museologicoErrors={museologicoErrors}
         bibliograficoErrors={bibliograficoErrors}
         arquivisticoErrors={arquivisticoErrors}
       />
@@ -464,16 +464,9 @@ const Uploader: React.FC<{
               Enviar
             </button>
           )}
-
-          <button
-            className={clsx(
-              "rounded-full py-2 px-4 text-base font-extrabold mt-5",
-              "bg-gray-500 text-white hover:bg-gray-600"
-            )}
-            onClick={handleCancelClick}
-          >
+          <Button primary inverted onClick={handleCancelClick} className="mt-5">
             Cancelar
-          </button>
+          </Button>
         </div>
       </form>
     </>

@@ -1,4 +1,4 @@
-import { Modal } from "react-dsgov"
+import { Modal, Button } from "react-dsgov"
 
 const museologicoFields = {
   nderegistro: "Nº de Registro",
@@ -63,13 +63,13 @@ const arquivisticoFields = {
 const MismatchsModal: React.FC<{
   opened: boolean
   onClose: () => void
-  musologicoErrors: string[]
+  museologicoErrors: string[]
   bibliograficoErrors: string[]
   arquivisticoErrors: string[]
 }> = ({
   opened,
   onClose,
-  musologicoErrors,
+  museologicoErrors,
   bibliograficoErrors,
   arquivisticoErrors
 }) => {
@@ -85,6 +85,7 @@ const MismatchsModal: React.FC<{
     <Modal
       useScrim
       modalOpened={opened}
+      showCloseButton
       onCloseButtonClick={() => onClose()}
       className="min-w-1/2"
       onClick={handleScrimClick}
@@ -108,13 +109,13 @@ const MismatchsModal: React.FC<{
             </tr>
           </thead>
           <tbody>
-            {musologicoErrors.length > 0 && (
+            {museologicoErrors.length > 0 && (
               <tr>
                 <td className="border-right" scope="rowgroup">
                   Museológico
                 </td>
                 <td>
-                  {musologicoErrors
+                  {museologicoErrors
                     .map(
                       (field) =>
                         `"${museologicoFields[field as keyof typeof museologicoFields] ?? field}"`
@@ -157,12 +158,9 @@ const MismatchsModal: React.FC<{
         </table>
       </Modal.Body>
       <Modal.Footer>
-        <button
-          onClick={onClose}
-          className="border px-6 py-2 bg-gray-600 text-white rounded-full hover:bg-gray-500 transition"
-        >
-          Cancelar
-        </button>
+        <Button primary inverted onClick={onClose}>
+          Fechar
+        </Button>
       </Modal.Footer>
     </Modal>
   )
