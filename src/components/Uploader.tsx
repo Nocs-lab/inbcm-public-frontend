@@ -266,7 +266,7 @@ const Uploader: React.FC<{
               role="alert"
             >
               <span className="message-title">
-                Encontramos inconsistências no(s) arquivo(s) enviado(s).{" "}
+                Há pendências na planilha selecionada para bens do tipo.{" "}
               </span>
               <span className="message-body">
                 Você pode corrigi-las antes de enviar ou, se preferir 1) cancele
