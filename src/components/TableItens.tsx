@@ -89,7 +89,7 @@ const TableItens: React.FC<{
     columns = arquivisticoColumns
   }
 
-  return <Table data={data} columns={columns} />
+  return <Table title="Bens" data={data} columns={columns} />
 }
 
 export default TableItens
