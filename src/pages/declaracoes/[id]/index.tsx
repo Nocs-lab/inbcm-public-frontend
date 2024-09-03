@@ -45,7 +45,10 @@ export default function DeclaracaoPage() {
         <i className="fas fa-arrow-left" aria-hidden="true"></i>
         Voltar
       </Link>
-      <h2 className="mt-3 mb-0">Declaração #{id}</h2>
+      <h2 className="mt-3 mb-0">
+        Declaração{" "}
+        {data.retificacao ? `Retificada 0${data.versao - 1}` : "Original"}
+      </h2>
       <span className="br-tag mb-5">{data.status}</span>
       <div className="flex gap-4">
         <a href={`/api/recibo/${id}`} className="text-xl">
@@ -87,11 +90,7 @@ export default function DeclaracaoPage() {
       </div>
       <div className="flex gap-10 text-lg mt-5">
         <span>
-          <span className="font-bold">Tipo: </span>
-          {data.retificacao ? "Retificada" : "Original"}
-        </span>
-        <span>
-          <span className="font-bold">Data de envio: </span>
+          <span className="font-bold">Envio: </span>
           {format(data.dataCriacao, "dd/MM/yyyy HH:mm")}
         </span>
         <span>

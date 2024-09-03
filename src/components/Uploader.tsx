@@ -145,16 +145,6 @@ const Uploader: React.FC<{
   }
 
   useEffect(() => {
-    if (errorMessage) {
-      const timer = setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-
-      return () => clearTimeout(timer)
-    }
-  }, [errorMessage])
-
-  useEffect(() => {
     if (museologico?.length) {
       setIsValidating(true)
       readFile(museologico[0]).then((result) =>
@@ -168,6 +158,7 @@ const Uploader: React.FC<{
                 setShowMessage(true)
               }
               setIsValidating(false)
+              setErrorMessage(null)
             }
           )
           .catch((err) => {
@@ -193,6 +184,7 @@ const Uploader: React.FC<{
                 setShowMessage(true)
               }
               setIsValidating(false)
+              setErrorMessage(null)
             }
           )
           .catch((err) => {
@@ -217,6 +209,7 @@ const Uploader: React.FC<{
                 setShowMessage(true)
               }
               setIsValidating(false)
+              setErrorMessage(null)
             }
           )
           .catch((err) => {
@@ -266,7 +259,7 @@ const Uploader: React.FC<{
               role="alert"
             >
               <span className="message-title">
-                Encontramos inconsistências no(s) arquivo(s) enviado(s).{" "}
+                Há pendências na planilha selecionada para bens do tipo.{" "}
               </span>
               <span className="message-body">
                 Você pode corrigi-las antes de enviar ou, se preferir 1) cancele
