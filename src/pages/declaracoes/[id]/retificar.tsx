@@ -72,7 +72,7 @@ export default function RetificarDeclaracao() {
         <i className="fas fa-arrow-left" aria-hidden="true"></i>
         Voltar
       </Link>
-      <h2>Retificar Declaração #{id}</h2>
+      <h2>Retificar declaração</h2>
       <div className="flex gap-10 text-lg mt-5">
         <span>
           <span className="font-bold">Ano: </span>
