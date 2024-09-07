@@ -47,7 +47,7 @@ export default function DeclaracaoPage() {
       </Link>
       <h2 className="mt-3 mb-0">
         Declaração{" "}
-        {data.retificacao ? `retificada 0${data.versao - 1}` : "original"}
+        {data.retificacao ? `retificadora 0${data.versao - 1}` : "original"}
       </h2>
       <span className="br-tag mb-5">{data.status}</span>
       <div className="flex gap-4">
