@@ -47,7 +47,7 @@ export default function DeclaracaoPage() {
       </Link>
       <h2 className="mt-3 mb-0">
         Declaração{" "}
-        {data.retificacao ? `Retificada 0${data.versao - 1}` : "Original"}
+        {data.retificacao ? `retificadora 0${data.versao - 1}` : "original"}
       </h2>
       <span className="br-tag mb-5">{data.status}</span>
       <div className="flex gap-4">
@@ -158,7 +158,7 @@ export default function DeclaracaoPage() {
                     onClick={() => setCurrentTab("arquivistico")}
                   >
                     <span className="name">
-                      Acervo arquivistico ({data.arquivistico?.quantidadeItens})
+                      Acervo arquivístico ({data.arquivistico?.quantidadeItens})
                     </span>
                   </button>
                 </li>

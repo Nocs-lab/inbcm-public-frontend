@@ -37,7 +37,7 @@ const columnHelper = createColumnHelper<{
 const columns = [
   columnHelper.accessor("retificacao", {
     header: "Tipo",
-    cell: (info) => (info.getValue() ? "Retificada" : "Original"),
+    cell: (info) => (info.getValue() ? "Retificadora" : "Original"),
     enableColumnFilter: false
   }),
   columnHelper.accessor("dataCriacao", {

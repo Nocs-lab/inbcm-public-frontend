@@ -104,7 +104,11 @@ const Uploader: React.FC<{
     (file) => file?.length
   ).length
 
-  const [showMessage, setShowMessage] = useState(false)
+  const [showMessage, setShowMessage] = useState<{
+    show: boolean
+    type: string
+  } | null>(null)
+
   const [errorMessage, setErrorMessage] = useState<{
     title: string
     body: string
@@ -155,7 +159,10 @@ const Uploader: React.FC<{
             }) => {
               if (result.errors.length > 0) {
                 setMuseologicoErrors(result.errors as string[])
-                setShowMessage(true)
+                setShowMessage({
+                  show: true,
+                  type: "museológico"
+                })
               }
               setIsValidating(false)
               setErrorMessage(null)
@@ -181,7 +188,10 @@ const Uploader: React.FC<{
             }) => {
               if (result.errors.length > 0) {
                 setBibliograficoErrors(result.errors as string[])
-                setShowMessage(true)
+                setShowMessage({
+                  show: true,
+                  type: "bibliográfico"
+                })
               }
               setIsValidating(false)
               setErrorMessage(null)
@@ -206,7 +216,10 @@ const Uploader: React.FC<{
             }) => {
               if (result.errors.length > 0) {
                 setArquivisticoErrors(result.errors as string[])
-                setShowMessage(true)
+                setShowMessage({
+                  show: true,
+                  type: "arquivístico"
+                })
               }
               setIsValidating(false)
               setErrorMessage(null)
@@ -259,7 +272,8 @@ const Uploader: React.FC<{
               role="alert"
             >
               <span className="message-title">
-                Há pendências na planilha selecionada para bens do tipo.{" "}
+                Há pendências na planilha selecionada para bens do tipo{" "}
+                {showMessage.type}.{" "}
               </span>
               <span className="message-body">
                 Você pode corrigi-las antes de enviar ou, se preferir 1) cancele
