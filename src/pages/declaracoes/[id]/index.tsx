@@ -8,6 +8,7 @@ import { Link } from "react-router-dom"
 import MismatchsModal from "../../../components/MismatchsModal"
 import { format } from "date-fns"
 import TableItens from "../../../components/TableItens"
+import { getColorStatus } from "../../../utils/colorStatus"
 
 export default function DeclaracaoPage() {
   const params = useParams()
@@ -49,7 +50,9 @@ export default function DeclaracaoPage() {
         Declaração{" "}
         {data.retificacao ? `retificadora 0${data.versao - 1}` : "original"}
       </h2>
-      <span className="br-tag mb-5">{data.status}</span>
+      <span className="br-tag mb-5" style={getColorStatus(data.status)}>
+        {data.status}
+      </span>
       <div className="flex gap-4">
         <a href={`/api/recibo/${id}`} className="text-xl">
           <i className="fas fa-file-pdf" aria-hidden="true"></i> Baixar recibo
@@ -177,7 +180,12 @@ export default function DeclaracaoPage() {
                 <div className="flex items-center justify-between">
                   <span className="mb-3 flex items-center justify-start gap-1">
                     <span className="font-bold">Status: </span>
-                    <span className="br-tag">{data.museologico?.status}</span>
+                    <span
+                      className="br-tag"
+                      style={getColorStatus(data.museologico?.status)}
+                    >
+                      {data.museologico?.status}
+                    </span>
                   </span>
                   <a
                     href={`/api/download/${data.museu_id._id}/${data.anoDeclaracao}/museologico`}
@@ -205,7 +213,12 @@ export default function DeclaracaoPage() {
                 <div className="flex items-center justify-between">
                   <span className="mb-3 flex items-center justify-start gap-1">
                     <span className="font-bold">Status: </span>
-                    <span className="br-tag">{data.bibliografico?.status}</span>
+                    <span
+                      className="br-tag"
+                      style={getColorStatus(data.bibliografico?.status)}
+                    >
+                      {data.bibliografico?.status}
+                    </span>
                   </span>
                   <a
                     href={`/api/download/${data.museu_id._id}/${data.anoDeclaracao}/bibliografico`}
@@ -233,7 +246,12 @@ export default function DeclaracaoPage() {
                 <div className="flex items-center justify-between">
                   <span className="mb-3 flex items-center justify-start gap-1">
                     <span className="font-bold">Status: </span>
-                    <span className="br-tag">{data.arquivistico?.status}</span>
+                    <span
+                      className="br-tag"
+                      style={getColorStatus(data.arquivistico?.status)}
+                    >
+                      {data.arquivistico?.status}
+                    </span>
                   </span>
                   <a
                     href={`/api/download/${data.museu_id._id}/${data.anoDeclaracao}/arquivistico`}
