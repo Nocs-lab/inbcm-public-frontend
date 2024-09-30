@@ -58,7 +58,7 @@ const columns = [
     }
   }),
   columnHelper.accessor("status", {
-    header: "Status",
+    header: "Situação",
     enableColumnFilter: false
   }),
   columnHelper.accessor("_id", {
