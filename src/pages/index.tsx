@@ -1,10 +1,10 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
+import { createColumnHelper } from "@tanstack/react-table"
+import { format } from "date-fns"
+import { Link } from "react-router-dom"
+import Table from "../components/Table"
 import DefaultLayout from "../layouts/default"
 import request from "../utils/request"
-import { createColumnHelper } from "@tanstack/react-table"
-import { Link } from "react-router-dom"
-import { format } from "date-fns"
-import Table from "../components/Table"
 
 const columnHelper = createColumnHelper<{
   _id: string
@@ -83,7 +83,7 @@ export default function Declaracoes() {
   const { data } = useSuspenseQuery({
     queryKey: ["declaracoes"],
     queryFn: async () => {
-      const response = await request("/api/declaracoes")
+      const response = await request("/api/public/declaracoes")
       return response.json()
     }
   })

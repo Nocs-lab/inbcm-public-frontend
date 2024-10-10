@@ -1,14 +1,14 @@
-import { useParams } from "react-router"
-import DefaultLayout from "../../../layouts/default"
-import { useState } from "react"
-import clsx from "clsx"
-import request from "../../../utils/request"
 import { useSuspenseQuery } from "@tanstack/react-query"
+import clsx from "clsx"
+import { format } from "date-fns"
+import { useState } from "react"
+import { useParams } from "react-router"
 import { Link } from "react-router-dom"
 import MismatchsModal from "../../../components/MismatchsModal"
-import { format } from "date-fns"
 import TableItens from "../../../components/TableItens"
+import DefaultLayout from "../../../layouts/default"
 import { getColorStatus } from "../../../utils/colorStatus"
+import request from "../../../utils/request"
 
 export default function DeclaracaoPage() {
   const params = useParams()
@@ -17,7 +17,7 @@ export default function DeclaracaoPage() {
   const { data } = useSuspenseQuery({
     queryKey: ["declaracao", id],
     queryFn: async () => {
-      const response = await request(`/api/declaracoes/${id}`)
+      const response = await request(`/api/public/declaracoes/${id}`)
       return response.json()
     }
   })
@@ -54,7 +54,7 @@ export default function DeclaracaoPage() {
         {data.status}
       </span>
       <div className="flex gap-4">
-        <a href={`/api/recibo/${id}`} className="text-xl">
+        <a href={`/api/public/recibo/${id}`} className="text-xl">
           <i className="fas fa-file-pdf" aria-hidden="true"></i> Baixar recibo
         </a>
 
@@ -188,7 +188,7 @@ export default function DeclaracaoPage() {
                     </span>
                   </span>
                   <a
-                    href={`/api/download/${data.museu_id._id}/${data.anoDeclaracao}/museologico`}
+                    href={`/api/public/download/${data.museu_id._id}/${data.anoDeclaracao}/museologico`}
                     className="mb-2"
                   >
                     <i className="fas fa-download" aria-hidden="true"></i>{" "}
@@ -221,7 +221,7 @@ export default function DeclaracaoPage() {
                     </span>
                   </span>
                   <a
-                    href={`/api/download/${data.museu_id._id}/${data.anoDeclaracao}/bibliografico`}
+                    href={`/api/public/download/${data.museu_id._id}/${data.anoDeclaracao}/bibliografico`}
                     className="mb-2"
                   >
                     <i className="fas fa-download" aria-hidden="true"></i>{" "}
@@ -254,7 +254,7 @@ export default function DeclaracaoPage() {
                     </span>
                   </span>
                   <a
-                    href={`/api/download/${data.museu_id._id}/${data.anoDeclaracao}/arquivistico`}
+                    href={`/api/public/download/${data.museu_id._id}/${data.anoDeclaracao}/arquivistico`}
                     className="mb-2"
                   >
                     <i className="fas fa-download" aria-hidden="true"></i>{" "}

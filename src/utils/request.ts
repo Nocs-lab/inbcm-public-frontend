@@ -1,4 +1,4 @@
-import { unpack, pack } from "msgpackr"
+import { pack, unpack } from "msgpackr"
 
 export default async function request(
   path: string,
@@ -20,7 +20,7 @@ export default async function request(
   })
 
   if (res.status === 401) {
-    const refreshRes = await fetch("/api/auth/refresh", {
+    const refreshRes = await fetch("/api/public/auth/refresh", {
       method: "POST",
       credentials: "include"
     })

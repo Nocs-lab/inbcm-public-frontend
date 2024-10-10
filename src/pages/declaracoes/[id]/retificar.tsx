@@ -1,9 +1,9 @@
-import DefaultLayout from "../../../layouts/default"
 import { useMutation, useSuspenseQueries } from "@tanstack/react-query"
 import { useNavigate, useParams } from "react-router"
-import request from "../../../utils/request"
 import { Link } from "react-router-dom"
 import Uploader from "../../../components/Uploader"
+import DefaultLayout from "../../../layouts/default"
+import request from "../../../utils/request"
 import useStore from "../../../utils/store"
 
 export default function RetificarDeclaracao() {
@@ -19,14 +19,14 @@ export default function RetificarDeclaracao() {
       {
         queryKey: ["museus", user?.email],
         queryFn: async () => {
-          const res = await request("/api/museus")
+          const res = await request("/api/public/museus")
           return await res.json()
         }
       },
       {
         queryKey: ["declaracao", id],
         queryFn: async () => {
-          const res = await request(`/api/declaracoes/${id}`)
+          const res = await request(`/api/public/declaracoes/${id}`)
           return await res.json()
         }
       }
@@ -54,7 +54,7 @@ export default function RetificarDeclaracao() {
       }
 
       return await request(
-        `/api/retificar/${declaracao.museu_id._id}/${declaracao.anoDeclaracao}/${id}`,
+        `/api/public/retificar/${declaracao.museu_id._id}/${declaracao.anoDeclaracao}/${id}`,
         {
           method: "PUT",
           body: formData
