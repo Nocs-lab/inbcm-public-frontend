@@ -1,13 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import DefaultLayout from "../../layouts/default"
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import { useState } from "react"
+import toast from "react-hot-toast"
 import { useNavigate } from "react-router"
+import { Link } from "react-router-dom"
+import Uploader from "../../components/Uploader"
+import DefaultLayout from "../../layouts/default"
 import request from "../../utils/request"
 import useStore from "../../utils/store"
-import { Link } from "react-router-dom"
-import toast from "react-hot-toast"
-import Uploader from "../../components/Uploader"
-import { useState } from "react"
 
 const NovoDeclaracaoPage = () => {
   const navigate = useNavigate()
@@ -17,7 +17,7 @@ const NovoDeclaracaoPage = () => {
   const { data: museus } = useSuspenseQuery<{ nome: string; _id: string }[]>({
     queryKey: ["museus", user?.email],
     queryFn: async () => {
-      const res = await request("/api/museus")
+      const res = await request("/api/public/museus")
       return await res.json()
     }
   })
@@ -29,7 +29,7 @@ const NovoDeclaracaoPage = () => {
     queryKey: ["declaracao", ano, museu],
     queryFn: async () => {
       try {
-        const res = await request(`/api/declaracoes/${museu}/${ano}`)
+        const res = await request(`/api/public/declaracoes/${museu}/${ano}`)
 
         return await res.json()
       } catch (e) {
@@ -62,7 +62,7 @@ const NovoDeclaracaoPage = () => {
         formData.append("arquivistico", data.arquivistico[0])
       }
 
-      await request(`/api/uploads/${data.museu}/${data.ano}`, {
+      await request(`/api/public/uploads/${data.museu}/${data.ano}`, {
         method: "POST",
         body: formData
       })
@@ -95,9 +95,9 @@ const NovoDeclaracaoPage = () => {
             </span>
             <span className="message-body">
               Para baixar o recibo correspondente,{" "}
-              <a href={`/api/recibo/${declaracao?._id}`}>clique aqui</a>. Caso
-              deseje fazer alguma alteração, você deve enviar uma declaração
-              retificadora{" "}
+              <a href={`/api/public/recibo/${declaracao?._id}`}>clique aqui</a>.
+              Caso deseje fazer alguma alteração, você deve enviar uma
+              declaração retificadora{" "}
               <Link to={`/declaracoes/${declaracao?._id}/retificar`}>
                 clicando aqui
               </Link>

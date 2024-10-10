@@ -1,12 +1,12 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
-import Table from "./Table"
 import { createColumnHelper } from "@tanstack/react-table"
 import {
-  museologico,
+  arquivistico,
   bibliografico,
-  arquivistico
+  museologico
 } from "inbcm-xlsx-validator/schema"
 import request from "../utils/request"
+import Table from "./Table"
 
 const columnHelper = createColumnHelper()
 
@@ -72,7 +72,7 @@ const TableItens: React.FC<{
     queryKey: ["itens", acervo],
     queryFn: async () => {
       const res = await request(
-        `/api/listar-itens/${museuId}/${ano}/${acervo}/`
+        `/api/public/declaracoes/listar-itens/${museuId}/${ano}/${acervo}/`
       )
 
       return await res.json()
