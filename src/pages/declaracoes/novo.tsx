@@ -62,10 +62,13 @@ const NovoDeclaracaoPage = () => {
         formData.append("arquivistico", data.arquivistico[0])
       }
 
-      await request(`/api/public/uploads/${data.museu}/${data.ano}`, {
-        method: "POST",
-        body: formData
-      })
+      await request(
+        `/api/public/declaracoes/uploads/${data.museu}/${data.ano}`,
+        {
+          method: "POST",
+          body: formData
+        }
+      )
     },
     onSuccess: () => {
       toast.success("Declaração enviada com sucesso!")
