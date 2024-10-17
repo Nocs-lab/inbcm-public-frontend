@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
 import { useState } from "react"
 import toast from "react-hot-toast"
