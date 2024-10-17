@@ -54,7 +54,7 @@ export default function RetificarDeclaracao() {
       }
 
       return await request(
-        `/api/public/retificar/${declaracao.museu_id._id}/${declaracao.anoDeclaracao}/${id}`,
+        `/api/public/declaracoes/retificar/${declaracao.museu_id._id}/${declaracao.anoDeclaracao}/${id}`,
         {
           method: "PUT",
           body: formData
