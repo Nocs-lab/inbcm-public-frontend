@@ -92,10 +92,16 @@ export default function Declaracoes() {
     <DefaultLayout>
       <div className="flex items-center justify-between">
         <h2>Minhas declarações</h2>
-        <Link to="/declaracoes/novo" className="btn text-xl">
-          <i className="fa-solid fa-file-lines p-2"></i>
-          Nova declaração
-        </Link>
+        <div>
+          <Link to="/declaracoes/novo" className="btn text-xl p-3">
+            <i className="fa-solid fa-file-lines p-2"></i>
+            Nova declaração
+          </Link>
+          <Link to="/dashboard" className="btn text-xl">
+            <i className="fa-solid fa-chart-line p-2"></i>
+            Painel
+          </Link>
+        </div>
       </div>
       <div
         className="br-table overflow-auto"
