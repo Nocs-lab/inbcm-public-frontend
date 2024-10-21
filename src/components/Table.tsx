@@ -1,5 +1,4 @@
 import React, { useEffect, useMemo, useState } from "react"
-import { getColorStatus } from "../utils/colorStatus"
 import {
   Column,
   ColumnFiltersState,
@@ -69,9 +68,10 @@ function DebouncedInput({
 function Filter({ column }: { column: Column<unknown, unknown> }) {
   const { filterVariant } = column.columnDef.meta ?? {}
   const columnFilterValue = column.getFilterValue()
+  const uniqueValues = column.getFacetedUniqueValues()
   const sortedUniqueValues = useMemo(
-    () => Array.from(column.getFacetedUniqueValues().keys()).sort(),
-    [column.getFacetedUniqueValues(), column]
+    () => Array.from(uniqueValues.keys()).sort(),
+    [uniqueValues]
   )
 
   return filterVariant === "select" ? (
@@ -201,14 +201,11 @@ const Table: React.FC<{
               {row.getVisibleCells().map((cell) => {
                 // Verifica se a coluna é a de status
                 const isStatusColumn = cell.column.id === "status"
-                const status = isStatusColumn ? cell.getValue() : null
-                const statusStyle = isStatusColumn ? getColorStatus(status) : {}
 
                 return (
                   <td key={cell.id} data-th={cell.column.columnDef.header}>
                     <span
-                      style={isStatusColumn ? statusStyle : {}}
-                      className="text-base text-center"
+                      className={`text-base text-center ${isStatusColumn ? "font-bold" : ""}`}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
