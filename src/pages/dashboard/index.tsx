@@ -4,6 +4,7 @@ import { Select } from "react-dsgov"
 import { useState, useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
 import request from "../../utils/request"
+import { Link } from "react-router-dom"
 
 export default function Dashboard() {
   const [museu, setMuseu] = useState("")
@@ -46,6 +47,10 @@ export default function Dashboard() {
 
   return (
     <DefaultLayout>
+      <Link to="/" className="text-lg">
+        <i className="fas fa-arrow-left" aria-hidden="true"></i>
+        Voltar
+      </Link>
       <h1>Painel para acompanhamento de itens no acervo</h1>
 
       <div className="flex items-center justify-center p-3 gap-16">
@@ -91,7 +96,7 @@ export default function Dashboard() {
       {isLoadingGrafico ? (
         <p>Carregando...</p>
       ) : error ? (
-        <p>Erro ao carregar os dados do gráfico.</p>
+        <p>Não há dados a serem exibidos com os filtros informados.</p>
       ) : (
         <Chart
           chartType="ColumnChart"
@@ -105,13 +110,32 @@ export default function Dashboard() {
             ]) ?? [])
           ]}
           width="100%"
-          height="350px"
+          height="400px"
           legendToggle
           options={{
+            hAxis: {
+              titleTextStyle: { color: "#607d8b" },
+              gridlines: { count: 0 },
+              textStyle: {
+                color: "#78909c",
+                fontName: "Roboto",
+                fontSize: "15",
+                bold: true
+              }
+            },
+            vAxis: {
+              minValue: 0,
+              gridlines: { color: "#cfd8dc", count: 4 },
+              baselineColor: "transparent"
+            },
             legend: {
               position: "bottom",
               alignment: "center",
-              textStyle: { fontSize: "22" }
+              textStyle: {
+                color: "#607d8b",
+                fontName: "Roboto",
+                fontSize: "15"
+              }
             },
             colors: [
               "#3f51b5",
@@ -122,7 +146,22 @@ export default function Dashboard() {
               "#4caf50",
               "#8bc34a",
               "#cddc39"
-            ]
+            ],
+            areaOpacity: 0.24,
+            lineWidth: 1,
+            chartArea: {
+              backgroundColor: "transparent",
+              width: "100%",
+              height: "80%"
+            },
+            pieSliceBorderColor: "#eceff1",
+            pieSliceTextStyle: { color: "#607d8b" },
+            pieHole: 0.9,
+            bar: { groupWidth: "100" },
+            colorAxis: { colors: ["#3f51b5", "#2196f3", "#03a9f4", "#00bcd4"] },
+            backgroundColor: "transparent",
+            datalessRegionColor: "#f00",
+            displayMode: "regions"
           }}
         />
       )}
