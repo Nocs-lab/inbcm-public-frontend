@@ -102,7 +102,7 @@ export default function Dashboard() {
           chartType="ColumnChart"
           data={[
             ["Ano", "Museológico", "Arquivístico", "Bibliográfico"],
-            ...(dadosGrafico?.map((item) => [
+            ...(dadosGrafico?.data?.map((item) => [
               item.anoDeclaracao,
               item.totalMuseologico,
               item.totalArquivistico,
