@@ -51,7 +51,7 @@ export default function Dashboard() {
         <i className="fas fa-arrow-left" aria-hidden="true"></i>
         Voltar
       </Link>
-      <h1>Painel para acompanhamento de itens no acervo</h1>
+      <h2>Painel analítico</h2>
 
       <div className="flex items-center justify-center p-3 gap-16">
         <Select
@@ -101,12 +101,27 @@ export default function Dashboard() {
         <Chart
           chartType="ColumnChart"
           data={[
-            ["Ano", "Museológico", "Arquivístico", "Bibliográfico"],
+            [
+              "Ano",
+              "Museológico",
+              { role: "annotation" },
+              "Arquivístico",
+              { role: "annotation" },
+              "Bibliográfico",
+              { role: "annotation" }
+            ],
             ...(dadosGrafico?.data?.map((item) => [
               item.anoDeclaracao,
               item.totalMuseologico,
+              item.totalMuseologico > 0 ? item.totalMuseologico.toString() : "", // Anotação para Museológico
               item.totalArquivistico,
-              item.totalBibliografico
+              item.totalArquivistico > 0
+                ? item.totalArquivistico.toString()
+                : "",
+              item.totalBibliografico,
+              item.totalBibliografico > 0
+                ? item.totalBibliografico.toString()
+                : ""
             ]) ?? [])
           ]}
           width="100%"
@@ -137,31 +152,23 @@ export default function Dashboard() {
                 fontSize: "15"
               }
             },
-            colors: [
-              "#3f51b5",
-              "#2196f3",
-              "#03a9f4",
-              "#00bcd4",
-              "#009688",
-              "#4caf50",
-              "#8bc34a",
-              "#cddc39"
-            ],
-            areaOpacity: 0.24,
-            lineWidth: 1,
+            annotations: {
+              alwaysOutside: true,
+              textStyle: {
+                fontSize: 12,
+                bold: true,
+                color: "#000"
+              }
+            },
+            colors: ["#3f51b5", "#2196f3", "#33F8FF"],
             chartArea: {
               backgroundColor: "transparent",
               width: "100%",
               height: "80%"
             },
-            pieSliceBorderColor: "#eceff1",
-            pieSliceTextStyle: { color: "#607d8b" },
-            pieHole: 0.9,
             bar: { groupWidth: "100" },
-            colorAxis: { colors: ["#3f51b5", "#2196f3", "#03a9f4", "#00bcd4"] },
-            backgroundColor: "transparent",
-            datalessRegionColor: "#f00",
-            displayMode: "regions"
+            focusTarget: "category",
+            backgroundColor: "transparent"
           }}
         />
       )}
