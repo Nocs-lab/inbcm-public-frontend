@@ -1,4 +1,4 @@
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useMutation, useSuspenseQuery } from "@tanstack/react-query"
 import clsx from "clsx"
 import { format } from "date-fns"
 import { useState } from "react"
@@ -9,6 +9,8 @@ import TableItens from "../../../components/TableItens"
 import DefaultLayout from "../../../layouts/default"
 import { getColorStatus } from "../../../utils/colorStatus"
 import request from "../../../utils/request"
+import { Button, Modal } from "react-dsgov"
+import toast from "react-hot-toast"
 
 export default function DeclaracaoPage() {
   const params = useParams()
@@ -21,6 +23,24 @@ export default function DeclaracaoPage() {
       return response.json()
     }
   })
+
+  const { mutate, isPending } = useMutation({
+    mutationFn: async () => {
+      const res = await request(`/api/public/declaracoes/${id}`, {
+        method: "DELETE"
+      })
+      return res.json()
+    },
+    onSuccess: () => {
+      toast.success("Declaração excluída com sucesso!")
+      window.location.href = "/declaracoes"
+    },
+    onError: () => {
+      toast.error("Erro ao excluir declaração")
+    }
+  })
+
+  console.log(data)
 
   const [showModal, setShowModal] = useState(false)
 
@@ -37,8 +57,10 @@ export default function DeclaracaoPage() {
   }
 
   const [currentTab, setCurrentTab] = useState<
-    "museologico" | "bibliografico" | "arquivistico"
+    "museologico" | "bibliografico" | "arquivistico" | "timeline"
   >(getDefaultTab())
+
+  const [modalAberta, setModalAberta] = useState(false)
 
   return (
     <DefaultLayout>
@@ -90,6 +112,10 @@ export default function DeclaracaoPage() {
             />
           </>
         )}
+
+        <a href="#" className="text-xl" onClick={() => setModalAberta(true)}>
+          <i className="fas fa-trash" aria-hidden="true"></i> Excluir
+        </a>
       </div>
       <div className="flex gap-10 text-lg mt-5">
         <span>
@@ -166,6 +192,17 @@ export default function DeclaracaoPage() {
                   </button>
                 </li>
               )}
+            <li
+              className={clsx(
+                "tab-item",
+                currentTab === "timeline" && "is-active"
+              )}
+              title="Timeline"
+            >
+              <button type="button" onClick={() => setCurrentTab("timeline")}>
+                <span className="name">Timeline</span>
+              </button>
+            </li>
           </ul>
         </nav>
         <div className="tab-content">
@@ -268,8 +305,101 @@ export default function DeclaracaoPage() {
                 />
               </div>
             )}
+          <div
+            className={clsx("tab-panel", currentTab === "timeline" && "active")}
+          >
+            <nav
+              className="br-step vertical"
+              data-initial="1"
+              data-label="right"
+              role="none"
+            >
+              <div
+                className="step-progress"
+                role="listbox"
+                aria-orientation="vertical"
+                aria-label="Lista de Opções"
+              >
+                {(data.status === "Em conformidade" ||
+                  data.status === "Não conformidade") && (
+                  <div className="step-progress-btn active">
+                    <span className="step-info">
+                      Análise finalizada em{" "}
+                      {format(data.dataFimAnalise, "dd/MM/yyyy 'às' HH:mm")}
+                    </span>
+                  </div>
+                )}
+                {data.status === "Em analíse" && (
+                  <button className="step-progress-btn" disabled>
+                    <span className="step-info text-left opacity-50">
+                      Aguardando finalização da análise
+                    </span>
+                  </button>
+                )}
+                {data.status === "Recebida" ? (
+                  <button className="step-progress-btn" disabled>
+                    <span className="step-info text-left opacity-50">
+                      Aguardando inicio da análise
+                    </span>
+                  </button>
+                ) : (
+                  <div
+                    className={clsx(
+                      "step-progress-btn",
+                      data.status === "Em análise" && "active"
+                    )}
+                  >
+                    <span className="step-info">
+                      Análise iniciada
+                      <br /> Por {data.responsavelAnaliseNome} em{" "}
+                      {format(data.dataAnalise, "dd/MM/yyyy 'às' HH:mm")}
+                    </span>
+                  </div>
+                )}
+                <div
+                  className={clsx(
+                    "step-progress-btn",
+                    data.status === "Recebida" && "active"
+                  )}
+                >
+                  <span className="step-info">
+                    Declaração enviada
+                    <br /> Por {data.responsavelEnvioNome} em{" "}
+                    {format(data.dataCriacao, "dd/MM/yyyy 'às' HH:mm")}
+                  </span>
+                </div>
+              </div>
+            </nav>
+          </div>
         </div>
       </div>
+      <Modal
+        useScrim
+        showCloseButton
+        modalOpened={modalAberta}
+        onCloseButtonClick={() => setModalAberta(false)}
+      >
+        <Modal.Body className="text-center">
+          <i className="fas fa-exclamation-triangle text-danger fa-3x"></i>
+          <h5 className="normal-case">
+            Tem certeza que deseja excluir esta declaração?
+          </h5>
+        </Modal.Body>
+        <Modal.Footer justify-content="end">
+          <Button secondary small m={2} onClick={() => setModalAberta(false)}>
+            Cancelar
+          </Button>
+          <Button
+            primary
+            small
+            m={2}
+            loading={isPending}
+            onClick={() => mutate()}
+          >
+            Confirmar
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </DefaultLayout>
   )
 }

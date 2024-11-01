@@ -112,6 +112,7 @@ const NovoDeclaracaoPage = () => {
       <Uploader
         onChangeAno={setAno}
         onChangeMuseu={setMuseu}
+        anoDeclaracao={ano}
         onSubmit={(data) => mutate(data)}
         isLoading={isPending || isLoading}
         museus={museus}
