@@ -57,15 +57,9 @@ const Header: React.FC = () => {
                   role="menu"
                   aria-labelledby="avatar-dropdown-trigger"
                 >
-                  {/* <a className="br-item" href="#(0)" role="menuitem">
-                    Dados pessoais
-                  </a> */}
                   <button className="br-item" onClick={logout} role="menuitem">
                     Sair
                   </button>
-                  {/* <a className="br-item" href="#(0)" role="menuitem">
-                    Notificações
-                  </a> */}
                 </div>
               </div>
             </div>
