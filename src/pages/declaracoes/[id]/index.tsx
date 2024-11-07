@@ -1,4 +1,4 @@
-import { useMutation, useSuspenseQuery } from "@tanstack/react-query"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import clsx from "clsx"
 import { format } from "date-fns"
 import { useState } from "react"
@@ -9,8 +9,6 @@ import TableItens from "../../../components/TableItens"
 import DefaultLayout from "../../../layouts/default"
 import { getColorStatus } from "../../../utils/colorStatus"
 import request from "../../../utils/request"
-import { Button, Modal } from "react-dsgov"
-import toast from "react-hot-toast"
 
 export default function DeclaracaoPage() {
   const params = useParams()
@@ -23,24 +21,6 @@ export default function DeclaracaoPage() {
       return response.json()
     }
   })
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: async () => {
-      const res = await request(`/api/public/declaracoes/${id}`, {
-        method: "DELETE"
-      })
-      return res.json()
-    },
-    onSuccess: () => {
-      toast.success("Declaração excluída com sucesso!")
-      window.location.href = "/declaracoes"
-    },
-    onError: () => {
-      toast.error("Erro ao excluir declaração")
-    }
-  })
-
-  console.log(data)
 
   const [showModal, setShowModal] = useState(false)
 
@@ -59,8 +39,6 @@ export default function DeclaracaoPage() {
   const [currentTab, setCurrentTab] = useState<
     "museologico" | "bibliografico" | "arquivistico" | "timeline"
   >(getDefaultTab())
-
-  const [modalAberta, setModalAberta] = useState(false)
 
   return (
     <DefaultLayout>
@@ -112,10 +90,6 @@ export default function DeclaracaoPage() {
             />
           </>
         )}
-
-        <a href="#" className="text-xl" onClick={() => setModalAberta(true)}>
-          <i className="fas fa-trash" aria-hidden="true"></i> Excluir
-        </a>
       </div>
       <div className="flex gap-10 text-lg mt-5">
         <span>
@@ -329,7 +303,7 @@ export default function DeclaracaoPage() {
                     </span>
                   </div>
                 )}
-                {data.status === "Em analíse" && (
+                {data.status === "Em análise" && (
                   <button className="step-progress-btn" disabled>
                     <span className="step-info text-left opacity-50">
                       Aguardando finalização da análise
@@ -373,33 +347,6 @@ export default function DeclaracaoPage() {
           </div>
         </div>
       </div>
-      <Modal
-        useScrim
-        showCloseButton
-        modalOpened={modalAberta}
-        onCloseButtonClick={() => setModalAberta(false)}
-      >
-        <Modal.Body className="text-center">
-          <i className="fas fa-exclamation-triangle text-danger fa-3x"></i>
-          <h5 className="normal-case">
-            Tem certeza que deseja excluir esta declaração?
-          </h5>
-        </Modal.Body>
-        <Modal.Footer justify-content="end">
-          <Button secondary small m={2} onClick={() => setModalAberta(false)}>
-            Cancelar
-          </Button>
-          <Button
-            primary
-            small
-            m={2}
-            loading={isPending}
-            onClick={() => mutate()}
-          >
-            Confirmar
-          </Button>
-        </Modal.Footer>
-      </Modal>
     </DefaultLayout>
   )
 }
