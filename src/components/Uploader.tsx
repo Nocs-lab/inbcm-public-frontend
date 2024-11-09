@@ -42,6 +42,7 @@ const Uploader: React.FC<{
   museus: { _id: string; nome: string }[]
   anoDeclaracao: string
   isRetificar?: boolean
+  isExcluded?: string
   isExist?: boolean
   onSubmit: (data: FormValues) => void
   isLoading: boolean
@@ -52,6 +53,7 @@ const Uploader: React.FC<{
   museus,
   anoDeclaracao,
   isRetificar,
+  isExcluded,
   onSubmit,
   isLoading,
   disabled = false,
@@ -232,6 +234,10 @@ const Uploader: React.FC<{
       )
     }
   }, [arquivistico])
+
+  console.log(" declaracao existe? ", isExist)
+  console.log(" status da declaracao: ", isExcluded)
+  console.log(" isRetificar? ", isRetificar)
 
   const navigate = useNavigate()
 
@@ -454,7 +460,9 @@ const Uploader: React.FC<{
           )}
         </div>
         <div className="flex space-x-4">
-          {!isExist && (
+          {((isExist === true && isExcluded === "Excluída") ||
+            (isExist === true && isRetificar) ||
+            isExist === false) && (
             <button
               type="submit"
               className={clsx(

@@ -33,6 +33,8 @@ export default function RetificarDeclaracao() {
     ]
   })
 
+  const isExist = declaracao !== null
+
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: {
       museologico: FileList
@@ -103,6 +105,7 @@ export default function RetificarDeclaracao() {
         museus={museus}
         anoDeclaracao={declaracao.anoDeclaracao}
         isRetificar={true}
+        isExist={isExist}
       />
     </DefaultLayout>
   )

@@ -38,7 +38,15 @@ const NovoDeclaracaoPage = () => {
     }
   })
 
-  const retificacao = declaracao !== null
+  console.log(declaracao)
+
+  const isExist = declaracao !== null
+  const isRetificar = declaracao?.retificacao
+  const isExcluded = declaracao?.status
+
+  console.log(isRetificar)
+  console.log(isExcluded)
+  console.log("Status da declaração:", declaracao?.status)
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: {
@@ -83,7 +91,7 @@ const NovoDeclaracaoPage = () => {
         Voltar
       </Link>
       <h2>Nova declaração</h2>
-      {retificacao && (
+      {isExist && (
         <div className="br-message warning">
           <div className="icon">
             <i className="fas fa-warning fa-lg" aria-hidden="true"></i>
@@ -94,17 +102,18 @@ const NovoDeclaracaoPage = () => {
             role="alert"
           >
             <span className="message-title">
-              Já foi enviada uma declaração de ajuste para o ano {ano}.{" "}
+              Já foi enviada uma declaração para o ano {ano}.{" "}
             </span>
             <span className="message-body">
               Para baixar o recibo correspondente,{" "}
               <a href={`/api/public/recibo/${declaracao?._id}`}>clique aqui</a>.
-              Caso deseje fazer alguma alteração, você deve enviar uma
+              Caso deseje fazer alguma alteração, você pode enviar uma
               declaração retificadora{" "}
               <Link to={`/declaracoes/${declaracao?._id}/retificar`}>
                 clicando aqui
               </Link>
-              .
+              , ou excluir a declaração do museu e ano referente dependendo do
+              nível de alteração.
             </span>
           </div>
         </div>
@@ -116,7 +125,8 @@ const NovoDeclaracaoPage = () => {
         onSubmit={(data) => mutate(data)}
         isLoading={isPending || isLoading}
         museus={museus}
-        isExist={retificacao}
+        isExist={isExist}
+        isExcluded={isExcluded}
       />
     </DefaultLayout>
   )
