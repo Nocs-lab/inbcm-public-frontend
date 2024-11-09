@@ -118,8 +118,13 @@ const Uploader: React.FC<{
   const [isValidating, setIsValidating] = useState(false)
 
   const [museologicoErrors, setMuseologicoErrors] = useState<string[]>([])
+  //const [museologicoFields, setMuseologicoFields] = useState<string[]>([])
+
   const [bibliograficoErrors, setBibliograficoErrors] = useState<string[]>([])
+  //const [bibliograficoFields, setBibliograficoFields] = useState<string[]>([])
+
   const [arquivisticoErrors, setArquivisticoErrors] = useState<string[]>([])
+  //const [arquivisticoFields, setArquivisticoFields] = useState<string[]>([])
 
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -161,6 +166,7 @@ const Uploader: React.FC<{
             }) => {
               if (result.errors.length > 0) {
                 setMuseologicoErrors(result.errors as string[])
+                //setMuseologicoFields(result.data as string[])
                 setShowMessage({
                   show: true,
                   type: "museológico"
@@ -177,6 +183,8 @@ const Uploader: React.FC<{
       )
     }
   }, [museologico])
+
+  //console.log(museologicoFields)
 
   useEffect(() => {
     if (bibliografico?.length) {
@@ -234,10 +242,6 @@ const Uploader: React.FC<{
       )
     }
   }, [arquivistico])
-
-  console.log(" declaracao existe? ", isExist)
-  console.log(" status da declaracao: ", isExcluded)
-  console.log(" isRetificar? ", isRetificar)
 
   const navigate = useNavigate()
 

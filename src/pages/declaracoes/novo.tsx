@@ -91,7 +91,7 @@ const NovoDeclaracaoPage = () => {
         Voltar
       </Link>
       <h2>Nova declaração</h2>
-      {isExist && (
+      {isExist && isExcluded !== "Excluída" && (
         <div className="br-message warning">
           <div className="icon">
             <i className="fas fa-warning fa-lg" aria-hidden="true"></i>
