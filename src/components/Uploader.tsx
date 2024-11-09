@@ -2,7 +2,7 @@ import { z } from "zod"
 import { Controller, FieldError, useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Select, Button } from "react-dsgov"
+import { Select, Button, Modal } from "react-dsgov"
 import Input from "../components/Input"
 import clsx from "clsx"
 import { useEffect, useState } from "react"
@@ -245,6 +245,12 @@ const Uploader: React.FC<{
     navigate("/")
   }
 
+  const [modalAberto, setModalAberto] = useState(false)
+
+  const handleSendClick = () => {
+    setModalAberto(false)
+  }
+
   return (
     <>
       <MismatchsModal
@@ -459,12 +465,44 @@ const Uploader: React.FC<{
             />
           )}
         </div>
+        <Modal
+          useScrim
+          showCloseButton
+          title="Enviar Declaração"
+          modalOpened={modalAberto}
+          onCloseButtonClick={() => setModalAberto(false)}
+        >
+          <Modal.Body>
+            {" "}
+            Tem certeza que deseja enviar esta declaração?{" "}
+          </Modal.Body>
+          <Modal.Footer justify-content="end">
+            <Button
+              primary
+              small
+              m={2}
+              loading={isLoading} // ajuste conforme necessário
+              onClick={handleSendClick}
+            >
+              Confirmar
+            </Button>
+            <Button
+              secondary
+              small
+              m={2}
+              onClick={() => setModalAberto(false)}
+              disabled={isLoading}
+            >
+              Cancelar
+            </Button>
+          </Modal.Footer>
+        </Modal>
         <div className="flex space-x-4">
           {((isExist === true && isExcluded === "Excluída") ||
             (isExist === true && isRetificar) ||
             isExist === false) && (
             <button
-              type="submit"
+              type="button"
               className={clsx(
                 "br-button primary mt-5",
                 isValidating || (isLoading && "loading")
@@ -475,6 +513,7 @@ const Uploader: React.FC<{
                 isValidating ||
                 disabled
               }
+              onClick={() => setModalAberto(true)}
             >
               Enviar
             </button>
