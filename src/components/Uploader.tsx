@@ -118,13 +118,13 @@ const Uploader: React.FC<{
   const [isValidating, setIsValidating] = useState(false)
 
   const [museologicoErrors, setMuseologicoErrors] = useState<string[]>([])
-  //const [museologicoFields, setMuseologicoFields] = useState<string[]>([])
+  const [museologicoFields, setMuseologicoFields] = useState<string[]>([])
 
   const [bibliograficoErrors, setBibliograficoErrors] = useState<string[]>([])
-  //const [bibliograficoFields, setBibliograficoFields] = useState<string[]>([])
+  const [bibliograficoFields, setBibliograficoFields] = useState<string[]>([])
 
   const [arquivisticoErrors, setArquivisticoErrors] = useState<string[]>([])
-  //const [arquivisticoFields, setArquivisticoFields] = useState<string[]>([])
+  const [arquivisticoFields, setArquivisticoFields] = useState<string[]>([])
 
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -166,7 +166,7 @@ const Uploader: React.FC<{
             }) => {
               if (result.errors.length > 0) {
                 setMuseologicoErrors(result.errors as string[])
-                //setMuseologicoFields(result.data as string[])
+                setMuseologicoFields(result.data as string[])
                 setShowMessage({
                   show: true,
                   type: "museológico"
@@ -184,7 +184,7 @@ const Uploader: React.FC<{
     }
   }, [museologico])
 
-  //console.log(museologicoFields)
+  console.log(museologicoFields.length)
 
   useEffect(() => {
     if (bibliografico?.length) {
@@ -198,6 +198,7 @@ const Uploader: React.FC<{
             }) => {
               if (result.errors.length > 0) {
                 setBibliograficoErrors(result.errors as string[])
+                setBibliograficoFields(result.data as string[])
                 setShowMessage({
                   show: true,
                   type: "bibliográfico"
@@ -215,6 +216,8 @@ const Uploader: React.FC<{
     }
   }, [bibliografico])
 
+  console.log(bibliograficoFields.length)
+
   useEffect(() => {
     if (arquivistico?.length) {
       setIsValidating(true)
@@ -226,6 +229,7 @@ const Uploader: React.FC<{
             }) => {
               if (result.errors.length > 0) {
                 setArquivisticoErrors(result.errors as string[])
+                setArquivisticoFields(result.data as string[])
                 setShowMessage({
                   show: true,
                   type: "arquivístico"
@@ -242,6 +246,8 @@ const Uploader: React.FC<{
       )
     }
   }, [arquivistico])
+
+  console.log(arquivisticoFields.length)
 
   const navigate = useNavigate()
 
@@ -472,20 +478,43 @@ const Uploader: React.FC<{
         <Modal
           useScrim
           showCloseButton
-          title="Enviar Declaração"
+          title="Confirmar envio da declaração"
           modalOpened={modalAberto}
           onCloseButtonClick={() => setModalAberto(false)}
         >
           <Modal.Body>
-            {" "}
-            Tem certeza que deseja enviar esta declaração?{" "}
+            <p>Verifique a quantidade de itens por acervo</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Tipo de Acervo</th>
+                  <th>Quantidade de itens</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Museológico</td>
+                  <td>{museologicoFields.length}</td>
+                </tr>
+                <tr>
+                  <td>Bibliográfico</td>
+                  <td>{bibliograficoFields.length}</td>
+                </tr>
+                <tr>
+                  <td>Arquivístico</td>
+                  <td>{arquivisticoFields.length}</td>
+                </tr>
+              </tbody>
+            </table>
           </Modal.Body>
-          <Modal.Footer justify-content="end">
+
+          <Modal.Footer justify-content="center">
+            <p>Tem certeza que deseja enviar esta declaração?</p>
             <Button
               primary
               small
               m={2}
-              loading={isLoading} // ajuste conforme necessário
+              loading={isLoading}
               onClick={handleSendClick}
             >
               Confirmar
@@ -494,13 +523,17 @@ const Uploader: React.FC<{
               secondary
               small
               m={2}
-              onClick={() => setModalAberto(false)}
+              onClick={(e) => {
+                e.preventDefault()
+                setModalAberto(false)
+              }}
               disabled={isLoading}
             >
               Cancelar
             </Button>
           </Modal.Footer>
         </Modal>
+
         <div className="flex space-x-4">
           {((isExist === true && isExcluded === "Excluída") ||
             (isExist === true && isRetificar) ||
