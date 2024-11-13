@@ -1,122 +1,10 @@
-import {
-  useMutation,
-  useQueryClient,
-  useSuspenseQuery
-} from "@tanstack/react-query"
-import {
-  CellContext,
-  type ColumnDef,
-  createColumnHelper
-} from "@tanstack/react-table"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { Link } from "react-router-dom"
 import Table from "../components/Table"
 import DefaultLayout from "../layouts/default"
 import request from "../utils/request"
-import { useState } from "react"
-import { Button, Modal } from "react-dsgov"
-import toast from "react-hot-toast"
-
-const Acoes = ({
-  info
-}: {
-  info: CellContext<
-    {
-      _id: string
-      dataCriacao: Date
-      anoDeclaracao: string
-      retificacao: boolean
-      museu_id: {
-        _id: string
-        nome: string
-      }
-      responsavelEnvio: {
-        nome: string
-      }
-      status: string
-      museologico: {
-        status: string
-        pendencias: string[]
-      }
-      bibliografico: {
-        status: string
-        pendencias: string[]
-      }
-      arquivistico: {
-        status: string
-        pendencias: string[]
-      }
-      refificacao: boolean
-    },
-    string
-  >
-}) => {
-  const [modalAberta, setModalAberta] = useState(false)
-  const queryClient = useQueryClient()
-
-  const { mutate, isPending } = useMutation({
-    mutationFn: async () => {
-      return await request(`/api/public/declaracoes/${info.getValue()}`, {
-        method: "DELETE"
-      })
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["declaracoes"] })
-      toast.success("Declaração excluída com sucesso!")
-    },
-    onError: () => {
-      toast.error("Erro ao excluir declaração")
-    }
-  })
-
-  return (
-    <div className="flex gap-2">
-      <Link to={`/declaracoes/${info.getValue()}`} className="br-link">
-        <i className="fas fa-eye" aria-hidden="true"></i> Exibir
-      </Link>
-      <button
-        className="br-link text-[#1351B9] hover:bg-blue-200"
-        onClick={() => setModalAberta(true)}
-        disabled={
-          info.row.original.retificacao ||
-          info.row.original.status !== "Recebida"
-        }
-      >
-        <i className="fas fa-trash" aria-hidden="true"></i> Excluir
-      </button>
-      <Modal
-        useScrim
-        showCloseButton
-        modalOpened={modalAberta}
-        onCloseButtonClick={() => setModalAberta(false)}
-      >
-        <Modal.Body className="text-center">
-          <i className="fas fa-exclamation-triangle text-danger fa-3x"></i>
-          <h5 className="normal-case">
-            Tem certeza que deseja excluir a declaração{" "}
-            {info.row.original.retificacao ? "retificadora" : "original"} de{" "}
-            {info.row.original.anoDeclaracao} do museu{" "}
-            {info.row.original.museu_id.nome}?
-          </h5>
-        </Modal.Body>
-        <Modal.Footer justify-content="end">
-          <Button secondary small m={2} onClick={() => setModalAberta(false)}>
-            Cancelar
-          </Button>
-          <Button
-            primary
-            small
-            m={2}
-            loading={isPending}
-            onClick={() => mutate()}
-          >
-            Confirmar
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </div>
-  )
-}
 
 const columnHelper = createColumnHelper<{
   _id: string
@@ -177,7 +65,11 @@ const columns = [
     header: "Ações",
     enableColumnFilter: false,
     enableSorting: false,
-    cell: (info) => <Acoes info={info} />
+    cell: (info) => (
+      <Link to={`/declaracoes/${info.getValue()}`} className="br-link">
+        <i className="fas fa-eye" aria-hidden="true"></i> Exibir
+      </Link>
+    )
   })
 ]
 

@@ -1,18 +1,47 @@
-import { useSuspenseQuery } from "@tanstack/react-query"
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery
+} from "@tanstack/react-query"
 import clsx from "clsx"
 import { format } from "date-fns"
 import { useState } from "react"
-import { useParams } from "react-router"
+import { useNavigate, useParams } from "react-router"
 import { Link } from "react-router-dom"
 import MismatchsModal from "../../../components/MismatchsModal"
 import TableItens from "../../../components/TableItens"
 import DefaultLayout from "../../../layouts/default"
 import { getColorStatus } from "../../../utils/colorStatus"
 import request from "../../../utils/request"
+import toast from "react-hot-toast"
+import { Button, Modal } from "react-dsgov"
 
 export default function DeclaracaoPage() {
   const params = useParams()
   const id = params.id!
+
+  const navigate = useNavigate()
+
+  const [modalTimelineAberta, setModalTimelineAberta] = useState(false)
+
+  const [modalExcluirAberta, setModalExcluirAberta] = useState(false)
+  const queryClient = useQueryClient()
+
+  const { mutate: deleteDeclaration, isPending: deletingDeclaration } =
+    useMutation({
+      mutationFn: async () => {
+        return await request(`/api/public/declaracoes/${id}`, {
+          method: "DELETE"
+        })
+      },
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: ["declaracoes"] })
+        toast.success("Declaração excluída com sucesso!")
+      },
+      onError: () => {
+        toast.error("Erro ao excluir declaração")
+      }
+    })
 
   const { data } = useSuspenseQuery({
     queryKey: ["declaracao", id],
@@ -90,6 +119,136 @@ export default function DeclaracaoPage() {
             />
           </>
         )}
+        <a
+          className="br-link text-[#1351B9] hover:bg-blue-200 text-xl"
+          href="#"
+          onClick={() => setModalTimelineAberta(true)}
+        >
+          <i className="fas fa-timeline" aria-hidden="true"></i> Histórico
+        </a>
+        <Modal
+          useScrim
+          showCloseButton
+          modalOpened={modalTimelineAberta}
+          onCloseButtonClick={() => setModalTimelineAberta(false)}
+        >
+          <Modal.Body className="text-center">
+            <span className="font-bold text-lg text-left">Histórico</span>
+            <nav
+              className="br-step vertical"
+              data-initial="1"
+              data-label="right"
+              role="none"
+            >
+              <div
+                className="step-progress"
+                role="listbox"
+                aria-orientation="vertical"
+                aria-label="Lista de Opções"
+              >
+                {(data.status === "Em conformidade" ||
+                  data.status === "Não conformidade") && (
+                  <div className="step-progress-btn active">
+                    <span className="step-info text-left">
+                      Análise finalizada em{" "}
+                      {format(data.dataFimAnalise, "dd/MM/yyyy 'às' HH:mm")}
+                    </span>
+                  </div>
+                )}
+                {data.status === "Em análise" && (
+                  <button className="step-progress-btn" disabled>
+                    <span className="step-info text-left opacity-50">
+                      Aguardando finalização da análise
+                    </span>
+                  </button>
+                )}
+                {data.status === "Recebida" ? (
+                  <button className="step-progress-btn" disabled>
+                    <span className="step-info text-left opacity-50">
+                      Aguardando inicio da análise
+                    </span>
+                  </button>
+                ) : (
+                  <div
+                    className={clsx(
+                      "step-progress-btn",
+                      data.status === "Em análise" && "active"
+                    )}
+                  >
+                    <span className="step-info text-left">
+                      Análise iniciada
+                      <br /> Por {data.responsavelAnaliseNome} em{" "}
+                      {format(data.dataEnvioAnalise, "dd/MM/yyyy 'às' HH:mm")}
+                    </span>
+                  </div>
+                )}
+                <div
+                  className={clsx(
+                    "step-progress-btn",
+                    data.status === "Recebida" && "active"
+                  )}
+                >
+                  <span className="step-info text-left">
+                    Declaração enviada
+                    <br /> Por {data.responsavelEnvioNome} em{" "}
+                    {format(data.dataCriacao, "dd/MM/yyyy 'às' HH:mm")}
+                  </span>
+                </div>
+              </div>
+            </nav>
+          </Modal.Body>
+          <Modal.Footer justify-content="end">
+            <Button
+              primary
+              small
+              m={2}
+              onClick={() => navigate(`/declaracoes/${id}/timeline`)}
+            >
+              Detalhar
+            </Button>
+          </Modal.Footer>
+        </Modal>
+        <a
+          className="br-link text-[#1351B9] hover:bg-blue-200 text-xl"
+          href="#"
+          onClick={() => setModalExcluirAberta(true)}
+        >
+          <i className="fas fa-trash" aria-hidden="true"></i> Excluir
+        </a>
+        <Modal
+          useScrim
+          showCloseButton
+          modalOpened={modalExcluirAberta}
+          onCloseButtonClick={() => setModalExcluirAberta(false)}
+        >
+          <Modal.Body className="text-center">
+            <i className="fas fa-exclamation-triangle text-danger fa-3x"></i>
+            <h5 className="normal-case">
+              Tem certeza que deseja excluir a declaração{" "}
+              {data.retificacao ? "retificadora" : "original"} de{" "}
+              {data.anoDeclaracao} do museu {data.museu_id.nome}?
+            </h5>
+          </Modal.Body>
+          <Modal.Footer justify-content="end">
+            <Button
+              secondary
+              small
+              m={2}
+              onClick={() => setModalExcluirAberta(false)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              primary
+              small
+              m={2}
+              loading={deletingDeclaration}
+              onClick={() => deleteDeclaration()}
+            >
+              Confirmar
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
       <div className="flex gap-10 text-lg mt-5">
         <span>
@@ -166,17 +325,6 @@ export default function DeclaracaoPage() {
                   </button>
                 </li>
               )}
-            <li
-              className={clsx(
-                "tab-item",
-                currentTab === "timeline" && "is-active"
-              )}
-              title="Timeline"
-            >
-              <button type="button" onClick={() => setCurrentTab("timeline")}>
-                <span className="name">Timeline</span>
-              </button>
-            </li>
           </ul>
         </nav>
         <div className="tab-content">
@@ -279,72 +427,6 @@ export default function DeclaracaoPage() {
                 />
               </div>
             )}
-          <div
-            className={clsx("tab-panel", currentTab === "timeline" && "active")}
-          >
-            <nav
-              className="br-step vertical"
-              data-initial="1"
-              data-label="right"
-              role="none"
-            >
-              <div
-                className="step-progress"
-                role="listbox"
-                aria-orientation="vertical"
-                aria-label="Lista de Opções"
-              >
-                {(data.status === "Em conformidade" ||
-                  data.status === "Não conformidade") && (
-                  <div className="step-progress-btn active">
-                    <span className="step-info">
-                      Análise finalizada em{" "}
-                      {format(data.dataFimAnalise, "dd/MM/yyyy 'às' HH:mm")}
-                    </span>
-                  </div>
-                )}
-                {data.status === "Em análise" && (
-                  <button className="step-progress-btn" disabled>
-                    <span className="step-info text-left opacity-50">
-                      Aguardando finalização da análise
-                    </span>
-                  </button>
-                )}
-                {data.status === "Recebida" ? (
-                  <button className="step-progress-btn" disabled>
-                    <span className="step-info text-left opacity-50">
-                      Aguardando inicio da análise
-                    </span>
-                  </button>
-                ) : (
-                  <div
-                    className={clsx(
-                      "step-progress-btn",
-                      data.status === "Em análise" && "active"
-                    )}
-                  >
-                    <span className="step-info">
-                      Análise iniciada
-                      <br /> Por {data.responsavelAnaliseNome} em{" "}
-                      {format(data.dataAnalise, "dd/MM/yyyy 'às' HH:mm")}
-                    </span>
-                  </div>
-                )}
-                <div
-                  className={clsx(
-                    "step-progress-btn",
-                    data.status === "Recebida" && "active"
-                  )}
-                >
-                  <span className="step-info">
-                    Declaração enviada
-                    <br /> Por {data.responsavelEnvioNome} em{" "}
-                    {format(data.dataCriacao, "dd/MM/yyyy 'às' HH:mm")}
-                  </span>
-                </div>
-              </div>
-            </nav>
-          </div>
         </div>
       </div>
     </DefaultLayout>
