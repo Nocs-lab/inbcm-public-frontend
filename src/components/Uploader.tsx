@@ -2,7 +2,7 @@ import { z } from "zod"
 import { Controller, FieldError, useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Select, Button } from "react-dsgov"
+import { Select, Button, Modal } from "react-dsgov"
 import Input from "../components/Input"
 import clsx from "clsx"
 import { useEffect, useState } from "react"
@@ -42,6 +42,7 @@ const Uploader: React.FC<{
   museus: { _id: string; nome: string }[]
   anoDeclaracao: string
   isRetificar?: boolean
+  isExcluded?: string
   isExist?: boolean
   onSubmit: (data: FormValues) => void
   isLoading: boolean
@@ -52,6 +53,7 @@ const Uploader: React.FC<{
   museus,
   anoDeclaracao,
   isRetificar,
+  isExcluded,
   onSubmit,
   isLoading,
   disabled = false,
@@ -116,8 +118,13 @@ const Uploader: React.FC<{
   const [isValidating, setIsValidating] = useState(false)
 
   const [museologicoErrors, setMuseologicoErrors] = useState<string[]>([])
+  const [museologicoFields, setMuseologicoFields] = useState<string[]>([])
+
   const [bibliograficoErrors, setBibliograficoErrors] = useState<string[]>([])
+  const [bibliograficoFields, setBibliograficoFields] = useState<string[]>([])
+
   const [arquivisticoErrors, setArquivisticoErrors] = useState<string[]>([])
+  const [arquivisticoFields, setArquivisticoFields] = useState<string[]>([])
 
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -159,6 +166,7 @@ const Uploader: React.FC<{
             }) => {
               if (result.errors.length > 0) {
                 setMuseologicoErrors(result.errors as string[])
+                setMuseologicoFields(result.data as string[])
                 setShowMessage({
                   show: true,
                   type: "museológico"
@@ -176,6 +184,8 @@ const Uploader: React.FC<{
     }
   }, [museologico])
 
+  console.log(museologicoFields.length)
+
   useEffect(() => {
     if (bibliografico?.length) {
       setIsValidating(true)
@@ -188,6 +198,7 @@ const Uploader: React.FC<{
             }) => {
               if (result.errors.length > 0) {
                 setBibliograficoErrors(result.errors as string[])
+                setBibliograficoFields(result.data as string[])
                 setShowMessage({
                   show: true,
                   type: "bibliográfico"
@@ -205,6 +216,8 @@ const Uploader: React.FC<{
     }
   }, [bibliografico])
 
+  console.log(bibliograficoFields.length)
+
   useEffect(() => {
     if (arquivistico?.length) {
       setIsValidating(true)
@@ -216,6 +229,7 @@ const Uploader: React.FC<{
             }) => {
               if (result.errors.length > 0) {
                 setArquivisticoErrors(result.errors as string[])
+                setArquivisticoFields(result.data as string[])
                 setShowMessage({
                   show: true,
                   type: "arquivístico"
@@ -233,10 +247,18 @@ const Uploader: React.FC<{
     }
   }, [arquivistico])
 
+  console.log(arquivisticoFields.length)
+
   const navigate = useNavigate()
 
   const handleCancelClick = () => {
     navigate("/")
+  }
+
+  const [modalAberto, setModalAberto] = useState(false)
+
+  const handleSendClick = () => {
+    setModalAberto(false)
   }
 
   return (
@@ -453,10 +475,71 @@ const Uploader: React.FC<{
             />
           )}
         </div>
+        <Modal
+          useScrim
+          showCloseButton
+          title="Confirmar envio da declaração"
+          modalOpened={modalAberto}
+          onCloseButtonClick={() => setModalAberto(false)}
+        >
+          <Modal.Body>
+            <p>Verifique a quantidade de itens por acervo</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Tipo de Acervo</th>
+                  <th>Quantidade de itens</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Museológico</td>
+                  <td>{museologicoFields.length}</td>
+                </tr>
+                <tr>
+                  <td>Bibliográfico</td>
+                  <td>{bibliograficoFields.length}</td>
+                </tr>
+                <tr>
+                  <td>Arquivístico</td>
+                  <td>{arquivisticoFields.length}</td>
+                </tr>
+              </tbody>
+            </table>
+          </Modal.Body>
+
+          <Modal.Footer justify-content="center">
+            <p>Tem certeza que deseja enviar esta declaração?</p>
+            <Button
+              primary
+              small
+              m={2}
+              loading={isLoading}
+              onClick={handleSendClick}
+            >
+              Confirmar
+            </Button>
+            <Button
+              secondary
+              small
+              m={2}
+              onClick={(e) => {
+                e.preventDefault()
+                setModalAberto(false)
+              }}
+              disabled={isLoading}
+            >
+              Cancelar
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
         <div className="flex space-x-4">
-          {!isExist && (
+          {((isExist === true && isExcluded === "Excluída") ||
+            (isExist === true && isRetificar) ||
+            isExist === false) && (
             <button
-              type="submit"
+              type="button"
               className={clsx(
                 "br-button primary mt-5",
                 isValidating || (isLoading && "loading")
@@ -467,6 +550,7 @@ const Uploader: React.FC<{
                 isValidating ||
                 disabled
               }
+              onClick={() => setModalAberto(true)}
             >
               Enviar
             </button>
