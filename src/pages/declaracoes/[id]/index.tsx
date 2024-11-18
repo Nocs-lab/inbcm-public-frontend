@@ -347,7 +347,7 @@ export default function DeclaracaoPage() {
                     </span>
                   </span>
                   <a
-                    href={`/api/public/download/${data.museu_id._id}/${data.anoDeclaracao}/museologico`}
+                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao}/museologico`}
                     className="mb-2"
                   >
                     <i className="fas fa-download" aria-hidden="true"></i>{" "}
@@ -380,7 +380,7 @@ export default function DeclaracaoPage() {
                     </span>
                   </span>
                   <a
-                    href={`/api/public/download/${data.museu_id._id}/${data.anoDeclaracao}/bibliografico`}
+                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao}/bibliografico`}
                     className="mb-2"
                   >
                     <i className="fas fa-download" aria-hidden="true"></i>{" "}
@@ -413,7 +413,7 @@ export default function DeclaracaoPage() {
                     </span>
                   </span>
                   <a
-                    href={`/api/public/download/${data.museu_id._id}/${data.anoDeclaracao}/arquivistico`}
+                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao}/arquivistico`}
                     className="mb-2"
                   >
                     <i className="fas fa-download" aria-hidden="true"></i>{" "}

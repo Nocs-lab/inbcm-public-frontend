@@ -4,6 +4,7 @@ import { Select } from "react-dsgov"
 import { useState, useEffect } from "react"
 import { useQuery } from "@tanstack/react-query"
 import request from "../../utils/request"
+import { Link } from "react-router-dom"
 
 export default function Dashboard() {
   const [museu, setMuseu] = useState("")
@@ -46,7 +47,11 @@ export default function Dashboard() {
 
   return (
     <DefaultLayout>
-      <h1>Painel para acompanhamento de itens no acervo</h1>
+      <Link to="/" className="text-lg">
+        <i className="fas fa-arrow-left" aria-hidden="true"></i>
+        Voltar
+      </Link>
+      <h2>Painel analítico</h2>
 
       <div className="flex items-center justify-center p-3 gap-16">
         <Select
@@ -91,38 +96,79 @@ export default function Dashboard() {
       {isLoadingGrafico ? (
         <p>Carregando...</p>
       ) : error ? (
-        <p>Erro ao carregar os dados do gráfico.</p>
+        <p>Não há dados a serem exibidos com os filtros informados.</p>
       ) : (
         <Chart
           chartType="ColumnChart"
           data={[
-            ["Ano", "Museológico", "Arquivístico", "Bibliográfico"],
-            ...(dadosGrafico?.map((item) => [
+            [
+              "Ano",
+              "Museológico",
+              { role: "annotation" },
+              "Arquivístico",
+              { role: "annotation" },
+              "Bibliográfico",
+              { role: "annotation" }
+            ],
+            ...(dadosGrafico?.data?.map((item) => [
               item.anoDeclaracao,
               item.totalMuseologico,
+              item.totalMuseologico > 0 ? item.totalMuseologico.toString() : "", // Anotação para Museológico
               item.totalArquivistico,
-              item.totalBibliografico
+              item.totalArquivistico > 0
+                ? item.totalArquivistico.toString()
+                : "",
+              item.totalBibliografico,
+              item.totalBibliografico > 0
+                ? item.totalBibliografico.toString()
+                : ""
             ]) ?? [])
           ]}
           width="100%"
-          height="350px"
+          height="400px"
           legendToggle
           options={{
+            hAxis: {
+              titleTextStyle: { color: "#607d8b" },
+              gridlines: { count: 0 },
+              textStyle: {
+                color: "#78909c",
+                fontName: "Roboto",
+                fontSize: "15",
+                bold: true
+              }
+            },
+            vAxis: {
+              minValue: 0,
+              gridlines: { color: "#cfd8dc", count: 4 },
+              baselineColor: "transparent"
+            },
             legend: {
               position: "bottom",
               alignment: "center",
-              textStyle: { fontSize: "22" }
+              textStyle: {
+                color: "#607d8b",
+                fontName: "Roboto",
+                fontSize: "15"
+              }
             },
-            colors: [
-              "#3f51b5",
-              "#2196f3",
-              "#03a9f4",
-              "#00bcd4",
-              "#009688",
-              "#4caf50",
-              "#8bc34a",
-              "#cddc39"
-            ]
+            annotations: {
+              alwaysOutside: true,
+              textStyle: {
+                fontSize: 12,
+                bold: true,
+                color: "#000"
+              }
+            },
+            colors: ["#3f51b5", "#2196f3", "#33F8FF"],
+            chartArea: {
+              backgroundColor: "transparent",
+              width: "100%",
+              height: "80%"
+            },
+            bar: { groupWidth: "100" },
+            focusTarget: "category",
+            backgroundColor: "transparent"
           }}
         />
       )}
