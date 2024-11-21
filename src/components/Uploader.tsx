@@ -80,6 +80,8 @@ const Uploader: React.FC<{
       fields: []
     }
   })
+  const currentYear = new Date().getFullYear() // Obtém o ano atual
+  const anos = Array.from({ length: 10 }, (_, i) => currentYear - i) // Últimos 10 anos
 
   const [museologico, bibliografico, arquivistico, ano, museu, fields] = watch([
     "museologico",
@@ -361,12 +363,10 @@ const Uploader: React.FC<{
                 <Select
                   label="Ano"
                   className="!w-full"
-                  options={[
-                    { label: "2024", value: "2024" },
-                    { label: "2023", value: "2023" },
-                    { label: "2022", value: "2022" },
-                    { label: "2021", value: "2021" }
-                  ]}
+                  options={anos.map((ano) => ({
+                    label: String(ano),
+                    value: String(ano)
+                  }))}
                   {...field}
                 />
               ) : (
