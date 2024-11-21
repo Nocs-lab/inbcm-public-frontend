@@ -7,6 +7,8 @@ import Input from "../components/Input"
 import clsx from "clsx"
 import { useEffect, useState } from "react"
 import MismatchsModal from "../components/MismatchsModal"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import request from "../utils/request"
 import {
   validate_museologico,
   validate_bibliografico,
@@ -80,7 +82,15 @@ const Uploader: React.FC<{
       fields: []
     }
   })
-
+  // Fetch anos válidos
+  const { data: anos } = useSuspenseQuery({
+    queryKey: ["anos-validos"],
+    queryFn: async () => {
+      const res = await request("/api/public/declaracoes/anos-validos/10")
+      const data = await res.json()
+      return data.anos.sort((a: number, b: number) => b - a) // Ordena do mais recente ao mais antigo
+    }
+  })
   const [museologico, bibliografico, arquivistico, ano, museu, fields] = watch([
     "museologico",
     "bibliografico",
@@ -361,12 +371,10 @@ const Uploader: React.FC<{
                 <Select
                   label="Ano"
                   className="!w-full"
-                  options={[
-                    { label: "2024", value: "2024" },
-                    { label: "2023", value: "2023" },
-                    { label: "2022", value: "2022" },
-                    { label: "2021", value: "2021" }
-                  ]}
+                  options={anos.map((ano: number) => ({
+                    label: String(ano),
+                    value: String(ano)
+                  }))}
                   {...field}
                 />
               ) : (
