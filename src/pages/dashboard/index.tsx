@@ -7,9 +7,12 @@ import request from "../../utils/request"
 import { Link } from "react-router-dom"
 
 export default function Dashboard() {
+  const currentYear = new Date().getFullYear() // Obtém o ano atual
+  const anos = Array.from({ length: 10 }, (_, i) => currentYear - i) // Últimos 10 anos
+
   const [museu, setMuseu] = useState("")
-  const [anoInicio, setAnoInicio] = useState("2024")
-  const [anoFim, setAnoFim] = useState("2024")
+  const [anoInicio, setAnoInicio] = useState(currentYear.toString())
+  const [anoFim, setAnoFim] = useState(currentYear.toString())
 
   const { data: museus, isLoading: isLoadingMuseus } = useQuery({
     queryKey: ["museus"],
@@ -71,24 +74,20 @@ export default function Dashboard() {
         <Select
           label="Início"
           className="!w-full"
-          options={[
-            { label: "2024", value: "2024" },
-            { label: "2023", value: "2023" },
-            { label: "2022", value: "2022" },
-            { label: "2021", value: "2021" }
-          ]}
+          options={anos.map((ano) => ({
+            label: ano.toString(),
+            value: ano.toString()
+          }))}
           value={anoInicio}
           onChange={handleAnoInicioChange}
         />
         <Select
           label="Fim"
           className="!w-full"
-          options={[
-            { label: "2024", value: "2024" },
-            { label: "2023", value: "2023" },
-            { label: "2022", value: "2022" },
-            { label: "2021", value: "2021" }
-          ]}
+          options={anos.map((ano) => ({
+            label: ano.toString(),
+            value: ano.toString()
+          }))}
           value={anoFim}
           onChange={handleAnoFimChange}
         />
