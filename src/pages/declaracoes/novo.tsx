@@ -119,7 +119,7 @@ const NovoDeclaracaoPage = () => {
           </div>
         </div>
       )}
-      {DeclaracaoStatus !== "Recebida" && (
+      {DeclaracaoStatus !== "Recebida" && DeclaracaoStatus !== "Excluída" && (
         <div className="br-message warning">
           <div className="icon">
             <i className="fas fa-warning fa-lg" aria-hidden="true"></i>
