@@ -232,14 +232,6 @@ export default function DeclaracaoPage() {
           </Modal.Body>
           <Modal.Footer justify-content="end">
             <Button
-              secondary
-              small
-              m={2}
-              onClick={() => setModalExcluirAberta(false)}
-            >
-              Cancelar
-            </Button>
-            <Button
               primary
               small
               m={2}
@@ -247,6 +239,14 @@ export default function DeclaracaoPage() {
               onClick={() => deleteDeclaration()}
             >
               Confirmar
+            </Button>
+            <Button
+              secondary
+              small
+              m={2}
+              onClick={() => setModalExcluirAberta(false)}
+            >
+              Cancelar
             </Button>
           </Modal.Footer>
         </Modal>
