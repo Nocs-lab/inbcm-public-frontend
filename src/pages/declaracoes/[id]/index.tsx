@@ -37,6 +37,7 @@ export default function DeclaracaoPage() {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ["declaracoes"] })
         toast.success("Declaração excluída com sucesso!")
+        navigate("/")
       },
       onError: () => {
         toast.error("Erro ao excluir declaração")
@@ -223,11 +224,11 @@ export default function DeclaracaoPage() {
         >
           <Modal.Body className="text-center">
             <i className="fas fa-exclamation-triangle text-danger fa-3x"></i>
-            <h5 className="normal-case">
+            <h6 className="normal-case">
               Tem certeza que deseja excluir a declaração{" "}
               {data.retificacao ? "retificadora" : "original"} de{" "}
               {data.anoDeclaracao} do museu {data.museu_id.nome}?
-            </h5>
+            </h6>
           </Modal.Body>
           <Modal.Footer justify-content="end">
             <Button
