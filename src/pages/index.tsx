@@ -2,6 +2,9 @@ import { useSuspenseQuery } from "@tanstack/react-query"
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import { format } from "date-fns"
 import { Link } from "react-router-dom"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { Modal, Button } from "react-dsgov"
 import Table from "../components/Table"
 import DefaultLayout from "../layouts/default"
 import request from "../utils/request"
@@ -74,6 +77,24 @@ const columns = [
 ]
 
 export default function Declaracoes() {
+  const navigate = useNavigate()
+  const [showModal, setShowModal] = useState(false)
+
+  const { data: museus } = useSuspenseQuery({
+    queryKey: ["museus"],
+    queryFn: async () => {
+      const response = await request("/api/public/museus")
+      return response.json()
+    }
+  })
+
+  const handleNavigation = (path: string) => {
+    if (!museus || museus.length === 0) {
+      setShowModal(true)
+    } else {
+      navigate(path)
+    }
+  }
   const { data } = useSuspenseQuery({
     queryKey: ["declaracoes"],
     queryFn: async () => {
@@ -87,11 +108,25 @@ export default function Declaracoes() {
       <div className="flex items-center justify-between">
         <h2>Minhas declarações</h2>
         <div>
-          <Link to="/declaracoes/novo" className="btn text-xl p-3">
+          <Link
+            to="#"
+            className="btn text-xl p-3"
+            onClick={(e) => {
+              e.preventDefault()
+              handleNavigation("/declaracoes/novo")
+            }}
+          >
             <i className="fa-solid fa-file-lines p-2"></i>
             Nova declaração
           </Link>
-          <Link to="/dashboard" className="btn text-xl">
+          <Link
+            to="#"
+            className="btn text-xl"
+            onClick={(e) => {
+              e.preventDefault()
+              handleNavigation("/dashboard")
+            }}
+          >
             <i className="fa-solid fa-chart-line p-2"></i>
             Painel
           </Link>
@@ -107,6 +142,27 @@ export default function Declaracoes() {
         <Table columns={columns as ColumnDef<unknown>[]} data={data} />
       </div>
       <div className="h-10" />
+
+      {/* Modal */}
+      <Modal
+        useScrim
+        showCloseButton
+        title="Museu não associado"
+        modalOpened={showModal}
+        onCloseButtonClick={() => setShowModal(false)}
+      >
+        <Modal.Body>
+          <p>
+            Você não possui nenhum museu associado ao seu perfil. Entre em
+            contato com o administrador para corrigir isso.
+          </p>
+        </Modal.Body>
+        <Modal.Footer justify-content="center">
+          <Button primary small onClick={() => setShowModal(false)}>
+            Entendido
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </DefaultLayout>
   )
 }
