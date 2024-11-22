@@ -47,7 +47,7 @@ const Uploader: React.FC<{
   museus: { _id: string; nome: string }[]
   anoDeclaracao: string
   isRetificar?: boolean
-  isExcluded?: string
+  DeclaracaoStatus?: string
   isExist?: boolean
   onSubmit: (data: FormValues) => void
   isLoading: boolean
@@ -58,7 +58,7 @@ const Uploader: React.FC<{
   museus,
   anoDeclaracao,
   isRetificar,
-  isExcluded,
+  DeclaracaoStatus,
   onSubmit,
   isLoading,
   disabled = false,
@@ -538,7 +538,7 @@ const Uploader: React.FC<{
         </Modal>
 
         <div className="flex space-x-4">
-          {((isExist === true && isExcluded === "Excluída") ||
+          {((isExist === true && DeclaracaoStatus === "Excluída") ||
             (isExist === true && isRetificar) ||
             isExist === false) && (
             <button
