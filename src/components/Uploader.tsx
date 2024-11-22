@@ -164,9 +164,9 @@ const Uploader: React.FC<{
             (result: {
               [key: string]: (string | { [key: string]: string })[]
             }) => {
+              setMuseologicoFields(result.data as string[])
               if (result.errors.length > 0) {
                 setMuseologicoErrors(result.errors as string[])
-                setMuseologicoFields(result.data as string[])
                 setShowMessage({
                   show: true,
                   type: "museológico"
@@ -184,7 +184,7 @@ const Uploader: React.FC<{
     }
   }, [museologico])
 
-  console.log(museologicoFields.length)
+  //console.log(museologicoFields.length)
 
   useEffect(() => {
     if (bibliografico?.length) {
@@ -196,9 +196,9 @@ const Uploader: React.FC<{
             (result: {
               [key: string]: (string | { [key: string]: string })[]
             }) => {
+              setBibliograficoFields(result.data as string[])
               if (result.errors.length > 0) {
                 setBibliograficoErrors(result.errors as string[])
-                setBibliograficoFields(result.data as string[])
                 setShowMessage({
                   show: true,
                   type: "bibliográfico"
@@ -216,7 +216,7 @@ const Uploader: React.FC<{
     }
   }, [bibliografico])
 
-  console.log(bibliograficoFields.length)
+  //console.log(bibliograficoFields.length)
 
   useEffect(() => {
     if (arquivistico?.length) {
@@ -227,9 +227,9 @@ const Uploader: React.FC<{
             (result: {
               [key: string]: (string | { [key: string]: string })[]
             }) => {
+              setArquivisticoFields(result.data as string[])
               if (result.errors.length > 0) {
                 setArquivisticoErrors(result.errors as string[])
-                setArquivisticoFields(result.data as string[])
                 setShowMessage({
                   show: true,
                   type: "arquivístico"
@@ -247,7 +247,7 @@ const Uploader: React.FC<{
     }
   }, [arquivistico])
 
-  console.log(arquivisticoFields.length)
+  //console.log(arquivisticoFields.length)
 
   const navigate = useNavigate()
 
