@@ -119,27 +119,32 @@ const NovoDeclaracaoPage = () => {
           </div>
         </div>
       )}
-      {DeclaracaoStatus !== "Recebida" && DeclaracaoStatus !== "Excluída" && (
-        <div className="br-message warning">
-          <div className="icon">
-            <i className="fas fa-warning fa-lg" aria-hidden="true"></i>
+      {isExist &&
+        DeclaracaoStatus !== "Recebida" &&
+        DeclaracaoStatus !== "Excluída" && (
+          <div className="br-message warning">
+            <div className="icon">
+              <i className="fas fa-warning fa-lg" aria-hidden="true"></i>
+            </div>
+            <div
+              className="content"
+              aria-label="Data de início do afastamento inválida. A data não pode ser superior à data atual."
+              role="alert"
+            >
+              <span className="message-title">
+                Esta declaração está em {DeclaracaoStatus} e não pode ser
+                alterada.{" "}
+              </span>
+              <span className="message-body">
+                Para baixar o recibo correspondente,{" "}
+                <a href={`/api/public/recibo/${declaracao?._id}`}>
+                  clique aqui
+                </a>
+                .
+              </span>
+            </div>
           </div>
-          <div
-            className="content"
-            aria-label="Data de início do afastamento inválida. A data não pode ser superior à data atual."
-            role="alert"
-          >
-            <span className="message-title">
-              Esta declaração está em {DeclaracaoStatus} e não pode ser
-              alterada.{" "}
-            </span>
-            <span className="message-body">
-              Para baixar o recibo correspondente,{" "}
-              <a href={`/api/public/recibo/${declaracao?._id}`}>clique aqui</a>.
-            </span>
-          </div>
-        </div>
-      )}
+        )}
       <Uploader
         onChangeAno={setAno}
         onChangeMuseu={setMuseu}
