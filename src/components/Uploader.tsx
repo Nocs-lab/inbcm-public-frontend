@@ -14,9 +14,14 @@ import {
   readFile
 } from "inbcm-xlsx-validator"
 
+const currentYear = new Date().getFullYear() // Obtém o ano atual
+const anos = Array.from({ length: 10 }, (_, i) => (currentYear - i).toString()) // Array com os últimos 10 anos como strings
+
 const schema = z
   .object({
-    ano: z.enum(["2024", "2023", "2022", "2021"], { message: "Ano inválido" }),
+    ano: z.string().refine((val) => anos.includes(val), {
+      message: "Ano inválido"
+    }),
     museologico: z.instanceof(FileList).nullable(),
     bibliografico: z.instanceof(FileList).nullable(),
     arquivistico: z.instanceof(FileList).nullable(),
@@ -42,7 +47,7 @@ const Uploader: React.FC<{
   museus: { _id: string; nome: string }[]
   anoDeclaracao: string
   isRetificar?: boolean
-  isExcluded?: string
+  DeclaracaoStatus?: string
   isExist?: boolean
   onSubmit: (data: FormValues) => void
   isLoading: boolean
@@ -53,7 +58,7 @@ const Uploader: React.FC<{
   museus,
   anoDeclaracao,
   isRetificar,
-  isExcluded,
+  DeclaracaoStatus,
   onSubmit,
   isLoading,
   disabled = false,
@@ -80,8 +85,6 @@ const Uploader: React.FC<{
       fields: []
     }
   })
-  const currentYear = new Date().getFullYear() // Obtém o ano atual
-  const anos = Array.from({ length: 10 }, (_, i) => currentYear - i) // Últimos 10 anos
 
   const [museologico, bibliografico, arquivistico, ano, museu, fields] = watch([
     "museologico",
@@ -535,7 +538,7 @@ const Uploader: React.FC<{
         </Modal>
 
         <div className="flex space-x-4">
-          {((isExist === true && isExcluded === "Excluída") ||
+          {((isExist === true && DeclaracaoStatus === "Excluída") ||
             (isExist === true && isRetificar) ||
             isExist === false) && (
             <button

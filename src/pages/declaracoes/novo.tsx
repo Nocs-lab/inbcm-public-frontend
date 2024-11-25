@@ -42,10 +42,11 @@ const NovoDeclaracaoPage = () => {
 
   const isExist = declaracao !== null
   const isRetificar = declaracao?.retificacao
-  const isExcluded = declaracao?.status
+  const DeclaracaoStatus = declaracao?.status
 
+  console.log(isExist)
   console.log(isRetificar)
-  console.log(isExcluded)
+  console.log(DeclaracaoStatus)
   console.log("Status da declaração:", declaracao?.status)
 
   const { mutate, isPending } = useMutation({
@@ -91,7 +92,7 @@ const NovoDeclaracaoPage = () => {
         Voltar
       </Link>
       <h2>Nova declaração</h2>
-      {isExist && isExcluded !== "Excluída" && (
+      {DeclaracaoStatus == "Recebida" && (
         <div className="br-message warning">
           <div className="icon">
             <i className="fas fa-warning fa-lg" aria-hidden="true"></i>
@@ -118,6 +119,32 @@ const NovoDeclaracaoPage = () => {
           </div>
         </div>
       )}
+      {isExist &&
+        DeclaracaoStatus !== "Recebida" &&
+        DeclaracaoStatus !== "Excluída" && (
+          <div className="br-message warning">
+            <div className="icon">
+              <i className="fas fa-warning fa-lg" aria-hidden="true"></i>
+            </div>
+            <div
+              className="content"
+              aria-label="Data de início do afastamento inválida. A data não pode ser superior à data atual."
+              role="alert"
+            >
+              <span className="message-title">
+                Esta declaração está em {DeclaracaoStatus} e não pode ser
+                alterada.{" "}
+              </span>
+              <span className="message-body">
+                Para baixar o recibo correspondente,{" "}
+                <a href={`/api/public/recibo/${declaracao?._id}`}>
+                  clique aqui
+                </a>
+                .
+              </span>
+            </div>
+          </div>
+        )}
       <Uploader
         onChangeAno={setAno}
         onChangeMuseu={setMuseu}
@@ -126,7 +153,7 @@ const NovoDeclaracaoPage = () => {
         isLoading={isPending || isLoading}
         museus={museus}
         isExist={isExist}
-        isExcluded={isExcluded}
+        DeclaracaoStatus={DeclaracaoStatus}
       />
     </DefaultLayout>
   )
