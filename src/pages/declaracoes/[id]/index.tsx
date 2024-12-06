@@ -1,7 +1,7 @@
 import {
   useMutation,
   useQueryClient,
-  useSuspenseQuery
+  useSuspenseQueries
 } from "@tanstack/react-query"
 import clsx from "clsx"
 import { format } from "date-fns"
@@ -44,12 +44,23 @@ export default function DeclaracaoPage() {
       }
     })
 
-  const { data } = useSuspenseQuery({
-    queryKey: ["declaracao", id],
-    queryFn: async () => {
-      const response = await request(`/api/public/declaracoes/${id}`)
-      return response.json()
-    }
+  const [{ data }, { data: timeline }] = useSuspenseQueries({
+    queries: [
+      {
+        queryKey: ["declaracao", id],
+        queryFn: async () => {
+          const response = await request(`/api/public/declaracoes/${id}`)
+          return response.json()
+        }
+      },
+      {
+        queryKey: ["timeline", id],
+        queryFn: async () => {
+          const response = await request(`/api/public/timeline/${id}`)
+          return response.json()
+        }
+      }
+    ]
   })
 
   const [showModal, setShowModal] = useState(false)
@@ -147,54 +158,25 @@ export default function DeclaracaoPage() {
                 aria-orientation="vertical"
                 aria-label="Lista de Opções"
               >
-                {(data.status === "Em conformidade" ||
-                  data.status === "Não conformidade") && (
-                  <div className="step-progress-btn active">
-                    <span className="step-info text-left">
-                      Análise finalizada em{" "}
-                      {format(data.dataFimAnalise, "dd/MM/yyyy 'às' HH:mm")}
-                    </span>
-                  </div>
-                )}
-                {data.status === "Em análise" && (
-                  <button className="step-progress-btn" disabled>
-                    <span className="step-info text-left opacity-50">
-                      Aguardando finalização da análise
-                    </span>
-                  </button>
-                )}
-                {data.status === "Recebida" ? (
-                  <button className="step-progress-btn" disabled>
-                    <span className="step-info text-left opacity-50">
-                      Aguardando inicio da análise
-                    </span>
-                  </button>
-                ) : (
-                  <div
-                    className={clsx(
-                      "step-progress-btn",
-                      data.status === "Em análise" && "active"
-                    )}
-                  >
-                    <span className="step-info text-left">
-                      Análise iniciada
-                      <br /> Por {data.responsavelAnaliseNome} em{" "}
-                      {format(data.dataEnvioAnalise, "dd/MM/yyyy 'às' HH:mm")}
-                    </span>
-                  </div>
-                )}
-                <div
-                  className={clsx(
-                    "step-progress-btn",
-                    data.status === "Recebida" && "active"
-                  )}
-                >
-                  <span className="step-info text-left">
-                    Declaração enviada
-                    <br /> Por {data.responsavelEnvioNome} em{" "}
-                    {format(data.dataCriacao, "dd/MM/yyyy 'às' HH:mm")}
-                  </span>
-                </div>
+                {[...timeline]
+                  .reverse()
+                  .slice(0, 5)
+                  .map((item: { dataEvento: Date; nomeEvento: string }) => (
+                    <button
+                      key={item.dataEvento.toISOString() + item.nomeEvento}
+                      className="step-progress-btn"
+                      role="option"
+                      aria-posinset={3}
+                      aria-setsize={3}
+                      type="button"
+                    >
+                      <span className="step-info text-left">
+                        {item.nomeEvento}
+                        <br /> Em{" "}
+                        {format(item.dataEvento, "dd/MM/yyyy 'às' HH:mm")}
+                      </span>
+                    </button>
+                  ))}
               </div>
             </nav>
           </Modal.Body>
