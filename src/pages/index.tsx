@@ -121,7 +121,7 @@ export default function Declaracoes() {
           </Link>
           <Link
             to="#"
-            className="btn text-xl"
+            className="btn text-xl p-3"
             onClick={(e) => {
               e.preventDefault()
               handleNavigation("/dashboard")
@@ -158,7 +158,7 @@ export default function Declaracoes() {
           </p>
         </Modal.Body>
         <Modal.Footer justify-content="center">
-          <Button primary small onClick={() => setShowModal(false)}>
+          <Button primary inverted onClick={() => setShowModal(false)}>
             Entendido
           </Button>
         </Modal.Footer>

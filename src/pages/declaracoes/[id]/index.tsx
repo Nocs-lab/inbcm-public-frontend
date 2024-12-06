@@ -219,18 +219,21 @@ export default function DeclaracaoPage() {
         <Modal
           useScrim
           showCloseButton
+          title="Excluir declaração"
           modalOpened={modalExcluirAberta}
           onCloseButtonClick={() => setModalExcluirAberta(false)}
         >
-          <Modal.Body className="text-center">
-            <i className="fas fa-exclamation-triangle text-danger fa-3x"></i>
-            <h6 className="normal-case">
+          <Modal.Body>
+            <div className="text-center">
+              <i className="fas fa-exclamation-triangle text-danger fa-3x"></i>
+            </div>
+            <p className="normal-case text-center">
               Tem certeza que deseja excluir a declaração{" "}
               {data.retificacao ? "retificadora" : "original"} de{" "}
               {data.anoDeclaracao} do museu {data.museu_id.nome}?
-            </h6>
+            </p>
           </Modal.Body>
-          <Modal.Footer justify-content="end">
+          <Modal.Footer justify-content="center">
             <Button
               primary
               small

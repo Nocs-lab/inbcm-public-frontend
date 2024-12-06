@@ -85,13 +85,13 @@ const MismatchsModal: React.FC<{
     <Modal
       useScrim
       modalOpened={opened}
+      title="Listagem de Pendências"
       showCloseButton
       onCloseButtonClick={() => onClose()}
       className="min-w-1/2"
       onClick={handleScrimClick}
     >
       <Modal.Body>
-        <h3 className="text-2xl font-semibold mb-4">Listagem de Pendências</h3>
         <p className="text-gray-600 mb-6">
           Abaixo, seguem as pendências que foram encontradas no envio da sua
           declaração. Há linhas em que campos obrigatórios não foram
@@ -157,7 +157,7 @@ const MismatchsModal: React.FC<{
           </tbody>
         </table>
       </Modal.Body>
-      <Modal.Footer>
+      <Modal.Footer justify-content="center">
         <Button primary inverted onClick={onClose}>
           Fechar
         </Button>

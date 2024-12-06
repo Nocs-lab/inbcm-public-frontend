@@ -483,7 +483,11 @@ const Uploader: React.FC<{
           showCloseButton
           title="Confirmar envio da declaração"
           modalOpened={modalAberto}
-          onCloseButtonClick={() => setModalAberto(false)}
+          onCloseButtonClick={(e) => {
+            e.stopPropagation() // Impede a propagação do evento
+            e.preventDefault() // Evita comportamento padrão para o showCloseButton cancelar o modal
+            setModalAberto(false) // Fecha o modal
+          }}
         >
           <Modal.Body>
             <p>Verifique a quantidade de itens por acervo</p>
