@@ -233,7 +233,7 @@ export default function DeclaracaoPage() {
               {data.anoDeclaracao} do museu {data.museu_id.nome}?
             </p>
           </Modal.Body>
-          <Modal.Footer justify-content="center">
+          <Modal.Footer justify-content="end">
             <Button
               primary
               small

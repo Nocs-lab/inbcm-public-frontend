@@ -481,6 +481,7 @@ const Uploader: React.FC<{
         <Modal
           useScrim
           showCloseButton
+          className="large w-[800px] p-3"
           title="Confirmar envio da declaração"
           modalOpened={modalAberto}
           onCloseButtonClick={(e) => {
@@ -489,7 +490,7 @@ const Uploader: React.FC<{
             setModalAberto(false) // Fecha o modal
           }}
         >
-          <Modal.Body>
+          <Modal.Body className="mb-4">
             <p>Verifique a quantidade de itens por acervo</p>
             <table>
               <thead>
@@ -515,17 +516,8 @@ const Uploader: React.FC<{
             </table>
           </Modal.Body>
 
-          <Modal.Footer justify-content="center">
-            <p>Tem certeza que deseja enviar esta declaração?</p>
-            <Button
-              primary
-              small
-              m={2}
-              loading={isLoading}
-              onClick={handleSendClick}
-            >
-              Confirmar
-            </Button>
+          <Modal.Footer className="border-t pt-4 mt-4 flex justify-end gap-2">
+            {/* <p>aaaaaaaaaaaaaaaaaaaaaaaa</p> */}
             <Button
               secondary
               small
@@ -538,10 +530,22 @@ const Uploader: React.FC<{
             >
               Cancelar
             </Button>
+            <Button
+              primary
+              small
+              m={2}
+              loading={isLoading}
+              onClick={handleSendClick}
+            >
+              Confirmar
+            </Button>
           </Modal.Footer>
         </Modal>
 
-        <div className="flex space-x-4">
+        <div className="flex space-x-4 justify-end">
+          <Button secondary onClick={handleCancelClick} className="mt-5">
+            Cancelar
+          </Button>
           {((isExist === true && DeclaracaoStatus === "Excluída") ||
             (isExist === true && isRetificar) ||
             isExist === false) && (
@@ -562,9 +566,6 @@ const Uploader: React.FC<{
               Enviar
             </button>
           )}
-          <Button primary inverted onClick={handleCancelClick} className="mt-5">
-            Cancelar
-          </Button>
         </div>
       </form>
     </>

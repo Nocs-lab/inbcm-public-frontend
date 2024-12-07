@@ -157,7 +157,7 @@ export default function Declaracoes() {
             contato com o administrador para corrigir isso.
           </p>
         </Modal.Body>
-        <Modal.Footer justify-content="center">
+        <Modal.Footer justify-content="end">
           <Button primary inverted onClick={() => setShowModal(false)}>
             Entendido
           </Button>
