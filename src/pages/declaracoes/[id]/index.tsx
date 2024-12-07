@@ -224,7 +224,7 @@ export default function DeclaracaoPage() {
           onCloseButtonClick={() => setModalExcluirAberta(false)}
         >
           <Modal.Body>
-            <div className="flex">
+            <div className="flex items-center space-x-2">
               <i className="fas fa-exclamation-triangle text-danger fa-3x"></i>
 
               <p className="normal-case text-center">
