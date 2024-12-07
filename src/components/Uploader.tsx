@@ -516,8 +516,7 @@ const Uploader: React.FC<{
             </table>
           </Modal.Body>
 
-          <Modal.Footer className="border-t pt-4 mt-4 flex justify-end gap-2">
-            {/* <p>aaaaaaaaaaaaaaaaaaaaaaaa</p> */}
+          <Modal.Footer className="pt-4 mt-4 flex justify-end gap-2">
             <Button
               secondary
               small

@@ -224,14 +224,15 @@ export default function DeclaracaoPage() {
           onCloseButtonClick={() => setModalExcluirAberta(false)}
         >
           <Modal.Body>
-            <div className="text-center">
+            <div className="flex">
               <i className="fas fa-exclamation-triangle text-danger fa-3x"></i>
+
+              <p className="normal-case text-center">
+                Tem certeza que deseja excluir a declaração{" "}
+                {data.retificacao ? "retificadora" : "original"} de{" "}
+                {data.anoDeclaracao} do {data.museu_id.nome}?
+              </p>
             </div>
-            <p className="normal-case text-center">
-              Tem certeza que deseja excluir a declaração{" "}
-              {data.retificacao ? "retificadora" : "original"} de{" "}
-              {data.anoDeclaracao} do museu {data.museu_id.nome}?
-            </p>
           </Modal.Body>
           <Modal.Footer justify-content="end">
             <Button

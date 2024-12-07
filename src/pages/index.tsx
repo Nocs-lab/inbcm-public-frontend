@@ -153,13 +153,13 @@ export default function Declaracoes() {
       >
         <Modal.Body>
           <p>
-            Você não possui nenhum museu associado ao seu perfil. Entre em
-            contato com o administrador para corrigir isso.
+            Não há museus associados ao seu perfil. Entre em contato com o
+            administrador do sistema solicitando esse vínculo.
           </p>
         </Modal.Body>
-        <Modal.Footer justify-content="end">
-          <Button primary inverted onClick={() => setShowModal(false)}>
-            Entendido
+        <Modal.Footer justify-content="center">
+          <Button primary onClick={() => setShowModal(false)}>
+            Ok
           </Button>
         </Modal.Footer>
       </Modal>

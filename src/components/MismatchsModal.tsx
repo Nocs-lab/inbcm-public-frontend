@@ -158,7 +158,7 @@ const MismatchsModal: React.FC<{
         </table>
       </Modal.Body>
       <Modal.Footer justify-content="center">
-        <Button primary inverted onClick={onClose}>
+        <Button primary onClick={onClose}>
           Fechar
         </Button>
       </Modal.Footer>
