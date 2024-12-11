@@ -121,7 +121,7 @@ export default function Declaracoes() {
           </Link>
           <Link
             to="#"
-            className="btn text-xl"
+            className="btn text-xl p-3"
             onClick={(e) => {
               e.preventDefault()
               handleNavigation("/dashboard")
@@ -153,13 +153,13 @@ export default function Declaracoes() {
       >
         <Modal.Body>
           <p>
-            Você não possui nenhum museu associado ao seu perfil. Entre em
-            contato com o administrador para corrigir isso.
+            Não há museus associados ao seu perfil. Entre em contato com o
+            administrador do sistema solicitando esse vínculo.
           </p>
         </Modal.Body>
         <Modal.Footer justify-content="center">
-          <Button primary small onClick={() => setShowModal(false)}>
-            Entendido
+          <Button primary onClick={() => setShowModal(false)}>
+            Ok
           </Button>
         </Modal.Footer>
       </Modal>

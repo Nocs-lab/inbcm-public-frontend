@@ -41,13 +41,13 @@ const NovoDeclaracaoPage = () => {
   console.log(declaracao)
 
   const isExist = declaracao !== null
-  const isRetificar = declaracao?.retificacao
+  //const isRetificar = declaracao?.retificacao
   const DeclaracaoStatus = declaracao?.status
 
-  console.log(isExist)
-  console.log(isRetificar)
-  console.log(DeclaracaoStatus)
-  console.log("Status da declaração:", declaracao?.status)
+  // console.log(isExist)
+  // console.log(isRetificar)
+  // console.log(DeclaracaoStatus)
+  // console.log("Status da declaração:", declaracao?.status)
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: {

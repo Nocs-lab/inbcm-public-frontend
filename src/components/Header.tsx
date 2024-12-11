@@ -51,14 +51,19 @@ const Header: React.FC = () => {
                   <i className="fas fa-caret-down" aria-hidden="true"></i>
                 </button>
                 <div
-                  className="br-list z-50"
+                  className="br-list z-50 w-full"
                   id="avatar-menu"
                   hidden={!userMenuOpen}
                   role="menu"
                   aria-labelledby="avatar-dropdown-trigger"
                 >
-                  <button className="br-item" onClick={logout} role="menuitem">
-                    Sair
+                  <button
+                    className="br-item flex items-center space-x-2"
+                    onClick={logout}
+                    role="menuitem"
+                  >
+                    <i className="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Sair</span>
                   </button>
                 </div>
               </div>
