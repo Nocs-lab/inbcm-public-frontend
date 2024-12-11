@@ -81,23 +81,23 @@ jobs:
   testing_main_flow:
     needs: updating_environment
     runs-on: ubuntu-latest
-      steps:
-        - name: Checkout do código
-          uses: actions/checkout@v4
-
-        - name: Create file .env
-          run: echo "${{ secrets.ENVS_TESTS }}" > .env
-
-        - name: Configurar Python
-          uses: actions/setup-python@v5
-          with:
-            python-version: '3.9'
-
-        - name: Instalar o Playwright e o Chromium
-          run: |
-            pip install playwright
-            playwright install chromium
-            pip install python-dotenv
-
-        - name: Executar script de atualização
-          run: python ./src/scripts/testMainFlow.py
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+  
+      - name: Create file .env
+        run: echo "${{ secrets.ENVS_TESTS }}" > .env
+  
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+  
+      - name: Instalar o Playwright e o Chromium
+        run: |
+          pip install playwright
+          playwright install chromium
+          pip install python-dotenv
+  
+      - name: Executar script de atualização
+        run: python ./src/scripts/testMainFlow.py
