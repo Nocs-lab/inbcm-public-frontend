@@ -98,15 +98,14 @@ export default function DeclaracaoPage() {
         <a href={`/api/public/recibo/${id}`} className="text-xl">
           <i className="fas fa-file-pdf" aria-hidden="true"></i> Baixar recibo
         </a>
-
-        {data.status !== "Em análise" ? (
-          <Link to={`/declaracoes/${id}/retificar`} className="text-xl">
-            <i className="fas fa-edit" aria-hidden="true"></i> Retificar
-          </Link>
-        ) : (
+        {data.status == "Em análise" || data.status == "Em conformidade" ? (
           <span className="text-xl text-gray-500 cursor-not-allowed">
             <i className="fas fa-edit" aria-hidden="true"></i> Retificar
           </span>
+        ) : (
+          <Link to={`/declaracoes/${id}/retificar`} className="text-xl">
+            <i className="fas fa-edit" aria-hidden="true"></i> Retificar
+          </Link>
         )}
 
         {(data.museologico?.pendencias.length > 0 ||
@@ -132,7 +131,7 @@ export default function DeclaracaoPage() {
           </>
         )}
         <a
-          className="br-link text-[#1351B9] hover:bg-blue-200 text-xl"
+          className="text-xl"
           href="#"
           onClick={() => setModalTimelineAberta(true)}
         >
@@ -141,11 +140,11 @@ export default function DeclaracaoPage() {
         <Modal
           useScrim
           showCloseButton
+          title="Linha do tempo"
           modalOpened={modalTimelineAberta}
           onCloseButtonClick={() => setModalTimelineAberta(false)}
         >
           <Modal.Body className="text-center">
-            <span className="font-bold text-lg text-left">Histórico</span>
             <nav
               className="br-step vertical"
               data-initial="1"
@@ -180,7 +179,7 @@ export default function DeclaracaoPage() {
               </div>
             </nav>
           </Modal.Body>
-          <Modal.Footer justify-content="end">
+          <Modal.Footer justify-content="center">
             <Button
               primary
               small
@@ -191,13 +190,19 @@ export default function DeclaracaoPage() {
             </Button>
           </Modal.Footer>
         </Modal>
-        <a
-          className="br-link text-[#1351B9] hover:bg-blue-200 text-xl"
-          href="#"
-          onClick={() => setModalExcluirAberta(true)}
-        >
-          <i className="fas fa-trash" aria-hidden="true"></i> Excluir
-        </a>
+        {data.status == "Recebida" ? (
+          <a
+            className="text-xl"
+            href="#"
+            onClick={() => setModalExcluirAberta(true)}
+          >
+            <i className="fas fa-trash" aria-hidden="true"></i> Excluir
+          </a>
+        ) : (
+          <span className="text-xl text-gray-500 cursor-not-allowed">
+            <i className="fas fa-trash" aria-hidden="true"></i> Excluir
+          </span>
+        )}
         <Modal
           useScrim
           showCloseButton
