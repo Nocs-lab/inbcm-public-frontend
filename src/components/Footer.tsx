@@ -4,12 +4,11 @@ import logoNocs from "../images/logo-nocs.png"
 
 const Footer: React.FC = () => {
   return (
-    <footer className="br-footer">
+    <footer className="br-footer mt-auto">
       <div className="container-lg">
         <div className="logo">
           <img src={logoIbramBranco} alt="Imagem" />
         </div>
-
         <div className="d-none d-sm-block">
           <div className="row align-items-end justify-content-between py-5">
             <div className="col">
