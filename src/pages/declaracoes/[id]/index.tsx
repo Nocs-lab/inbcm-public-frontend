@@ -140,7 +140,7 @@ export default function DeclaracaoPage() {
         <Modal
           useScrim
           showCloseButton
-          title="Linha do tempo"
+          title="Histórico da declaração"
           modalOpened={modalTimelineAberta}
           onCloseButtonClick={() => setModalTimelineAberta(false)}
         >
