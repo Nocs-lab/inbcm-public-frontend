@@ -126,7 +126,7 @@ const LoginPage: React.FC = () => {
             Entrar
           </button>
           <a href="/autenticar">
-            <i className="fa-solid fa-envelope-circle-check p-2"></i>quando
+            <i className="fa-solid fa-envelope-circle-check p-2"></i>
             Autenticar recibo
           </a>
         </form>
