@@ -98,7 +98,7 @@ export default function DeclaracaoPage() {
         <a href={`/api/public/recibo/${id}`} className="text-xl">
           <i className="fas fa-file-pdf" aria-hidden="true"></i> Baixar recibo
         </a>
-        {data.status == "Em análise" || data.status == "Em conformidade" ? (
+        {data.status == "Em análise" ? (
           <span className="text-xl text-gray-500 cursor-not-allowed">
             <i className="fas fa-edit" aria-hidden="true"></i> Retificar
           </span>
