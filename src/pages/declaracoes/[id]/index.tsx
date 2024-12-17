@@ -22,8 +22,6 @@ export default function DeclaracaoPage() {
 
   const navigate = useNavigate()
 
-  const [modalTimelineAberta, setModalTimelineAberta] = useState(false)
-
   const [modalExcluirAberta, setModalExcluirAberta] = useState(false)
   const queryClient = useQueryClient()
 
@@ -44,19 +42,12 @@ export default function DeclaracaoPage() {
       }
     })
 
-  const [{ data }, { data: timeline }] = useSuspenseQueries({
+  const [{ data }] = useSuspenseQueries({
     queries: [
       {
         queryKey: ["declaracao", id],
         queryFn: async () => {
           const response = await request(`/api/public/declaracoes/${id}`)
-          return response.json()
-        }
-      },
-      {
-        queryKey: ["timeline", id],
-        queryFn: async () => {
-          const response = await request(`/api/public/timeline/${id}`)
           return response.json()
         }
       }
@@ -133,63 +124,10 @@ export default function DeclaracaoPage() {
         <a
           className="text-xl"
           href="#"
-          onClick={() => setModalTimelineAberta(true)}
+          onClick={() => navigate(`/declaracoes/${id}/timeline`)}
         >
           <i className="fas fa-timeline" aria-hidden="true"></i> Histórico
         </a>
-        <Modal
-          useScrim
-          showCloseButton
-          title="Histórico da declaração"
-          modalOpened={modalTimelineAberta}
-          onCloseButtonClick={() => setModalTimelineAberta(false)}
-        >
-          <Modal.Body className="text-center">
-            <nav
-              className="br-step vertical"
-              data-initial="1"
-              data-label="right"
-              role="none"
-            >
-              <div
-                className="step-progress"
-                role="listbox"
-                aria-orientation="vertical"
-                aria-label="Lista de Opções"
-              >
-                {[...timeline]
-                  .reverse()
-                  .slice(0, 5)
-                  .map((item: { dataEvento: Date; nomeEvento: string }) => (
-                    <button
-                      key={item.dataEvento.toISOString() + item.nomeEvento}
-                      className="step-progress-btn"
-                      role="option"
-                      aria-posinset={3}
-                      aria-setsize={3}
-                      type="button"
-                    >
-                      <span className="step-info text-left">
-                        {item.nomeEvento}
-                        <br /> Em{" "}
-                        {format(item.dataEvento, "dd/MM/yyyy 'às' HH:mm")}
-                      </span>
-                    </button>
-                  ))}
-              </div>
-            </nav>
-          </Modal.Body>
-          <Modal.Footer justify-content="center">
-            <Button
-              primary
-              small
-              m={2}
-              onClick={() => navigate(`/declaracoes/${id}/timeline`)}
-            >
-              Detalhar
-            </Button>
-          </Modal.Footer>
-        </Modal>
         {data.status == "Recebida" ? (
           <a
             className="text-xl"
