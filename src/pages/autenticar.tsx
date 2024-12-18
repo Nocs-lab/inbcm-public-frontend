@@ -33,9 +33,7 @@ export default function AutenticarPage() {
         </div>
 
         <div className="flex justify-end mt-6">
-          <Button primary onClick={() => console.log("Verificar")}>
-            Verificar
-          </Button>
+          <Button primary>Verificar</Button>
         </div>
       </div>
       <Footer />
