@@ -13,17 +13,9 @@ export default function AutenticarPage() {
           <i className="fas fa-arrow-left" aria-hidden="true"></i>
           Voltar
         </Link>
-        <h2>Autenticar recibo</h2>
+        <h2>Validar recibo</h2>
 
         <div className="space-y-4">
-          <div className="w-1/3">
-            <Input
-              type="date"
-              label="Data do recibo"
-              placeholder="Escolha a data do recibo"
-              value={""}
-            />
-          </div>
           <Input
             type="text"
             label="Numeração do recibo"
