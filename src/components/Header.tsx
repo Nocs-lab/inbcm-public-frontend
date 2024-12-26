@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom"
 import logoIbramSimples from "../images/logo-ibram-simples.png"
 import useStore from "../utils/store"
 import { useState } from "react"
+import { Link } from "react-router-dom"
 
 const Header: React.FC = () => {
   const { setUser, ...rest } = useStore()
@@ -57,6 +58,12 @@ const Header: React.FC = () => {
                   role="menu"
                   aria-labelledby="avatar-dropdown-trigger"
                 >
+                  <Link to="/perfil">
+                    <button className="br-item flex items-center space-x-2">
+                      <i className="fa-solid fa-user"></i>
+                      <span>Perfil</span>
+                    </button>
+                  </Link>
                   <button
                     className="br-item flex items-center space-x-2"
                     onClick={logout}
