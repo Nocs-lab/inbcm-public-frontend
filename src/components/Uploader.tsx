@@ -13,55 +13,10 @@ import {
   validate_arquivistico,
   readFile
 } from "inbcm-xlsx-validator"
-import request from "../utils/request"
-
-const currentYear = new Date().getFullYear().toString() // Obtém o ano atual
-
-interface PeriodoDeclaracao {
-  _id: string
-  ano: number
-  dataInicioSubmissao: string
-  dataFimSubmissao: string
-  dataInicioRetificacao: string
-  dataFimRetificacao: string
-  metaDeclaracoesEnviadas: number
-  createdAt: string
-  updatedAt: string
-}
-
-const fetchAnosVigente = async (): Promise<number[]> => {
-  const response = await request(
-    "/api/admin/anodeclaracao/getPeriodoDeclaracaoVigente"
-  )
-
-  if (!response.ok) {
-    let errorMessage = "Período de declaração vigente não encontrado"
-    try {
-      const errorData = await response.json()
-      errorMessage = errorData.message || errorMessage
-    } catch (e) {
-      throw new Error(errorMessage)
-    }
-  }
-  const data: PeriodoDeclaracao[] = await response.json() // Tipando o data como um array de PeriodoDeclaracao
-
-  // Extrai os anos em uma lista
-  const anosVigentes = data.map((item) => item.ano)
-
-  return anosVigentes // Retorna a lista de anos
-}
-
-let anos: number[] = []
-
-fetchAnosVigente().then((result) => {
-  anos = result // Coloca o resultado na variável anos
-})
 
 const schema = z
   .object({
-    ano: z.string().refine((val) => anos.includes(val), {
-      message: "Ano inválido"
-    }),
+    ano: z.string(),
     museologico: z.instanceof(FileList).nullable(),
     bibliografico: z.instanceof(FileList).nullable(),
     arquivistico: z.instanceof(FileList).nullable(),
@@ -94,6 +49,7 @@ const Uploader: React.FC<{
   disabled?: boolean
   onChangeAno?: (ano: string) => void
   onChangeMuseu?: (museu: string) => void
+  anos: number[]
 }> = ({
   museus,
   anoDeclaracao,
@@ -104,7 +60,8 @@ const Uploader: React.FC<{
   disabled = false,
   onChangeAno,
   onChangeMuseu,
-  isExist
+  isExist,
+  anos
 }) => {
   const {
     register,
@@ -117,7 +74,7 @@ const Uploader: React.FC<{
     resolver: zodResolver(schema),
     mode: "onBlur",
     defaultValues: {
-      ano: anoDeclaracao || currentYear,
+      ano: anoDeclaracao || Math.max(...anos).toString(),
       museu: museus[0]?._id,
       museologico: null,
       bibliografico: null,
