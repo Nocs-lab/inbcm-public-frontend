@@ -14,14 +14,9 @@ import {
   readFile
 } from "inbcm-xlsx-validator"
 
-const currentYear = new Date().getFullYear() // Obtém o ano atual
-const anos = Array.from({ length: 10 }, (_, i) => (currentYear - i).toString()) // Array com os últimos 10 anos como strings
-
 const schema = z
   .object({
-    ano: z.string().refine((val) => anos.includes(val), {
-      message: "Ano inválido"
-    }),
+    ano: z.string(),
     museologico: z.instanceof(FileList).nullable(),
     bibliografico: z.instanceof(FileList).nullable(),
     arquivistico: z.instanceof(FileList).nullable(),
@@ -54,6 +49,7 @@ const Uploader: React.FC<{
   disabled?: boolean
   onChangeAno?: (ano: string) => void
   onChangeMuseu?: (museu: string) => void
+  anos: number[]
 }> = ({
   museus,
   anoDeclaracao,
@@ -64,7 +60,8 @@ const Uploader: React.FC<{
   disabled = false,
   onChangeAno,
   onChangeMuseu,
-  isExist
+  isExist,
+  anos
 }) => {
   const {
     register,
@@ -77,7 +74,7 @@ const Uploader: React.FC<{
     resolver: zodResolver(schema),
     mode: "onBlur",
     defaultValues: {
-      ano: anoDeclaracao || "2024",
+      ano: anoDeclaracao || Math.max(...anos).toString(),
       museu: museus[0]?._id,
       museologico: null,
       bibliografico: null,
