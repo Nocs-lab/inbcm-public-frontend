@@ -306,7 +306,7 @@ const Uploader: React.FC<{
                 Você pode corrigi-las antes de enviar ou, se preferir 1) cancele
                 o envio; 2) preencha os campos corretamente e; 3) mais tarde,
                 retorne para enviar sua declaração. Para visualizar as
-                inconsistências,{" "}
+                pendências,{" "}
                 <button
                   className="text-blue-600"
                   onClick={() => setModalOpen(true)}
