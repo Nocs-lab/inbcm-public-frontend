@@ -87,7 +87,7 @@ export default function DeclaracaoPage() {
       </span>
       <div className="flex gap-4">
         <a href={`/api/public/recibo/${id}`} className="text-xl">
-          <i className="fas fa-file-pdf" aria-hidden="true"></i> Baixar recibo
+          <i className="fas fa-file-pdf" aria-hidden="true"></i> Recibo
         </a>
         {data.status == "Em análise" ? (
           <span className="text-xl text-gray-500 cursor-not-allowed">
@@ -110,7 +110,7 @@ export default function DeclaracaoPage() {
               role="button"
             >
               <i className="fas fa-exclamation-triangle" aria-hidden="true"></i>{" "}
-              Visualizar pendências
+              Pendências
             </a>
             <MismatchsModal
               opened={showModal}
