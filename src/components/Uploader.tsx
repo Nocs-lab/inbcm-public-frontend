@@ -13,9 +13,49 @@ import {
   validate_arquivistico,
   readFile
 } from "inbcm-xlsx-validator"
+import request from "../utils/request"
 
-const currentYear = new Date().getFullYear() // Obtém o ano atual
-const anos = Array.from({ length: 10 }, (_, i) => (currentYear - i).toString()) // Array com os últimos 10 anos como strings
+const currentYear = new Date().getFullYear().toString() // Obtém o ano atual
+
+interface PeriodoDeclaracao {
+  _id: string
+  ano: number
+  dataInicioSubmissao: string
+  dataFimSubmissao: string
+  dataInicioRetificacao: string
+  dataFimRetificacao: string
+  metaDeclaracoesEnviadas: number
+  createdAt: string
+  updatedAt: string
+}
+
+const fetchAnosVigente = async (): Promise<number[]> => {
+  const response = await request(
+    "/api/admin/anodeclaracao/getPeriodoDeclaracaoVigente"
+  )
+
+  if (!response.ok) {
+    let errorMessage = "Período de declaração vigente não encontrado"
+    try {
+      const errorData = await response.json()
+      errorMessage = errorData.message || errorMessage
+    } catch (e) {
+      throw new Error(errorMessage)
+    }
+  }
+  const data: PeriodoDeclaracao[] = await response.json() // Tipando o data como um array de PeriodoDeclaracao
+
+  // Extrai os anos em uma lista
+  const anosVigentes = data.map((item) => item.ano)
+
+  return anosVigentes // Retorna a lista de anos
+}
+
+let anos: number[] = []
+
+fetchAnosVigente().then((result) => {
+  anos = result // Coloca o resultado na variável anos
+})
 
 const schema = z
   .object({
@@ -77,7 +117,7 @@ const Uploader: React.FC<{
     resolver: zodResolver(schema),
     mode: "onBlur",
     defaultValues: {
-      ano: anoDeclaracao || "2024",
+      ano: anoDeclaracao || currentYear,
       museu: museus[0]?._id,
       museologico: null,
       bibliografico: null,
