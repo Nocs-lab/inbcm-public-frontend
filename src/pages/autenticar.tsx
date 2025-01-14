@@ -36,7 +36,7 @@ export default function AutenticarPage() {
           Voltar
         </Link>
         <h2 className="text-2xl font-bold mb-4">
-          Verificação de autenticação da declaração
+          Verificação de autenticidade do recibo
         </h2>
 
         <div className="space-y-4">
