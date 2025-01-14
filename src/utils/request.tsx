@@ -51,7 +51,12 @@ export default function useHttpClient() {
 
       setModalContent(
         <Modal title="Erro" showCloseButton onCloseButtonClick={closeModal}>
-          <Modal.Body>{message}</Modal.Body>
+          <Modal.Body>
+            <div className="flex items-center space-x-2">
+              <i className="fas fa-warning text-danger fa-3x"></i>
+              <p className="normal-case text-center">{message}</p>
+            </div>
+          </Modal.Body>
         </Modal>
       )
 
