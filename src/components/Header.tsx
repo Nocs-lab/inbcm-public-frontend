@@ -1,21 +1,30 @@
-import React from "react"
-import { useNavigate } from "react-router-dom"
+import React, { useState } from "react"
+import { useNavigate, Link } from "react-router-dom"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import logoIbramSimples from "../images/logo-ibram-simples.png"
+import request from "../utils/request"
 import useStore from "../utils/store"
-import { useState } from "react"
-import { Link } from "react-router-dom"
 
 const Header: React.FC = () => {
-  const { setUser, ...rest } = useStore()
-  const user = rest.user!
   const navigate = useNavigate()
+  const [userMenuOpen, setUserMenuOpen] = useState(false)
 
+  const { setUser } = useStore()
+
+  // Buscar os dados do usuário logado
+  const { data: user } = useSuspenseQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
+      const response = await request("/api/public/users")
+      return response.json()
+    }
+  })
+
+  // Função de logout
   const logout = () => {
     setUser(null)
     navigate("/login")
   }
-
-  const [userMenuOpen, setUserMenuOpen] = useState(false)
 
   return (
     <header className="br-header compact large fixed">
@@ -36,9 +45,9 @@ const Header: React.FC = () => {
                   data-toggle="dropdown"
                   data-target="avatar-menu"
                 >
-                  <span className="br-avatar" title={user.name}>
+                  <span className="br-avatar" title={user.nome}>
                     <span className="content bg-orange-vivid-30 text-pure-0">
-                      {user.name.charAt(0).toUpperCase()}
+                      {user.nome.charAt(0).toUpperCase()}
                     </span>
                   </span>
                   <span
@@ -46,7 +55,7 @@ const Header: React.FC = () => {
                     data-testid="username"
                   >
                     <span className="text-weight-semi-bold">
-                      {user.name.split(" ")[0]}
+                      {user.nome.split(" ")[0]}
                     </span>
                   </span>
                   <i className="fas fa-caret-down" aria-hidden="true"></i>

@@ -1,8 +1,17 @@
+import { useQuery } from "@tanstack/react-query"
 import logoIbramBranco from "../images/logo-ibram-branco.png"
 import logoIfrn from "../images/logo-ifrn.png"
 import logoNocs from "../images/logo-nocs.png"
 
 const Footer: React.FC = () => {
+  const { data: versaoBackend } = useQuery({
+    queryKey: ["version"],
+    queryFn: async () => {
+      const res = await fetch("/api/public")
+      return res.headers.get("x-version")
+    }
+  })
+
   return (
     <footer className="br-footer mt-auto">
       <div className="container-lg">
@@ -41,8 +50,8 @@ const Footer: React.FC = () => {
             </div>
             <div className="col assigns flex items-center justify-center">
               Desenvolvido por:
-              <img className="ml-4" src={logoIfrn} alt="Imagem" />
               <img className="ml-4" src={logoNocs} alt="Imagem" />
+              <img className="ml-4" src={logoIfrn} alt="Imagem" />
             </div>
           </div>
         </div>
@@ -51,9 +60,8 @@ const Footer: React.FC = () => {
       <div className="container-lg">
         <div className="info">
           <div className="text-down-01 text-medium pb-3">
-            Este sistema foi desenvolvido pelo <strong>Nocs Lab</strong>, que
-            detém os direitos da&nbsp;
-            <strong>licença de uso.</strong>
+            Versão do cliente: {import.meta.env.VITE_SHORT_SHA ?? "dev"} |
+            Versão do servidor: {versaoBackend}
           </div>
         </div>
       </div>

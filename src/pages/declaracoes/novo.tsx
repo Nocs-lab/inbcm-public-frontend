@@ -1,5 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import {
+  useMutation,
+  useQuery,
+  useSuspenseQueries
+} from "@tanstack/react-query"
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { useNavigate } from "react-router"
@@ -14,18 +18,34 @@ const NovoDeclaracaoPage = () => {
 
   const { user } = useStore()
 
-  const { data: museus } = useSuspenseQuery<{ nome: string; _id: string }[]>({
-    queryKey: ["museus", user?.email],
-    queryFn: async () => {
-      const res = await request("/api/public/museus")
-      return await res.json()
-    }
+  const [{ data: museus }, { data: anos }] = useSuspenseQueries({
+    queries: [
+      {
+        queryKey: ["museus", user?.email],
+        queryFn: async () => {
+          const res = await request("/api/public/museus")
+          return await res.json()
+        }
+      },
+      {
+        queryKey: ["anos"],
+        queryFn: async () => {
+          const res = await request(
+            "/api/admin/anodeclaracao/getPeriodoDeclaracaoVigente"
+          )
+          return await res.json()
+        }
+      }
+    ]
   })
 
   const [ano, setAno] = useState("")
   const [museu, setMuseu] = useState("")
 
-  const { data: declaracao, isLoading } = useQuery<{ _id: string } | null>({
+  const { data: declaracao, isLoading } = useQuery<{
+    _id: string
+    status: string
+  } | null>({
     queryKey: ["declaracao", ano, museu],
     queryFn: async () => {
       try {
@@ -38,16 +58,8 @@ const NovoDeclaracaoPage = () => {
     }
   })
 
-  console.log(declaracao)
-
   const isExist = declaracao !== null
-  //const isRetificar = declaracao?.retificacao
   const DeclaracaoStatus = declaracao?.status
-
-  // console.log(isExist)
-  // console.log(isRetificar)
-  // console.log(DeclaracaoStatus)
-  // console.log("Status da declaração:", declaracao?.status)
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: {
@@ -154,6 +166,7 @@ const NovoDeclaracaoPage = () => {
         museus={museus}
         isExist={isExist}
         DeclaracaoStatus={DeclaracaoStatus}
+        anos={anos.map((ano: { ano: number }) => ano.ano)}
       />
     </DefaultLayout>
   )
