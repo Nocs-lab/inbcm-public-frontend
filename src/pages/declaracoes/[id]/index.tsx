@@ -184,7 +184,7 @@ export default function DeclaracaoPage() {
           data.bibliografico?.status !== "Recebida" ||
           data.arquivistico?.status !== "Recebida") && (
           <Link to={`/declaracoes/${id}/analise`} className="text-xl">
-            <i className="fa-solid fa-chalkboard-user"></i> Parecer do analista
+            <i class="fa-solid fa-chalkboard-user"></i> Parecer do analista
           </Link>
         )}
       </div>
