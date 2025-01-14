@@ -3,9 +3,11 @@ import Input from "../components/Input"
 import { Link } from "react-router-dom"
 import Table from "../components/Table"
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table"
+import { useSuspenseQuery } from "@tanstack/react-query"
+import request from "../utils/request"
 
 interface Museu {
-  name: string
+  nome: string
   regiao: string
   uf: string
 }
@@ -14,32 +16,33 @@ const PerfilPage = () => {
   const columnHelper = createColumnHelper<Museu>()
 
   const columns: ColumnDef<Museu>[] = [
-    columnHelper.accessor("name", {
+    columnHelper.accessor("nome", {
       header: "Nome",
-      cell: (info) => info.getValue(),
-      accessorFn: (row) => row.name
+      cell: (info) => info.getValue()
     }),
     columnHelper.accessor("regiao", {
       header: "Região",
-      cell: (info) => info.getValue(),
-      accessorFn: (row) => row.regiao
+      cell: (info) => info.getValue()
     }),
     columnHelper.accessor("uf", {
       header: "UF",
-      cell: (info) => info.getValue(),
-      accessorFn: (row) => row.uf
+      cell: (info) => info.getValue()
     })
   ]
 
-  const data: Museu[] = [
-    {
-      name: "Casa da Cultura José Gonçalves de Minas",
-      regiao: "Nordeste",
-      uf: "RN"
-    },
-    { name: "Museu de Esportes", regiao: "Norte", uf: "AM" },
-    { name: "Museu Histórico Municipal Família Pires", regiao: "Sul", uf: "SC" }
-  ]
+  const { data: user } = useSuspenseQuery({
+    queryKey: ["user"],
+    queryFn: async () => {
+      const response = await request("/api/public/users")
+      return response.json()
+    }
+  })
+
+  const museus: Museu[] = user.museus.map((museu) => ({
+    nome: museu.nome,
+    regiao: museu.endereco.municipio,
+    uf: museu.endereco.uf
+  }))
 
   return (
     <DefaultLayout>
@@ -57,20 +60,20 @@ const PerfilPage = () => {
                 label="Nome"
                 placeholder="Digite o nome"
                 className="w-full"
-                value={"Thiago Campos"}
+                value={user.nome}
               />
               <Input
                 type="email"
                 label="Email"
                 placeholder="Digite o email"
                 className="w-full"
-                value={"thiago@gmail.com"}
+                value={user.email}
               />
             </div>
           </div>
           <div className="br-table overflow-auto">
             <Table
-              data={data}
+              data={museus}
               columns={columns}
               showSearch={false}
               showSelectedBar={false}
