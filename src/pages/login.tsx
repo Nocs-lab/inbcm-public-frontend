@@ -7,7 +7,7 @@ import { useNavigate } from "react-router"
 import { z } from "zod"
 import Input from "../components/Input"
 import logoIbram from "../images/logo-ibram.png"
-import request from "../utils/request"
+import useHttpClient from "../utils/request"
 import useStore from "../utils/store"
 
 const schema = z.object({
@@ -17,6 +17,7 @@ const schema = z.object({
 type FormData = z.infer<typeof schema>
 
 const LoginPage: React.FC = () => {
+  const request = useHttpClient()
   const {
     register,
     handleSubmit,

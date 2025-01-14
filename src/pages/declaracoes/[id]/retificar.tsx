@@ -3,8 +3,8 @@ import { useNavigate, useParams } from "react-router"
 import { Link } from "react-router-dom"
 import Uploader from "../../../components/Uploader"
 import DefaultLayout from "../../../layouts/default"
-import request from "../../../utils/request"
 import useStore from "../../../utils/store"
+import useHttpClient from "../../../utils/request"
 
 export default function RetificarDeclaracao() {
   const params = useParams()
@@ -13,25 +13,36 @@ export default function RetificarDeclaracao() {
   const user = useStore((state) => state.user)
 
   const navigate = useNavigate()
+  const request = useHttpClient()
 
-  const [{ data: museus }, { data: declaracao }] = useSuspenseQueries({
-    queries: [
-      {
-        queryKey: ["museus", user?.email],
-        queryFn: async () => {
-          const res = await request("/api/public/museus")
-          return await res.json()
+  const [{ data: museus }, { data: declaracao }, { data: anos }] =
+    useSuspenseQueries({
+      queries: [
+        {
+          queryKey: ["museus", user?.email],
+          queryFn: async () => {
+            const res = await request("/api/public/museus")
+            return await res.json()
+          }
+        },
+        {
+          queryKey: ["declaracao", id],
+          queryFn: async () => {
+            const res = await request(`/api/public/declaracoes/${id}`)
+            return await res.json()
+          }
+        },
+        {
+          queryKey: ["anos"],
+          queryFn: async () => {
+            const res = await request(
+              "/api/admin/anodeclaracao/getPeriodoDeclaracaoVigente"
+            )
+            return await res.json()
+          }
         }
-      },
-      {
-        queryKey: ["declaracao", id],
-        queryFn: async () => {
-          const res = await request(`/api/public/declaracoes/${id}`)
-          return await res.json()
-        }
-      }
-    ]
-  })
+      ]
+    })
 
   const isExist = declaracao !== null
 
@@ -106,6 +117,7 @@ export default function RetificarDeclaracao() {
         anoDeclaracao={declaracao.anoDeclaracao}
         isRetificar={true}
         isExist={isExist}
+        anos={anos.map((ano: { ano: number }) => ano.ano)}
       />
     </DefaultLayout>
   )
