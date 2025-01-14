@@ -4,7 +4,7 @@ import { Link } from "react-router-dom"
 import Table from "../components/Table"
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table"
 import { useSuspenseQuery, useMutation } from "@tanstack/react-query"
-import request from "../utils/request"
+import useHttpClient from "../utils/request"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -24,6 +24,7 @@ interface Museu {
 }
 
 const PerfilPage = () => {
+  const request = useHttpClient()
   const columnHelper = createColumnHelper<Museu>()
 
   const columns: ColumnDef<Museu>[] = [

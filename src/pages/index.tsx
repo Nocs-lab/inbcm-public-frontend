@@ -7,7 +7,7 @@ import { useNavigate } from "react-router-dom"
 import { Modal, Button } from "react-dsgov"
 import Table from "../components/Table"
 import DefaultLayout from "../layouts/default"
-import request from "../utils/request"
+import useHttpClient from "../utils/request"
 
 const columnHelper = createColumnHelper<{
   _id: string
@@ -77,6 +77,7 @@ const columns = [
 ]
 
 export default function Declaracoes() {
+  const request = useHttpClient()
   const navigate = useNavigate()
   const [showModal, setShowModal] = useState(false)
 
