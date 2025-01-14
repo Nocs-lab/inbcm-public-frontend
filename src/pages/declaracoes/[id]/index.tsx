@@ -14,7 +14,7 @@ import DefaultLayout from "../../../layouts/default"
 import { getColorStatus } from "../../../utils/colorStatus"
 import request from "../../../utils/request"
 import toast from "react-hot-toast"
-import { Button, Modal } from "react-dsgov"
+import { Button, Modal, Textarea } from "react-dsgov"
 
 export default function DeclaracaoPage() {
   const params = useParams()
@@ -284,6 +284,22 @@ export default function DeclaracaoPage() {
                     Baixar planilha
                   </a>
                 </div>
+                {data.museologico.status !== "Recebida" && (
+                  <Textarea
+                    label="Parecer técnico sobre os bens museológicos"
+                    rows={4}
+                    className="w-full"
+                    style={{ minHeight: "100px" }}
+                    value={
+                      data.museologico.comentarios.length > 0
+                        ? data.museologico.comentarios[
+                            data.museologico.comentarios.length - 1
+                          ].mensagem
+                        : ""
+                    }
+                    disabled
+                  />
+                )}
                 <TableItens
                   acervo="museologico"
                   ano={data.anoDeclaracao}
@@ -317,6 +333,22 @@ export default function DeclaracaoPage() {
                     Baixar planilha
                   </a>
                 </div>
+                {data.bibliografico.status !== "Recebida" && (
+                  <Textarea
+                    label="Parecer técnico sobre os bens bibliográficos"
+                    rows={4}
+                    className="w-full"
+                    style={{ minHeight: "100px" }}
+                    value={
+                      data.bibliografico.comentarios.length > 0
+                        ? data.bibliografico.comentarios[
+                            data.bibliografico.comentarios.length - 1
+                          ].mensagem
+                        : ""
+                    }
+                    disabled
+                  />
+                )}
                 <TableItens
                   acervo="bibliografico"
                   ano={data.anoDeclaracao}
@@ -350,6 +382,22 @@ export default function DeclaracaoPage() {
                     Baixar planilha
                   </a>
                 </div>
+                {data.arquivistico.status !== "Recebida" && (
+                  <Textarea
+                    label="Parecer técnico sobre os bens arquivísticos"
+                    rows={4}
+                    className="w-full"
+                    style={{ minHeight: "100px" }}
+                    value={
+                      data.arquivistico.comentarios.length > 0
+                        ? data.arquivistico.comentarios[
+                            data.arquivistico.comentarios.length - 1
+                          ].mensagem
+                        : ""
+                    }
+                    disabled
+                  />
+                )}
                 <TableItens
                   acervo="arquivistico"
                   ano={data.anoDeclaracao}
