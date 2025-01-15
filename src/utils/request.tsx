@@ -1,10 +1,11 @@
 import { pack, unpack } from "msgpackr"
 import { useModal } from "./modal"
 import { Modal } from "react-dsgov"
-import router from "./router"
+import { useNavigate } from "react-router"
 
 export default function useHttpClient() {
   const { openModal, closeModal, setModalContent } = useModal()
+  const navigate = useNavigate()
 
   async function request(
     path: string,
@@ -37,7 +38,7 @@ export default function useHttpClient() {
       if (refreshRes.ok) {
         return request(path, init, handleError)
       } else {
-        router.navigate("/login")
+        navigate("/login")
       }
     } else if (!res.status.toString().startsWith("2") && handleError) {
       let message: string
@@ -62,7 +63,7 @@ export default function useHttpClient() {
       )
 
       if ((init?.method ?? "GET") === "GET") {
-        router.navigate(`/error?status=${res.status}`, {
+        navigate(`/error?status=${res.status}`, {
           state: { message }
         })
       } else {
