@@ -9,7 +9,7 @@ export default function useHttpClient() {
   async function request(
     path: string,
     init?: RequestInit & { data?: unknown },
-    handleError: boolean = true
+    handleError: boolean = false
   ): Promise<Response> {
     const headers = { Accept: "application/x-msgpack", ...init?.headers } as {
       [key: string]: string
@@ -26,6 +26,7 @@ export default function useHttpClient() {
       body: init?.data !== undefined ? pack(init.data) : init?.body
     })
 
+    // @ts-expect-error arrayBuffer is correct
     res.json = async () => unpack(await res.arrayBuffer())
 
     if (res.status === 401) {

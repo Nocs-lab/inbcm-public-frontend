@@ -26,7 +26,7 @@ export default function App() {
         <ModalProvider>
           <RouterProvider
             router={router}
-            fallbackElement={<Navigate to="/error" />}
+            fallbackElement={<Navigate to="/error?status=404" />}
           />
           <Toaster />
         </ModalProvider>
