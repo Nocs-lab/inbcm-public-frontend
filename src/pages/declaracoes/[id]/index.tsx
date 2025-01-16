@@ -16,6 +16,7 @@ import request from "../../../utils/request"
 import toast from "react-hot-toast"
 import { Button, Modal } from "react-dsgov"
 
+//index.tsx
 export default function DeclaracaoPage() {
   const params = useParams()
   const id = params.id!
