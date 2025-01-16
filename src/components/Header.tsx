@@ -2,12 +2,11 @@ import React, { useState } from "react"
 import { useNavigate, Link } from "react-router-dom"
 import { useSuspenseQuery } from "@tanstack/react-query"
 import logoIbramSimples from "../images/logo-ibram-simples.png"
-import useHttpClient from "../utils/request"
+import request from "../utils/request"
 import useStore from "../utils/store"
 
 const Header: React.FC = () => {
   const navigate = useNavigate()
-  const request = useHttpClient()
   const [userMenuOpen, setUserMenuOpen] = useState(false)
 
   const { setUser } = useStore()

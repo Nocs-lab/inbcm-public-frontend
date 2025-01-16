@@ -10,12 +10,11 @@ import { useNavigate } from "react-router"
 import { Link } from "react-router-dom"
 import Uploader from "../../components/Uploader"
 import DefaultLayout from "../../layouts/default"
+import request from "../../utils/request"
 import useStore from "../../utils/store"
-import useHttpClient from "../../utils/request"
 
 const NovoDeclaracaoPage = () => {
   const navigate = useNavigate()
-  const request = useHttpClient()
 
   const { user } = useStore()
 
