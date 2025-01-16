@@ -7,6 +7,7 @@ import { Link } from "react-router-dom"
 import DefaultLayout from "../../../layouts/default"
 import { getColorStatus } from "../../../utils/colorStatus"
 import request from "../../../utils/request"
+
 import { Textarea } from "react-dsgov"
 
 export default function DeclaracaoPage() {
