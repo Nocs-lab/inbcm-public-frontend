@@ -12,16 +12,15 @@ import MismatchsModal from "../../../components/MismatchsModal"
 import TableItens from "../../../components/TableItens"
 import DefaultLayout from "../../../layouts/default"
 import { getColorStatus } from "../../../utils/colorStatus"
+import request from "../../../utils/request"
 import toast from "react-hot-toast"
 import { Button, Modal } from "react-dsgov"
-import useHttpClient from "../../../utils/request"
 
 export default function DeclaracaoPage() {
   const params = useParams()
   const id = params.id!
 
   const navigate = useNavigate()
-  const request = useHttpClient()
 
   const [modalExcluirAberta, setModalExcluirAberta] = useState(false)
   const queryClient = useQueryClient()

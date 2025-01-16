@@ -4,40 +4,28 @@ import Input from "../components/Input"
 import { Link } from "react-router-dom"
 import { Button } from "react-dsgov"
 import { useState } from "react"
-import useHttpClient from "../utils/request"
-import { useMutation } from "@tanstack/react-query"
+import request from "../utils/request"
 
 export default function AutenticarPage() {
   const [hashDeclaracao, setHashDeclaracao] = useState("")
-  const [validationResult, setValidationResult] = useState<{
-    mensagem: string
-  } | null>(null)
+  const [validationResult, setValidationResult] = useState(null)
   const [error, setError] = useState<string | null>(null)
-  const [message, setMessage] = useState<string | null>(null)
-  const request = useHttpClient()
+  const [menssage, setMenssage] = useState(null)
 
-  const { mutateAsync: handleValidate } = useMutation({
-    mutationFn: async (data: unknown) => {
+  const handleValidate = async () => {
+    try {
       const response = await request(
-        "/api/public/recibo/validar",
-        {
-          method: "POST",
-          data
-        },
-        false
+        `/api/public/recibo/validar/${hashDeclaracao}`
       )
-      return response.json()
-    },
-    onSuccess: (data: { mensagem: string }) => {
-      setValidationResult(data)
-      setMessage(data.mensagem)
+      const result = await response.json()
+      setValidationResult(result)
+      setMenssage(result.mensagem)
       setError(null)
-    },
-    onError: () => {
+    } catch (err) {
       setValidationResult(null)
       setError("Declaração não encontrada.")
     }
-  })
+  }
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -68,11 +56,11 @@ export default function AutenticarPage() {
         </div>
 
         {/* Mensagem de sucesso */}
-        {validationResult && message && !error && (
+        {validationResult && menssage && !error && (
           <div className="mt-6 p-4 border rounded-lg bg-blue-100 text-blue-800 flex items-center space-x-4">
             <i className="fas fa-check-circle text-2xl"></i>
             <div>
-              <p>{message}</p>
+              <p>{menssage}</p>
             </div>
           </div>
         )}

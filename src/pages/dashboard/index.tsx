@@ -3,11 +3,10 @@ import { Chart } from "react-google-charts"
 import { Select } from "react-dsgov"
 import { useState, useEffect, SetStateAction } from "react"
 import { useQuery } from "@tanstack/react-query"
+import request from "../../utils/request"
 import { Link } from "react-router-dom"
-import useHttpClient from "../../utils/request"
 
 export default function Dashboard() {
-  const request = useHttpClient()
   const currentYear = new Date().getFullYear() // Obtém o ano atual
   const anos = Array.from({ length: 10 }, (_, i) => currentYear - i) // Últimos 10 anos
 
