@@ -129,9 +129,7 @@ export default function DeclaracaoPage() {
         >
           <i className="fas fa-timeline" aria-hidden="true"></i> Histórico
         </a>
-        {(data.museologico?.status !== "Recebida" ||
-          data.bibliografico?.status !== "Recebida" ||
-          data.arquivistico?.status !== "Recebida") && (
+        {data.status !== "Recebida" && (
           <Link to={`/declaracoes/${id}/analise`} className="text-xl">
             <i className="fa-solid fa-chalkboard-user"></i> Parecer
           </Link>
