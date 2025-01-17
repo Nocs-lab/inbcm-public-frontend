@@ -1,159 +1,22 @@
+import { useQuery } from "@tanstack/react-query"
 import logoIbramBranco from "../images/logo-ibram-branco.png"
 import logoIfrn from "../images/logo-ifrn.png"
 import logoNocs from "../images/logo-nocs.png"
 
 const Footer: React.FC = () => {
+  const { data: versaoBackend } = useQuery({
+    queryKey: ["version"],
+    queryFn: async () => {
+      const res = await fetch("/api/public")
+      return res.headers.get("x-version")
+    }
+  })
+
   return (
-    <footer className="br-footer">
+    <footer className="br-footer mt-auto">
       <div className="container-lg">
         <div className="logo">
           <img src={logoIbramBranco} alt="Imagem" />
-        </div>
-        <div
-          className="br-list horizontal"
-          data-toggle="data-toggle"
-          data-sub="data-sub"
-        >
-          <div className="col-2">
-            <a className="br-item header" href="#(0)">
-              <div className="content text-down-01 text-bold text-uppercase">
-                Categoria 1
-              </div>
-              <div className="support">
-                <i className="fas fa-angle-down" aria-hidden="true"></i>
-              </div>
-            </a>
-            <div className="br-list">
-              <span className="br-divider d-md-none"></span>
-              <a className="br-item" href="#(0)">
-                <div className="content">Deserunt</div>
-              </a>
-              <a className="br-item" href="#(0)">
-                <div className="content">Deserunt</div>
-              </a>
-              <span className="br-divider d-md-none"></span>
-            </div>
-          </div>
-          <div className="col-2">
-            <a className="br-item header" href="#(0)">
-              <div className="content text-down-01 text-bold text-uppercase">
-                Categoria 2
-              </div>
-              <div className="support">
-                <i className="fas fa-angle-down" aria-hidden="true"></i>
-              </div>
-            </a>
-            <div className="br-list">
-              <span className="br-divider d-md-none"></span>
-              <a className="br-item" href="#(0)">
-                <div className="content">Deserunt</div>
-              </a>
-              <a className="br-item" href="#(0)">
-                <div className="content">Ad deserunt nostrud</div>
-              </a>
-              <a className="br-item" href="#(0)">
-                <div className="content">Est ex deserunt</div>
-              </a>
-              <span className="br-divider d-md-none"></span>
-            </div>
-          </div>
-          <div className="col-2">
-            <a className="br-item header" href="#(0)">
-              <div className="content text-down-01 text-bold text-uppercase">
-                Categoria 3
-              </div>
-              <div className="support">
-                <i className="fas fa-angle-down" aria-hidden="true"></i>
-              </div>
-            </a>
-            <div className="br-list">
-              <span className="br-divider d-md-none"></span>
-              <a className="br-item" href="#(0)">
-                <div className="content">Est ex deserunt</div>
-              </a>
-              <a className="br-item" href="#(0)">
-                <div className="content">Est ex deserunt</div>
-              </a>
-              <a className="br-item" href="#(0)">
-                <div className="content">
-                  Ex qui laborum consectetur aute commodo
-                </div>
-              </a>
-              <span className="br-divider d-md-none"></span>
-            </div>
-          </div>
-          <div className="col-2">
-            <a className="br-item header" href="#(0)">
-              <div className="content text-down-01 text-bold text-uppercase">
-                Categoria 4
-              </div>
-              <div className="support">
-                <i className="fas fa-angle-down" aria-hidden="true"></i>
-              </div>
-            </a>
-            <div className="br-list">
-              <span className="br-divider d-md-none"></span>
-              <a className="br-item" href="#(0)">
-                <div className="content">Duis incididunt consectetur</div>
-              </a>
-              <a className="br-item" href="#(0)">
-                <div className="content">Ad deserunt nostrud</div>
-              </a>
-              <span className="br-divider d-md-none"></span>
-            </div>
-          </div>
-          <div className="col-2">
-            <a className="br-item header" href="#(0)">
-              <div className="content text-down-01 text-bold text-uppercase">
-                Categoria 5
-              </div>
-              <div className="support">
-                <i className="fas fa-angle-down" aria-hidden="true"></i>
-              </div>
-            </a>
-            <div className="br-list">
-              <span className="br-divider d-md-none"></span>
-              <a className="br-item" href="#(0)">
-                <div className="content">Nulla occaecat eiusmod</div>
-              </a>
-              <a className="br-item" href="#(0)">
-                <div className="content">
-                  Ex qui laborum consectetur aute commodo
-                </div>
-              </a>
-              <a className="br-item" href="#(0)">
-                <div className="content">Deserunt</div>
-              </a>
-              <a className="br-item" href="#(0)">
-                <div className="content">Est ex deserunt</div>
-              </a>
-              <span className="br-divider d-md-none"></span>
-            </div>
-          </div>
-          <div className="col-2">
-            <a className="br-item header" href="#(0)">
-              <div className="content text-down-01 text-bold text-uppercase">
-                Categoria 6
-              </div>
-              <div className="support">
-                <i className="fas fa-angle-down" aria-hidden="true"></i>
-              </div>
-            </a>
-            <div className="br-list">
-              <span className="br-divider d-md-none"></span>
-              <a className="br-item" href="#(0)">
-                <div className="content">
-                  Ex qui laborum consectetur aute commodo
-                </div>
-              </a>
-              <a className="br-item" href="#(0)">
-                <div className="content">
-                  Ex qui laborum consectetur aute commodo
-                </div>
-              </a>
-              <span className="br-divider d-md-none"></span>
-            </div>
-          </div>
         </div>
         <div className="d-none d-sm-block">
           <div className="row align-items-end justify-content-between py-5">
@@ -185,10 +48,10 @@ const Footer: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="flex items-center justify-center font-bold">
+            <div className="col assigns flex items-center justify-center">
               Desenvolvido por:
-              <img className="ml-4 h-20" src={logoIfrn} alt="Imagem" />
-              <img className="ml-4 h-10" src={logoNocs} alt="Imagem" />
+              <img className="ml-4" src={logoNocs} alt="Imagem" />
+              <img className="ml-4" src={logoIfrn} alt="Imagem" />
             </div>
           </div>
         </div>
@@ -197,8 +60,8 @@ const Footer: React.FC = () => {
       <div className="container-lg">
         <div className="info">
           <div className="text-down-01 text-medium pb-3">
-            Texto destinado a exibição de informações relacionadas à&nbsp;
-            <strong>licença de uso.</strong>
+            Versão do cliente: {import.meta.env.VITE_SHORT_SHA ?? "dev"} |
+            Versão do servidor: {versaoBackend}
           </div>
         </div>
       </div>

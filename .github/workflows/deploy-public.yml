@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out the repo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set Docker repository name for main branch
         if: github.ref == 'refs/heads/main'
@@ -24,6 +24,9 @@ jobs:
       - name: Set Docker repository name for development branch
         if: github.ref == 'refs/heads/development'
         run: echo "DOCKER_REPOSITORY=inbcm-public" >> $GITHUB_ENV
+
+      - name: Truncate commit SHA
+        run: echo "VITE_SHORT_SHA=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
 
       - name: Log in to Docker Registry
         uses: docker/login-action@v3
@@ -37,4 +40,40 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPOSITORY }}:latest
+          build-args: |
+            VITE_SHORT_SHA=${{ env.VITE_SHORT_SHA }}
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPOSITORY }}:${{ github.event_name }}-${{ env.VITE_SHORT_SHA }}
+            ${{ secrets.DOCKER_USERNAME }}/${{ env.DOCKER_REPOSITORY }}:latest
+
+      - name: waiting images arrive on docker hub
+        run: sleep 12
+
+# Environment update
+
+  updating_environment:
+    needs: push_to_registry
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout of code
+        uses: actions/checkout@v4
+
+      - name: Create file .env
+        run: echo "${{ secrets.ENVS_UPDATE }}" > .env
+
+      - name: Config Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.9'
+
+      - name: Install Playwright and Chromium
+        run: |
+          pip install playwright
+          playwright install chromium
+          pip install python-dotenv
+
+      - name: Running script update
+        run: python ./src/scripts/updatePortainer.py
+
+      - name: Wainting portainer update
+        run: sleep 12

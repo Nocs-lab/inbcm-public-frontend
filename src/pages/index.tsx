@@ -1,15 +1,19 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
+import { type ColumnDef, createColumnHelper } from "@tanstack/react-table"
+import { format } from "date-fns"
+import { Link } from "react-router-dom"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { Modal, Button } from "react-dsgov"
+import Table from "../components/Table"
 import DefaultLayout from "../layouts/default"
 import request from "../utils/request"
-import { createColumnHelper } from "@tanstack/react-table"
-import { Link } from "react-router-dom"
-import { format } from "date-fns"
-import Table from "../components/Table"
 
 const columnHelper = createColumnHelper<{
   _id: string
   dataCriacao: Date
   anoDeclaracao: string
+  retificacao: boolean
   museu_id: {
     _id: string
     nome: string
@@ -34,8 +38,13 @@ const columnHelper = createColumnHelper<{
 }>()
 
 const columns = [
+  columnHelper.accessor("retificacao", {
+    header: "Tipo",
+    cell: (info) => (info.getValue() ? "Retificadora" : "Original"),
+    enableColumnFilter: false
+  }),
   columnHelper.accessor("dataCriacao", {
-    header: "Data de envio",
+    header: "Envio",
     cell: (info) => format(info.getValue(), "dd/MM/yyyy HH:mm"),
     enableColumnFilter: false
   }),
@@ -52,31 +61,44 @@ const columns = [
     }
   }),
   columnHelper.accessor("status", {
-    header: "Status",
+    header: "Situação",
     enableColumnFilter: false
   }),
   columnHelper.accessor("_id", {
     header: "Ações",
     enableColumnFilter: false,
+    enableSorting: false,
     cell: (info) => (
-      <div className="flex gap-1 items-center">
-        <Link
-          to={`/declaracoes/${info.getValue()}`}
-          className="flex items-center justify-center gap-1"
-        >
-          <i className="fas fa-eye" aria-hidden="true"></i>
-          Detalhar
-        </Link>
-      </div>
+      <Link to={`/declaracoes/${info.getValue()}`} className="br-link">
+        <i className="fas fa-eye" aria-hidden="true"></i> Exibir
+      </Link>
     )
   })
 ]
 
 export default function Declaracoes() {
+  const navigate = useNavigate()
+  const [showModal, setShowModal] = useState(false)
+
+  const { data: museus } = useSuspenseQuery({
+    queryKey: ["museus"],
+    queryFn: async () => {
+      const response = await request("/api/public/museus")
+      return response.json()
+    }
+  })
+
+  const handleNavigation = (path: string) => {
+    if (!museus || museus.length === 0) {
+      setShowModal(true)
+    } else {
+      navigate(path)
+    }
+  }
   const { data } = useSuspenseQuery({
     queryKey: ["declaracoes"],
     queryFn: async () => {
-      const response = await request("/api/declaracoes")
+      const response = await request("/api/public/declaracoes")
       return response.json()
     }
   })
@@ -85,10 +107,30 @@ export default function Declaracoes() {
     <DefaultLayout>
       <div className="flex items-center justify-between">
         <h2>Minhas declarações</h2>
-        <Link to="/declaracoes/novo" className="btn text-xl">
-          <i className="fa-solid fa-file-lines p-2"></i>
-          Nova declaração
-        </Link>
+        <div>
+          <Link
+            to="#"
+            className="btn text-xl p-3"
+            onClick={(e) => {
+              e.preventDefault()
+              handleNavigation("/declaracoes/novo")
+            }}
+          >
+            <i className="fa-solid fa-file-lines p-2"></i>
+            Nova declaração
+          </Link>
+          <Link
+            to="#"
+            className="btn text-xl p-3"
+            onClick={(e) => {
+              e.preventDefault()
+              handleNavigation("/dashboard")
+            }}
+          >
+            <i className="fa-solid fa-chart-line p-2"></i>
+            Painel
+          </Link>
+        </div>
       </div>
       <div
         className="br-table overflow-auto"
@@ -97,9 +139,30 @@ export default function Declaracoes() {
         data-collapse="data-collapse"
         data-random="data-random"
       >
-        <Table columns={columns} data={data} />
+        <Table columns={columns as ColumnDef<unknown>[]} data={data} />
       </div>
       <div className="h-10" />
+
+      {/* Modal */}
+      <Modal
+        useScrim
+        showCloseButton
+        title="Museu não associado"
+        modalOpened={showModal}
+        onCloseButtonClick={() => setShowModal(false)}
+      >
+        <Modal.Body>
+          <p>
+            Não há museus associados ao seu perfil. Entre em contato com o
+            administrador do sistema solicitando esse vínculo.
+          </p>
+        </Modal.Body>
+        <Modal.Footer justify-content="center">
+          <Button primary onClick={() => setShowModal(false)}>
+            Ok
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </DefaultLayout>
   )
 }

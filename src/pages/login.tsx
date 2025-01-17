@@ -1,14 +1,14 @@
-import { z } from "zod"
-import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import useStore from "../utils/store"
-import clsx from "clsx"
-import { useNavigate } from "react-router"
 import { useMutation } from "@tanstack/react-query"
-import request from "../utils/request"
+import clsx from "clsx"
 import React, { useState } from "react"
-import logoIbram from "../images/logo-ibram.png"
+import { useForm } from "react-hook-form"
+import { useNavigate } from "react-router"
+import { z } from "zod"
 import Input from "../components/Input"
+import logoIbram from "../images/logo-ibram.png"
+import request from "../utils/request"
+import useStore from "../utils/store"
 
 const schema = z.object({
   email: z.string().min(1, "Este campo é obrigatório"),
@@ -27,16 +27,21 @@ const LoginPage: React.FC = () => {
   })
 
   const [showError, setShowError] = useState(true)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
 
   const { mutate, error, isError } = useMutation({
     mutationFn: async ({ email, password }: FormData) => {
-      const res = await request("/api/auth/login", {
-        method: "POST",
-        data: {
-          email,
-          password
-        }
-      })
+      const res = await request(
+        "/api/public/auth/login",
+        {
+          method: "POST",
+          data: {
+            email,
+            password
+          }
+        },
+        false
+      )
 
       return await res.json()
     },
@@ -49,6 +54,13 @@ const LoginPage: React.FC = () => {
       navigate("/")
     },
     onError: () => {
+      if (error instanceof Error) {
+        setErrorMessage(error.message)
+      } else if (typeof error === "string") {
+        setErrorMessage(error)
+      } else {
+        setErrorMessage("Usuário ou senha incorreta")
+      }
       setShowError(true)
     }
   })
@@ -74,9 +86,13 @@ const LoginPage: React.FC = () => {
               <div className="icon">
                 <i className="fas fa-times-circle fa-lg" aria-hidden="true"></i>
               </div>
-              <div className="content" aria-label={error.message} role="alert">
+              <div
+                className="content"
+                aria-label={errorMessage ?? ""}
+                role="alert"
+              >
                 <span className="message-title"> Erro: </span>
-                <span className="message-body">{error.message}</span>
+                <span className="message-body">{errorMessage}</span>
               </div>
               <div className="close">
                 <button
@@ -113,6 +129,10 @@ const LoginPage: React.FC = () => {
           >
             Entrar
           </button>
+          <a href="/autenticar">
+            <i className="fa-solid fa-envelope-circle-check p-2 text-lg"></i>
+            Validar recibo
+          </a>
         </form>
       </div>
       <div className="hidden lg:block w-7/12 bg-blue-700"></div>

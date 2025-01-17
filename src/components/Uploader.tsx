@@ -1,9 +1,8 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { z } from "zod"
 import { Controller, FieldError, useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Select } from "react-dsgov"
+import { Select, Button, Modal } from "react-dsgov"
 import Input from "../components/Input"
 import clsx from "clsx"
 import { useEffect, useState } from "react"
@@ -11,12 +10,13 @@ import MismatchsModal from "../components/MismatchsModal"
 import {
   validate_museologico,
   validate_bibliografico,
-  validate_arquivistico
+  validate_arquivistico,
+  readFile
 } from "inbcm-xlsx-validator"
 
 const schema = z
   .object({
-    ano: z.enum(["2024", "2023", "2022", "2021"], { message: "Ano inválido" }),
+    ano: z.string(),
     museologico: z.instanceof(FileList).nullable(),
     bibliografico: z.instanceof(FileList).nullable(),
     arquivistico: z.instanceof(FileList).nullable(),
@@ -42,20 +42,26 @@ const Uploader: React.FC<{
   museus: { _id: string; nome: string }[]
   anoDeclaracao: string
   isRetificar?: boolean
+  DeclaracaoStatus?: string
+  isExist?: boolean
   onSubmit: (data: FormValues) => void
   isLoading: boolean
   disabled?: boolean
   onChangeAno?: (ano: string) => void
   onChangeMuseu?: (museu: string) => void
+  anos: number[]
 }> = ({
   museus,
   anoDeclaracao,
   isRetificar,
+  DeclaracaoStatus,
   onSubmit,
   isLoading,
   disabled = false,
   onChangeAno,
-  onChangeMuseu
+  onChangeMuseu,
+  isExist,
+  anos
 }) => {
   const {
     register,
@@ -68,7 +74,7 @@ const Uploader: React.FC<{
     resolver: zodResolver(schema),
     mode: "onBlur",
     defaultValues: {
-      ano: anoDeclaracao || "2024",
+      ano: anoDeclaracao || Math.max(...anos).toString(),
       museu: museus[0]?._id,
       museologico: null,
       bibliografico: null,
@@ -102,16 +108,25 @@ const Uploader: React.FC<{
     (file) => file?.length
   ).length
 
-  const [showMessage, setShowMessage] = useState(false)
+  const [showMessage, setShowMessage] = useState<{
+    show: boolean
+    type: string
+  } | null>(null)
+
   const [errorMessage, setErrorMessage] = useState<{
     title: string
     body: string
   } | null>(null)
   const [isValidating, setIsValidating] = useState(false)
 
-  const [musologicoErrors, setMuseologicoErrors] = useState<string[]>([])
+  const [museologicoErrors, setMuseologicoErrors] = useState<string[]>([])
+  const [museologicoFields, setMuseologicoFields] = useState<string[]>([])
+
   const [bibliograficoErrors, setBibliograficoErrors] = useState<string[]>([])
+  const [bibliograficoFields, setBibliograficoFields] = useState<string[]>([])
+
   const [arquivisticoErrors, setArquivisticoErrors] = useState<string[]>([])
+  const [arquivisticoFields, setArquivisticoFields] = useState<string[]>([])
 
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -143,80 +158,98 @@ const Uploader: React.FC<{
   }
 
   useEffect(() => {
-    if (errorMessage) {
-      const timer = setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-
-      return () => clearTimeout(timer)
-    }
-  }, [errorMessage])
-
-  useEffect(() => {
     if (museologico?.length) {
       setIsValidating(true)
-      validate_museologico(museologico[0])
-        .then(
-          (result: {
-            [key: string]: (string | { [key: string]: string })[]
-          }) => {
-            if (result.errors.length > 0) {
-              setMuseologicoErrors(result.errors as string[])
-              setShowMessage(true)
+      readFile(museologico[0]).then((result) =>
+        validate_museologico(result)
+          .then(
+            (result: {
+              [key: string]: (string | { [key: string]: string })[]
+            }) => {
+              setMuseologicoFields(result.data as string[])
+              if (result.errors.length > 0) {
+                setMuseologicoErrors(result.errors as string[])
+                setShowMessage({
+                  show: true,
+                  type: "museológico"
+                })
+              }
+              setIsValidating(false)
+              setErrorMessage(null)
             }
-            setIsValidating(false)
-          }
-        )
-        .catch((err) => {
-          setValue("museologico", null)
-          handlerError(err, "museológicos")
-        })
+          )
+          .catch((err) => {
+            setValue("museologico", null)
+            handlerError(err, "museológicos")
+          })
+      )
     }
   }, [museologico])
+
+  //console.log(museologicoFields.length)
 
   useEffect(() => {
     if (bibliografico?.length) {
       setIsValidating(true)
       validate_bibliografico(bibliografico[0])
-        .then(
-          (result: {
-            [key: string]: (string | { [key: string]: string })[]
-          }) => {
-            if (result.errors.length > 0) {
-              setBibliograficoErrors(result.errors as string[])
-              setShowMessage(true)
+      readFile(bibliografico[0]).then((result) =>
+        validate_bibliografico(result)
+          .then(
+            (result: {
+              [key: string]: (string | { [key: string]: string })[]
+            }) => {
+              setBibliograficoFields(result.data as string[])
+              if (result.errors.length > 0) {
+                setBibliograficoErrors(result.errors as string[])
+                setShowMessage({
+                  show: true,
+                  type: "bibliográfico"
+                })
+              }
+              setIsValidating(false)
+              setErrorMessage(null)
             }
-            setIsValidating(false)
-          }
-        )
-        .catch((err) => {
-          setValue("bibliografico", null)
-          handlerError(err, "bibliográficos")
-        })
+          )
+          .catch((err) => {
+            setValue("bibliografico", null)
+            handlerError(err, "bibliográficos")
+          })
+      )
     }
   }, [bibliografico])
+
+  //console.log(bibliograficoFields.length)
 
   useEffect(() => {
     if (arquivistico?.length) {
       setIsValidating(true)
-      validate_arquivistico(arquivistico[0])
-        .then(
-          (result: {
-            [key: string]: (string | { [key: string]: string })[]
-          }) => {
-            if (result.errors.length > 0) {
-              setArquivisticoErrors(result.errors as string[])
-              setShowMessage(true)
+      readFile(arquivistico[0]).then((result) =>
+        validate_arquivistico(result)
+          .then(
+            (result: {
+              [key: string]: (string | { [key: string]: string })[]
+            }) => {
+              setArquivisticoFields(result.data as string[])
+              if (result.errors.length > 0) {
+                setArquivisticoErrors(result.errors as string[])
+                setShowMessage({
+                  show: true,
+                  type: "arquivístico"
+                })
+              }
+              setIsValidating(false)
+              setErrorMessage(null)
             }
-            setIsValidating(false)
-          }
-        )
-        .catch((err) => {
-          setValue("arquivistico", null)
-          handlerError(err, "arquivísticos")
-        })
+          )
+          .catch((err) => {
+            setValue("arquivistico", null)
+            handlerError(err, "arquivísticos")
+          })
+      )
     }
   }, [arquivistico])
+
+  //console.log(arquivisticoFields.length)
 
   const navigate = useNavigate()
 
@@ -224,12 +257,18 @@ const Uploader: React.FC<{
     navigate("/")
   }
 
+  const [modalAberto, setModalAberto] = useState(false)
+
+  const handleSendClick = () => {
+    setModalAberto(false)
+  }
+
   return (
     <>
       <MismatchsModal
         opened={modalOpen}
         onClose={() => setModalOpen(false)}
-        musologicoErrors={musologicoErrors}
+        museologicoErrors={museologicoErrors}
         bibliograficoErrors={bibliograficoErrors}
         arquivisticoErrors={arquivisticoErrors}
       />
@@ -257,13 +296,14 @@ const Uploader: React.FC<{
               role="alert"
             >
               <span className="message-title">
-                Encontramos inconsistências no(s) arquivo(s) enviado(s).{" "}
+                Há pendências na planilha selecionada para bens do tipo{" "}
+                {showMessage.type}.{" "}
               </span>
               <span className="message-body">
                 Você pode corrigi-las antes de enviar ou, se preferir 1) cancele
                 o envio; 2) preencha os campos corretamente e; 3) mais tarde,
                 retorne para enviar sua declaração. Para visualizar as
-                inconsistências,{" "}
+                pendências,{" "}
                 <button
                   className="text-blue-600"
                   onClick={() => setModalOpen(true)}
@@ -323,12 +363,10 @@ const Uploader: React.FC<{
                 <Select
                   label="Ano"
                   className="!w-full"
-                  options={[
-                    { label: "2024", value: "2024" },
-                    { label: "2023", value: "2023" },
-                    { label: "2022", value: "2022" },
-                    { label: "2021", value: "2021" }
-                  ]}
+                  options={anos.map((ano) => ({
+                    label: String(ano),
+                    value: String(ano)
+                  }))}
                   {...field}
                 />
               ) : (
@@ -366,6 +404,7 @@ const Uploader: React.FC<{
               <Select
                 label="Tipos de acervo"
                 type="multiple"
+                selectAllText={""}
                 placeholder="Seleciona o(s) tipo(s)"
                 options={[
                   { label: "Museológico", value: "museologico" },
@@ -436,32 +475,93 @@ const Uploader: React.FC<{
             />
           )}
         </div>
-        <div className="flex space-x-4">
-          <button
-            type="submit"
-            className={clsx(
-              "br-button primary mt-5",
-              isValidating || (isLoading && "loading")
-            )}
-            disabled={
-              isLoading ||
-              totalFiles !== fields.length ||
-              isValidating ||
-              disabled
-            }
-          >
-            Enviar
-          </button>
+        <Modal
+          useScrim
+          showCloseButton
+          className="large w-[800px] p-3"
+          title="Confirmar envio da declaração"
+          modalOpened={modalAberto}
+          onCloseButtonClick={(e) => {
+            e.stopPropagation() // Impede a propagação do evento
+            e.preventDefault() // Evita comportamento padrão para o showCloseButton cancelar o modal
+            setModalAberto(false) // Fecha o modal
+          }}
+        >
+          <Modal.Body className="mb-4">
+            <p>Verifique a quantidade de itens por acervo</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Tipo de Acervo</th>
+                  <th>Quantidade de itens</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Museológico</td>
+                  <td>{museologicoFields.length}</td>
+                </tr>
+                <tr>
+                  <td>Bibliográfico</td>
+                  <td>{bibliograficoFields.length}</td>
+                </tr>
+                <tr>
+                  <td>Arquivístico</td>
+                  <td>{arquivisticoFields.length}</td>
+                </tr>
+              </tbody>
+            </table>
+          </Modal.Body>
 
-          <button
-            className={clsx(
-              "rounded-full py-2 px-4 text-base font-extrabold mt-5",
-              "bg-gray-500 text-white hover:bg-gray-600"
-            )}
-            onClick={handleCancelClick}
-          >
+          <Modal.Footer className="pt-4 mt-4 flex justify-end gap-2">
+            <Button
+              secondary
+              small
+              m={2}
+              onClick={(e) => {
+                e.preventDefault()
+                setModalAberto(false)
+              }}
+              disabled={isLoading}
+            >
+              Cancelar
+            </Button>
+            <Button
+              primary
+              small
+              m={2}
+              loading={isLoading}
+              onClick={handleSendClick}
+            >
+              Confirmar
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        <div className="flex space-x-4 justify-end">
+          <Button secondary onClick={handleCancelClick} className="mt-5">
             Cancelar
-          </button>
+          </Button>
+          {((isExist === true && DeclaracaoStatus === "Excluída") ||
+            (isExist === true && isRetificar) ||
+            isExist === false) && (
+            <button
+              type="button"
+              className={clsx(
+                "br-button primary mt-5",
+                isValidating || (isLoading && "loading")
+              )}
+              disabled={
+                isLoading ||
+                totalFiles !== fields.length ||
+                isValidating ||
+                disabled
+              }
+              onClick={() => setModalAberto(true)}
+            >
+              Enviar
+            </button>
+          )}
         </div>
       </form>
     </>
