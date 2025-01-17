@@ -129,6 +129,11 @@ export default function DeclaracaoPage() {
         >
           <i className="fas fa-timeline" aria-hidden="true"></i> Histórico
         </a>
+        {data.status !== "Recebida" && (
+          <Link to={`/declaracoes/${id}/analise`} className="text-xl">
+            <i className="fa-solid fa-chalkboard-user"></i> Parecer
+          </Link>
+        )}
         {data.status == "Recebida" ? (
           <a
             className="text-xl"
@@ -180,13 +185,6 @@ export default function DeclaracaoPage() {
             </Button>
           </Modal.Footer>
         </Modal>
-        {(data.museologico?.status !== "Recebida" ||
-          data.bibliografico?.status !== "Recebida" ||
-          data.arquivistico?.status !== "Recebida") && (
-          <Link to={`/declaracoes/${id}/analise`} className="text-xl">
-            <i class="fa-solid fa-chalkboard-user"></i> Parecer do analista
-          </Link>
-        )}
       </div>
       <div className="flex gap-10 text-lg mt-5">
         <span>
@@ -276,7 +274,6 @@ export default function DeclaracaoPage() {
               >
                 <div className="flex items-center justify-between">
                   <span className="mb-3 flex items-center justify-start gap-1">
-                    <span className="font-bold">Situação: </span>
                     <span
                       className="br-tag"
                       style={getColorStatus(data.museologico?.status)}
@@ -309,7 +306,6 @@ export default function DeclaracaoPage() {
               >
                 <div className="flex items-center justify-between">
                   <span className="mb-3 flex items-center justify-start gap-1">
-                    <span className="font-bold">Situação: </span>
                     <span
                       className="br-tag"
                       style={getColorStatus(data.bibliografico?.status)}
@@ -342,7 +338,6 @@ export default function DeclaracaoPage() {
               >
                 <div className="flex items-center justify-between">
                   <span className="mb-3 flex items-center justify-start gap-1">
-                    <span className="font-bold">Situação: </span>
                     <span
                       className="br-tag"
                       style={getColorStatus(data.arquivistico?.status)}

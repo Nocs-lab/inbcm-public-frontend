@@ -143,7 +143,6 @@ export default function DeclaracaoPage() {
               >
                 <div className="flex items-center justify-between">
                   <span className="mb-3 flex items-center justify-start gap-1">
-                    <span className="font-bold">Situação: </span>
                     <span
                       className="br-tag"
                       style={getColorStatus(data.museologico?.status)}
@@ -187,7 +186,6 @@ export default function DeclaracaoPage() {
               >
                 <div className="flex items-center justify-between">
                   <span className="mb-3 flex items-center justify-start gap-1">
-                    <span className="font-bold">Situação: </span>
                     <span
                       className="br-tag"
                       style={getColorStatus(data.bibliografico?.status)}
@@ -231,7 +229,6 @@ export default function DeclaracaoPage() {
               >
                 <div className="flex items-center justify-between">
                   <span className="mb-3 flex items-center justify-start gap-1">
-                    <span className="font-bold">Situação: </span>
                     <span
                       className="br-tag"
                       style={getColorStatus(data.arquivistico?.status)}
