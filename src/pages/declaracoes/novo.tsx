@@ -103,7 +103,7 @@ const NovoDeclaracaoPage = () => {
         <i className="fas fa-arrow-left" aria-hidden="true"></i>
         Voltar
       </Link>
-      <h2>Nova declaração</h2>
+      <h2>Enviar nova declaração</h2>
       {DeclaracaoStatus == "Recebida" && (
         <div className="br-message warning">
           <div className="icon">
