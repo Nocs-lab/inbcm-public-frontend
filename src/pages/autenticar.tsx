@@ -57,10 +57,10 @@ export default function AutenticarPage() {
 
         {/* Mensagem de sucesso */}
         {validationResult && menssage && !error && (
-          <div className="mt-6 p-4 border rounded-lg bg-blue-100 text-blue-800 flex items-center space-x-4">
-            <i className="fas fa-check-circle text-2xl"></i>
+          <div className="mt-6 p-4 border rounded-lg bg-green-100 text-green-800 flex items-center space-x-4">
+            <i className="fas fa-check-circle text-2xl flex-shrink-0"></i>
             <div>
-              <p>{menssage}</p>
+              <p className="m-0 leading-relaxed">{menssage}</p>
             </div>
           </div>
         )}
@@ -68,8 +68,10 @@ export default function AutenticarPage() {
         {/* Mensagem de erro */}
         {error && (
           <div className="mt-6 p-4 border rounded-lg bg-red-100 text-red-800 flex items-center space-x-4">
-            <i className="fas fa-exclamation-circle text-2xl"></i>
-            <p>{error}</p>
+            <i className="fas fa-exclamation-circle text-2xl flex-shrink-0"></i>
+            <div>
+              <p className="m-0 leading-relaxed">{error}</p>
+            </div>
           </div>
         )}
       </div>

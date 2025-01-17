@@ -130,8 +130,8 @@ const LoginPage: React.FC = () => {
             Entrar
           </button>
           <a href="/autenticar">
-            <i className="fa-solid fa-envelope-circle-check p-2"></i>
-            Autenticar recibo
+            <i className="fa-solid fa-envelope-circle-check p-2 text-lg"></i>
+            Validar recibo
           </a>
         </form>
       </div>
