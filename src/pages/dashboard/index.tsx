@@ -1,7 +1,7 @@
 import DefaultLayout from "../../layouts/default"
 import { Chart } from "react-google-charts"
 import { Select } from "react-dsgov"
-import { useState, useEffect } from "react"
+import { useState, useEffect, SetStateAction } from "react"
 import { useQuery } from "@tanstack/react-query"
 import request from "../../utils/request"
 import { Link } from "react-router-dom"
@@ -44,9 +44,10 @@ export default function Dashboard() {
     }
   }, [museus])
 
-  const handleMuseuChange = (value) => setMuseu(value)
-  const handleAnoInicioChange = (value) => setAnoInicio(value)
-  const handleAnoFimChange = (value) => setAnoFim(value)
+  const handleMuseuChange = (value: SetStateAction<string>) => setMuseu(value)
+  const handleAnoInicioChange = (value: SetStateAction<string>) =>
+    setAnoInicio(value)
+  const handleAnoFimChange = (value: SetStateAction<string>) => setAnoFim(value)
 
   return (
     <DefaultLayout>
@@ -62,7 +63,7 @@ export default function Dashboard() {
           label="Museu"
           className="!w-full"
           options={
-            museus?.map((museu) => ({
+            museus?.map((museu: { nome: string; _id: string }) => ({
               label: museu.nome,
               value: museu._id
             })) ?? []
@@ -109,19 +110,28 @@ export default function Dashboard() {
               "Bibliográfico",
               { role: "annotation" }
             ],
-            ...(dadosGrafico?.data?.map((item) => [
-              item.anoDeclaracao,
-              item.totalMuseologico,
-              item.totalMuseologico > 0 ? item.totalMuseologico.toString() : "", // Anotação para Museológico
-              item.totalArquivistico,
-              item.totalArquivistico > 0
-                ? item.totalArquivistico.toString()
-                : "",
-              item.totalBibliografico,
-              item.totalBibliografico > 0
-                ? item.totalBibliografico.toString()
-                : ""
-            ]) ?? [])
+            ...(dadosGrafico?.data?.map(
+              (item: {
+                anoDeclaracao: unknown
+                totalMuseologico: number
+                totalArquivistico: number
+                totalBibliografico: number
+              }) => [
+                item.anoDeclaracao,
+                item.totalMuseologico,
+                item.totalMuseologico > 0
+                  ? item.totalMuseologico.toString()
+                  : "", // Anotação para Museológico
+                item.totalArquivistico,
+                item.totalArquivistico > 0
+                  ? item.totalArquivistico.toString()
+                  : "",
+                item.totalBibliografico,
+                item.totalBibliografico > 0
+                  ? item.totalBibliografico.toString()
+                  : ""
+              ]
+            ) ?? [])
           ]}
           width="100%"
           height="400px"

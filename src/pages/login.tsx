@@ -31,13 +31,17 @@ const LoginPage: React.FC = () => {
 
   const { mutate, error, isError } = useMutation({
     mutationFn: async ({ email, password }: FormData) => {
-      const res = await request("/api/public/auth/login", {
-        method: "POST",
-        data: {
-          email,
-          password
-        }
-      })
+      const res = await request(
+        "/api/public/auth/login",
+        {
+          method: "POST",
+          data: {
+            email,
+            password
+          }
+        },
+        false
+      )
 
       return await res.json()
     },
@@ -126,8 +130,8 @@ const LoginPage: React.FC = () => {
             Entrar
           </button>
           <a href="/autenticar">
-            <i className="fa-solid fa-envelope-circle-check p-2"></i>
-            Autenticar recibo
+            <i className="fa-solid fa-envelope-circle-check p-2 text-lg"></i>
+            Validar recibo
           </a>
         </form>
       </div>
