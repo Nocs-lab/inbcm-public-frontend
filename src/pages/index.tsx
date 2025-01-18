@@ -117,7 +117,7 @@ export default function Declaracoes() {
             }}
           >
             <i className="fa-solid fa-file-lines p-2"></i>
-            Nova declaração
+            Nova
           </Link>
           <Link
             to="#"
