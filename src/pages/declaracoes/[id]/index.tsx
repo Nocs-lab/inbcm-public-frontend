@@ -24,6 +24,7 @@ export default function DeclaracaoPage() {
   const navigate = useNavigate()
 
   const [modalExcluirAberta, setModalExcluirAberta] = useState(false)
+  const [modalAlertaAberta, setModalAlertaAberta] = useState(false)
   const queryClient = useQueryClient()
 
   const { mutate: deleteDeclaration, isPending: deletingDeclaration } =
@@ -122,6 +123,50 @@ export default function DeclaracaoPage() {
             />
           </>
         )}
+        {(data.museologico?.pendencias.length > 0 ||
+          data.bibliografico?.pendencias.length > 0 ||
+          data.arquivistico?.pendencias.length > 0) && (
+          <>
+            <a
+              className="text-xl"
+              href="#"
+              onClick={() => setModalAlertaAberta(true)}
+              role="button"
+            >
+              <i
+                className="fas fa-file-circle-exclamation"
+                aria-hidden="true"
+              ></i>{" "}
+              Relatório de pendências
+            </a>
+            <Modal
+              useScrim
+              showCloseButton
+              title="Tela em desenvolvimento"
+              modalOpened={modalAlertaAberta}
+              onCloseButtonClick={() => setModalAlertaAberta(false)}
+            >
+              <Modal.Body>
+                <div className="flex items-center space-x-2">
+                  <i className="fas fa-exclamation-triangle text-danger fa-3x"></i>
+                  <p className="normal-case text-center">
+                    Essa tela ainda está em desenvolvimento.
+                  </p>
+                </div>
+              </Modal.Body>
+              <Modal.Footer justify-content="center">
+                <Button
+                  primary
+                  small
+                  m={2}
+                  onClick={() => setModalAlertaAberta(false)}
+                >
+                  Voltar
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          </>
+        )}
         <a
           className="text-xl"
           href="#"
@@ -131,7 +176,7 @@ export default function DeclaracaoPage() {
         </a>
         {data.status !== "Recebida" && (
           <Link to={`/declaracoes/${id}/analise`} className="text-xl">
-            <i className="fa-solid fa-chalkboard-user"></i> Parecer
+            <i className="fas fa-chalkboard-user"></i> Parecer
           </Link>
         )}
         {data.status == "Recebida" ? (
