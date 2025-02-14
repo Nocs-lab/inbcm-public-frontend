@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react"
 import { useNavigate } from "react-router"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import Input from "../components/Input"
-import { Row, Col, Button } from "react-dsgov"
+import { Row, Col, Button, Modal } from "react-dsgov"
 import { z } from "zod"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -65,6 +65,8 @@ const CreateUser: React.FC = () => {
   const [selectedMuseusNames, setSelectedMuseusNames] = useState<string[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [search, setSearch] = useState("")
+  const [showConfirmationModal, setShowConfirmationModal] = useState(false)
+  const [formData, setFormData] = useState<FormData | null>(null)
   const [page, setPage] = useState(1)
 
   const { data: museusData } = useQuery<RespostaMuseus>({
@@ -108,7 +110,7 @@ const CreateUser: React.FC = () => {
       cpf,
       museus
     }: FormData & { museus: string[] }) => {
-      const res = await request("/api/admin/users", {
+      const res = await request("/api/admin/users/registro", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -126,20 +128,36 @@ const CreateUser: React.FC = () => {
 
       return res.json()
     },
-    onSuccess: () => {
-      navigate("/usuarios")
-      toast.success("Usuário criado com sucesso")
+    onSuccess: (data) => {
+      navigate("/login")
+      toast.success(data.message, { duration: 8000 })
+    },
+    onError: (error) => {
+      if (error instanceof Error) {
+        toast.error(error.message, { duration: 8000 })
+      }
     }
   })
 
-  const onSubmit = ({ email, nome, cpf }: FormData) => {
-    const museusIds = selectedMuseus.map((item) => item.split(",")[0])
-    mutate({
-      email,
-      nome,
-      cpf,
-      museus: museusIds
-    })
+  const onSubmit = (data: FormData) => {
+    // Armazena os dados do formulário e abre o modal
+    setFormData(data)
+    setShowConfirmationModal(true)
+  }
+
+  const handleConfirm = () => {
+    if (formData) {
+      const museusIds = selectedMuseus.map((item) => item.split(",")[0])
+      mutate({
+        ...formData,
+        museus: museusIds
+      })
+      setShowConfirmationModal(false)
+    }
+  }
+
+  const handleCloseModal = () => {
+    setShowConfirmationModal(false)
   }
 
   return (
@@ -306,6 +324,63 @@ const CreateUser: React.FC = () => {
           </div>
         </form>
       </div>
+      {/* Modal de Confirmação */}
+      {showConfirmationModal && formData && (
+        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
+          <Modal
+            title="Confirmar Solicitação"
+            showCloseButton
+            onCloseButtonClick={handleCloseModal}
+          >
+            <Modal.Body>
+              <div className="text-left">
+                <p>Confira os dados antes de enviar:</p>
+                <table className="w-full border-collapse border border-gray-300">
+                  <tbody>
+                    <tr className="border-b border-gray-300">
+                      <td className="p-2 font-semibold bg-gray-100">CPF:</td>
+                      <td className="p-2">{formData.cpf}</td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <td className="p-2 font-semibold bg-gray-100">Nome:</td>
+                      <td className="p-2">{formData.nome}</td>
+                    </tr>
+                    <tr className="border-b border-gray-300">
+                      <td className="p-2 font-semibold bg-gray-100">E-mail:</td>
+                      <td className="p-2">{formData.email}</td>
+                    </tr>
+                    <tr>
+                      <td className="p-2 font-semibold bg-gray-100">
+                        Museus selecionados:
+                      </td>
+                      <td className="p-2">
+                        {selectedMuseusNames.length > 0 ? (
+                          <ul className="list-disc pl-4">
+                            {selectedMuseusNames.map((name, index) => (
+                              <li key={index}>{name}</li>
+                            ))}
+                          </ul>
+                        ) : (
+                          "Nenhum museu selecionado."
+                        )}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </Modal.Body>
+
+            <Modal.Footer justify-content="end">
+              <Button primary small m={2} onClick={handleConfirm}>
+                Confirmar
+              </Button>
+              <Button secondary small m={2} onClick={handleCloseModal}>
+                Cancelar
+              </Button>
+            </Modal.Footer>
+          </Modal>
+        </div>
+      )}
     </>
   )
 }
