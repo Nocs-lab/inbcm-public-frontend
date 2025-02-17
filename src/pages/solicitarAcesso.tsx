@@ -13,10 +13,34 @@ import toast from "react-hot-toast"
 import { debounce } from "lodash"
 import Select from "../components/MultiSelect"
 
+const validateCPF = (cpf: string): boolean => {
+  cpf = cpf.replace(/[^\d]+/g, "")
+  if (cpf.length !== 11 || !!cpf.match(/(\d)\1{10}/)) return false
+
+  const cpfDigits = cpf.split("").map((el) => +el)
+  const rest = (count: number) => {
+    return (
+      ((cpfDigits
+        .slice(0, count - 12)
+        .reduce((soma, el, index) => soma + el * (count - index), 0) *
+        10) %
+        11) %
+      10
+    )
+  }
+
+  return rest(10) === cpfDigits[9] && rest(11) === cpfDigits[10]
+}
+
 const schema = z.object({
   email: z.string().min(1, "Este campo é obrigatório"),
   nome: z.string().min(1, "Este campo é obrigatório"),
-  cpf: z.string().min(1, "Este campo é obrigatório"),
+  cpf: z
+    .string()
+    .min(1, "Este campo é obrigatório")
+    .refine((cpf) => validateCPF(cpf), {
+      message: "CPF inválido"
+    }),
   museus: z.array(z.string()).optional()
 })
 type FormData = z.infer<typeof schema>
@@ -219,7 +243,7 @@ const CreateUser: React.FC = () => {
             <legend className="text-lg font-extrabold px-3 m-0">
               Museus associados
             </legend>
-            <div className="flex flex-col w-full items-center">
+            <div className="flex flex-col w-full items-center p-2">
               <div className="w-full">
                 <Row>
                   <Col>
