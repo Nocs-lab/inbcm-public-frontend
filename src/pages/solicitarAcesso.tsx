@@ -45,11 +45,18 @@ const schema = z.object({
 })
 type FormData = z.infer<typeof schema>
 
+interface Endereco {
+  logradouro: string
+  numero: string
+  municipio: string
+  uf: string
+}
+
 interface Museu {
   _id: string
   nome: string
+  endereco: Endereco
 }
-
 interface Paginacao {
   currentPage: number
   totalPages: number
@@ -86,7 +93,7 @@ const fetchMuseus = async (
 
 const CreateUser: React.FC = () => {
   const [selectedMuseus, setSelectedMuseus] = useState<string[]>([])
-  const [selectedMuseusNames, setSelectedMuseusNames] = useState<string[]>([])
+  const [selectedMuseusNames, setSelectedMuseusNames] = useState<Museu[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [search, setSearch] = useState("")
   const [showConfirmationModal, setShowConfirmationModal] = useState(false)
@@ -102,6 +109,10 @@ const CreateUser: React.FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const museus = museusData?.museus || []
 
+  console.log("selectedMuseus", selectedMuseus)
+  console.log("selectedMuseusNames", selectedMuseusNames)
+  console.log("museus", museus)
+
   const debounceSearch = debounce((value: string) => {
     console.log(value)
     setIsLoading(true)
@@ -110,10 +121,20 @@ const CreateUser: React.FC = () => {
   }, 500)
 
   useEffect(() => {
-    if (museus.length > 0) {
-      setIsLoading(false)
+    if (selectedMuseus.length > 0) {
+      const museusSelecionados = selectedMuseus
+        .map((item) => {
+          const [id] = item.split(",")
+          return (
+            museus.find((m) => m._id === id) ||
+            selectedMuseusNames.find((m) => m._id === id)
+          )
+        })
+        .filter((m) => m !== undefined) as Museu[]
+
+      setSelectedMuseusNames(museusSelecionados)
     }
-  }, [museus])
+  }, [selectedMuseus, museus])
 
   const {
     register,
@@ -164,7 +185,6 @@ const CreateUser: React.FC = () => {
   })
 
   const onSubmit = (data: FormData) => {
-    // Armazena os dados do formulário e abre o modal
     setFormData(data)
     setShowConfirmationModal(true)
   }
@@ -222,6 +242,7 @@ const CreateUser: React.FC = () => {
                 placeholder="Digite o nome do usuário"
                 error={errors.nome}
                 {...register("nome")}
+                className="capitalize"
               />
               <Input
                 type="email"
@@ -277,13 +298,27 @@ const CreateUser: React.FC = () => {
                                 .value
                               debounceSearch(inputValue)
                             }}
-                            onChange={(selected: string[]) => {
+                            onChange={(value: unknown) => {
+                              const selected = value as string[]
                               field.onChange(selected)
-                              const nomesMuseus = selected.map(
-                                (item) => item.split(",")[1]
-                              )
-                              setSelectedMuseus(selected)
-                              setSelectedMuseusNames(nomesMuseus)
+
+                              setSelectedMuseus((prev) => {
+                                const newSelection = selected.filter(
+                                  (s) => !prev.includes(s)
+                                )
+                                return [...prev, ...newSelection]
+                              })
+
+                              setSelectedMuseusNames((prev) => {
+                                const newMuseus = selected
+                                  .map((item) => {
+                                    const [id] = item.split(",")
+                                    return museus.find((m) => m._id === id)
+                                  })
+                                  .filter((m) => m !== undefined) as Museu[]
+
+                                return [...prev, ...newMuseus]
+                              })
                             }}
                           />
                           {isLoading && (
@@ -305,28 +340,39 @@ const CreateUser: React.FC = () => {
                       {selectedMuseusNames.length} museu(s) selecionado(s):
                     </p>
                     <div className="flex flex-wrap gap-2 p-2">
-                      {selectedMuseusNames.map((name, index) => (
+                      {selectedMuseusNames.map((museu, index) => (
                         <Button
                           key={index}
-                          className="gap-2 flex items-center justify-between"
+                          className="gap-2 flex items-center justify-between p-4"
                           primary
                           inverted
                         >
                           <i
-                            className="fa-solid fa-xmark ml-2 cursor-pointer"
+                            className="fa-solid fa-xmark ml-2 cursor-pointer pr-4"
                             onClick={() => {
-                              const updatedMuseus = selectedMuseus.filter(
-                                (_, i) => i !== index
+                              setSelectedMuseus((prev) =>
+                                prev.filter(
+                                  (m) => m.split(",")[0] !== museu._id
+                                )
                               )
-                              const updatedNames = selectedMuseusNames.filter(
-                                (_, i) => i !== index
+                              setSelectedMuseusNames((prev) =>
+                                prev.filter((m) => m._id !== museu._id)
                               )
-
-                              setSelectedMuseus(updatedMuseus)
-                              setSelectedMuseusNames(updatedNames)
                             }}
                           ></i>
-                          {name}
+
+                          <div className="flex flex-col">
+                            <div className="text-left font-semibold">
+                              {museu?.nome}
+                            </div>
+                            {museu && (
+                              <div className="text-sm text-left text-gray-500">
+                                {museu.endereco.logradouro},{" "}
+                                {museu.endereco.numero} -{" "}
+                                {museu.endereco.municipio}/{museu.endereco.uf}
+                              </div>
+                            )}
+                          </div>
                         </Button>
                       ))}
                     </div>
@@ -358,7 +404,7 @@ const CreateUser: React.FC = () => {
           >
             <Modal.Body>
               <div className="text-left">
-                <p>Confira os dados antes de enviar:</p>
+                <p>Confira atentamente os dados que serão enviados:</p>
                 <table className="w-full border-collapse border border-gray-300">
                   <tbody>
                     <tr className="border-b border-gray-300">
@@ -374,16 +420,35 @@ const CreateUser: React.FC = () => {
                       <td className="p-2">{formData.email}</td>
                     </tr>
                     <tr>
-                      <td className="p-2 font-semibold bg-gray-100">
-                        Museus selecionados:
-                      </td>
+                      <td className="p-2 font-semibold bg-gray-100">Museus:</td>
                       <td className="p-2">
                         {selectedMuseusNames.length > 0 ? (
-                          <ul className="list-disc pl-4">
-                            {selectedMuseusNames.map((name, index) => (
-                              <li key={index}>{name}</li>
+                          <div className="flex flex-wrap gap-2">
+                            {selectedMuseusNames.map((museu, index) => (
+                              <div
+                                key={index}
+                                className="text-blue-950 py-1 px-3 rounded-full flex items-center space-x-2"
+                                style={{ backgroundColor: "#8c9db8" }}
+                              >
+                                <span style={{ color: "#071d41" }}>
+                                  {museu?.nome}
+                                </span>
+                                <i
+                                  className="fa-solid fa-xmark cursor-pointer"
+                                  onClick={() => {
+                                    setSelectedMuseus((prev) =>
+                                      prev.filter(
+                                        (m) => m.split(",")[0] !== museu._id
+                                      )
+                                    )
+                                    setSelectedMuseusNames((prev) =>
+                                      prev.filter((m) => m._id !== museu._id)
+                                    )
+                                  }}
+                                ></i>
+                              </div>
                             ))}
-                          </ul>
+                          </div>
                         ) : (
                           "Nenhum museu selecionado."
                         )}

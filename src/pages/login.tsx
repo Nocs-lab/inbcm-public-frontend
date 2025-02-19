@@ -135,7 +135,7 @@ const LoginPage: React.FC = () => {
           </a>
           <div className="text-center mt-4">
             <span>
-              É um novo usuário?{" "}
+              Novo usuário?{" "}
               <a href="/solicitarAcesso" className="inline-flex items-center">
                 <i className="fa-solid fa-user-check p-1"></i>
                 <span>Solicitar acesso</span>
