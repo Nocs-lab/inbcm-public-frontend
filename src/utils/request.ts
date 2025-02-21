@@ -30,7 +30,7 @@ export default async function request(
       location.href = "/login"
     }
   } else if (!res.status.toString().startsWith("2")) {
-    throw new Error(unpack((await res.arrayBuffer()) as Buffer).msg)
+    throw new Error(unpack((await res.arrayBuffer()) as Buffer).message)
   }
 
   res.json = async () => unpack((await res.arrayBuffer()) as Buffer)

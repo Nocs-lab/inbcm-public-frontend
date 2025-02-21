@@ -2,7 +2,7 @@ import { z } from "zod"
 import { Controller, FieldError, useForm } from "react-hook-form"
 import { useNavigate } from "react-router-dom"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Select, Button } from "react-dsgov"
+import { Select, Button, Modal } from "react-dsgov"
 import Input from "../components/Input"
 import clsx from "clsx"
 import { useEffect, useState } from "react"
@@ -16,7 +16,7 @@ import {
 
 const schema = z
   .object({
-    ano: z.enum(["2024", "2023", "2022", "2021"], { message: "Ano inválido" }),
+    ano: z.string(),
     museologico: z.instanceof(FileList).nullable(),
     bibliografico: z.instanceof(FileList).nullable(),
     arquivistico: z.instanceof(FileList).nullable(),
@@ -42,22 +42,26 @@ const Uploader: React.FC<{
   museus: { _id: string; nome: string }[]
   anoDeclaracao: string
   isRetificar?: boolean
+  DeclaracaoStatus?: string
   isExist?: boolean
   onSubmit: (data: FormValues) => void
   isLoading: boolean
   disabled?: boolean
   onChangeAno?: (ano: string) => void
   onChangeMuseu?: (museu: string) => void
+  anos: number[]
 }> = ({
   museus,
   anoDeclaracao,
   isRetificar,
+  DeclaracaoStatus,
   onSubmit,
   isLoading,
   disabled = false,
   onChangeAno,
   onChangeMuseu,
-  isExist
+  isExist,
+  anos
 }) => {
   const {
     register,
@@ -70,7 +74,7 @@ const Uploader: React.FC<{
     resolver: zodResolver(schema),
     mode: "onBlur",
     defaultValues: {
-      ano: anoDeclaracao || "2024",
+      ano: anoDeclaracao || Math.max(...anos).toString(),
       museu: museus[0]?._id,
       museologico: null,
       bibliografico: null,
@@ -116,8 +120,13 @@ const Uploader: React.FC<{
   const [isValidating, setIsValidating] = useState(false)
 
   const [museologicoErrors, setMuseologicoErrors] = useState<string[]>([])
+  const [museologicoFields, setMuseologicoFields] = useState<string[]>([])
+
   const [bibliograficoErrors, setBibliograficoErrors] = useState<string[]>([])
+  const [bibliograficoFields, setBibliograficoFields] = useState<string[]>([])
+
   const [arquivisticoErrors, setArquivisticoErrors] = useState<string[]>([])
+  const [arquivisticoFields, setArquivisticoFields] = useState<string[]>([])
 
   const [modalOpen, setModalOpen] = useState(false)
 
@@ -157,6 +166,7 @@ const Uploader: React.FC<{
             (result: {
               [key: string]: (string | { [key: string]: string })[]
             }) => {
+              setMuseologicoFields(result.data as string[])
               if (result.errors.length > 0) {
                 setMuseologicoErrors(result.errors as string[])
                 setShowMessage({
@@ -176,6 +186,8 @@ const Uploader: React.FC<{
     }
   }, [museologico])
 
+  //console.log(museologicoFields.length)
+
   useEffect(() => {
     if (bibliografico?.length) {
       setIsValidating(true)
@@ -186,6 +198,7 @@ const Uploader: React.FC<{
             (result: {
               [key: string]: (string | { [key: string]: string })[]
             }) => {
+              setBibliograficoFields(result.data as string[])
               if (result.errors.length > 0) {
                 setBibliograficoErrors(result.errors as string[])
                 setShowMessage({
@@ -205,6 +218,8 @@ const Uploader: React.FC<{
     }
   }, [bibliografico])
 
+  //console.log(bibliograficoFields.length)
+
   useEffect(() => {
     if (arquivistico?.length) {
       setIsValidating(true)
@@ -214,6 +229,7 @@ const Uploader: React.FC<{
             (result: {
               [key: string]: (string | { [key: string]: string })[]
             }) => {
+              setArquivisticoFields(result.data as string[])
               if (result.errors.length > 0) {
                 setArquivisticoErrors(result.errors as string[])
                 setShowMessage({
@@ -233,10 +249,18 @@ const Uploader: React.FC<{
     }
   }, [arquivistico])
 
+  //console.log(arquivisticoFields.length)
+
   const navigate = useNavigate()
 
   const handleCancelClick = () => {
     navigate("/")
+  }
+
+  const [modalAberto, setModalAberto] = useState(false)
+
+  const handleSendClick = () => {
+    setModalAberto(false)
   }
 
   return (
@@ -279,7 +303,7 @@ const Uploader: React.FC<{
                 Você pode corrigi-las antes de enviar ou, se preferir 1) cancele
                 o envio; 2) preencha os campos corretamente e; 3) mais tarde,
                 retorne para enviar sua declaração. Para visualizar as
-                inconsistências,{" "}
+                pendências,{" "}
                 <button
                   className="text-blue-600"
                   onClick={() => setModalOpen(true)}
@@ -339,12 +363,10 @@ const Uploader: React.FC<{
                 <Select
                   label="Ano"
                   className="!w-full"
-                  options={[
-                    { label: "2024", value: "2024" },
-                    { label: "2023", value: "2023" },
-                    { label: "2022", value: "2022" },
-                    { label: "2021", value: "2021" }
-                  ]}
+                  options={anos.map((ano) => ({
+                    label: String(ano),
+                    value: String(ano)
+                  }))}
                   {...field}
                 />
               ) : (
@@ -453,10 +475,78 @@ const Uploader: React.FC<{
             />
           )}
         </div>
-        <div className="flex space-x-4">
-          {!isExist && (
+        <Modal
+          useScrim
+          showCloseButton
+          className="large w-[800px] p-3"
+          title="Confirmar envio da declaração"
+          modalOpened={modalAberto}
+          onCloseButtonClick={(e) => {
+            e.stopPropagation() // Impede a propagação do evento
+            e.preventDefault() // Evita comportamento padrão para o showCloseButton cancelar o modal
+            setModalAberto(false) // Fecha o modal
+          }}
+        >
+          <Modal.Body className="mb-4">
+            <p>Verifique a quantidade de itens por acervo</p>
+            <table>
+              <thead>
+                <tr>
+                  <th>Tipo de Acervo</th>
+                  <th>Quantidade de itens</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Museológico</td>
+                  <td>{museologicoFields.length}</td>
+                </tr>
+                <tr>
+                  <td>Bibliográfico</td>
+                  <td>{bibliograficoFields.length}</td>
+                </tr>
+                <tr>
+                  <td>Arquivístico</td>
+                  <td>{arquivisticoFields.length}</td>
+                </tr>
+              </tbody>
+            </table>
+          </Modal.Body>
+
+          <Modal.Footer className="pt-4 mt-4 flex justify-end gap-2">
+            <Button
+              secondary
+              small
+              m={2}
+              onClick={(e) => {
+                e.preventDefault()
+                setModalAberto(false)
+              }}
+              disabled={isLoading}
+            >
+              Cancelar
+            </Button>
+            <Button
+              primary
+              small
+              m={2}
+              loading={isLoading}
+              onClick={handleSendClick}
+            >
+              Confirmar
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        <div className="flex space-x-4 justify-end">
+          <Button secondary onClick={handleCancelClick} className="mt-5">
+            Cancelar
+          </Button>
+          {((isExist === true && DeclaracaoStatus === "Excluída") ||
+            (isExist === true && isRetificar) ||
+            isExist === false) && (
             <button
-              type="submit"
+              type="button"
               className={clsx(
                 "br-button primary mt-5",
                 isValidating || (isLoading && "loading")
@@ -467,13 +557,11 @@ const Uploader: React.FC<{
                 isValidating ||
                 disabled
               }
+              onClick={() => setModalAberto(true)}
             >
               Enviar
             </button>
           )}
-          <Button primary inverted onClick={handleCancelClick} className="mt-5">
-            Cancelar
-          </Button>
         </div>
       </form>
     </>

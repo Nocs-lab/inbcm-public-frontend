@@ -1,15 +1,18 @@
 import DefaultLayout from "../../layouts/default"
 import { Chart } from "react-google-charts"
 import { Select } from "react-dsgov"
-import { useState, useEffect } from "react"
+import { useState, useEffect, SetStateAction } from "react"
 import { useQuery } from "@tanstack/react-query"
 import request from "../../utils/request"
 import { Link } from "react-router-dom"
 
 export default function Dashboard() {
+  const currentYear = new Date().getFullYear() // Obtém o ano atual
+  const anos = Array.from({ length: 10 }, (_, i) => currentYear - i) // Últimos 10 anos
+
   const [museu, setMuseu] = useState("")
-  const [anoInicio, setAnoInicio] = useState("2024")
-  const [anoFim, setAnoFim] = useState("2024")
+  const [anoInicio, setAnoInicio] = useState(currentYear.toString())
+  const [anoFim, setAnoFim] = useState(currentYear.toString())
 
   const { data: museus, isLoading: isLoadingMuseus } = useQuery({
     queryKey: ["museus"],
@@ -41,9 +44,10 @@ export default function Dashboard() {
     }
   }, [museus])
 
-  const handleMuseuChange = (value) => setMuseu(value)
-  const handleAnoInicioChange = (value) => setAnoInicio(value)
-  const handleAnoFimChange = (value) => setAnoFim(value)
+  const handleMuseuChange = (value: SetStateAction<string>) => setMuseu(value)
+  const handleAnoInicioChange = (value: SetStateAction<string>) =>
+    setAnoInicio(value)
+  const handleAnoFimChange = (value: SetStateAction<string>) => setAnoFim(value)
 
   return (
     <DefaultLayout>
@@ -59,7 +63,7 @@ export default function Dashboard() {
           label="Museu"
           className="!w-full"
           options={
-            museus?.map((museu) => ({
+            museus?.map((museu: { nome: string; _id: string }) => ({
               label: museu.nome,
               value: museu._id
             })) ?? []
@@ -71,24 +75,20 @@ export default function Dashboard() {
         <Select
           label="Início"
           className="!w-full"
-          options={[
-            { label: "2024", value: "2024" },
-            { label: "2023", value: "2023" },
-            { label: "2022", value: "2022" },
-            { label: "2021", value: "2021" }
-          ]}
+          options={anos.map((ano) => ({
+            label: ano.toString(),
+            value: ano.toString()
+          }))}
           value={anoInicio}
           onChange={handleAnoInicioChange}
         />
         <Select
           label="Fim"
           className="!w-full"
-          options={[
-            { label: "2024", value: "2024" },
-            { label: "2023", value: "2023" },
-            { label: "2022", value: "2022" },
-            { label: "2021", value: "2021" }
-          ]}
+          options={anos.map((ano) => ({
+            label: ano.toString(),
+            value: ano.toString()
+          }))}
           value={anoFim}
           onChange={handleAnoFimChange}
         />
@@ -110,19 +110,28 @@ export default function Dashboard() {
               "Bibliográfico",
               { role: "annotation" }
             ],
-            ...(dadosGrafico?.data?.map((item) => [
-              item.anoDeclaracao,
-              item.totalMuseologico,
-              item.totalMuseologico > 0 ? item.totalMuseologico.toString() : "", // Anotação para Museológico
-              item.totalArquivistico,
-              item.totalArquivistico > 0
-                ? item.totalArquivistico.toString()
-                : "",
-              item.totalBibliografico,
-              item.totalBibliografico > 0
-                ? item.totalBibliografico.toString()
-                : ""
-            ]) ?? [])
+            ...(dadosGrafico?.data?.map(
+              (item: {
+                anoDeclaracao: unknown
+                totalMuseologico: number
+                totalArquivistico: number
+                totalBibliografico: number
+              }) => [
+                item.anoDeclaracao,
+                item.totalMuseologico,
+                item.totalMuseologico > 0
+                  ? item.totalMuseologico.toString()
+                  : "", // Anotação para Museológico
+                item.totalArquivistico,
+                item.totalArquivistico > 0
+                  ? item.totalArquivistico.toString()
+                  : "",
+                item.totalBibliografico,
+                item.totalBibliografico > 0
+                  ? item.totalBibliografico.toString()
+                  : ""
+              ]
+            ) ?? [])
           ]}
           width="100%"
           height="400px"

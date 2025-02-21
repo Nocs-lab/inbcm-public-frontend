@@ -1,5 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useMutation, useQuery, useSuspenseQuery } from "@tanstack/react-query"
+import {
+  useMutation,
+  useQuery,
+  useSuspenseQueries
+} from "@tanstack/react-query"
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { useNavigate } from "react-router"
@@ -14,18 +18,34 @@ const NovoDeclaracaoPage = () => {
 
   const { user } = useStore()
 
-  const { data: museus } = useSuspenseQuery<{ nome: string; _id: string }[]>({
-    queryKey: ["museus", user?.email],
-    queryFn: async () => {
-      const res = await request("/api/public/museus")
-      return await res.json()
-    }
+  const [{ data: museus }, { data: anos }] = useSuspenseQueries({
+    queries: [
+      {
+        queryKey: ["museus", user?.email],
+        queryFn: async () => {
+          const res = await request("/api/public/museus")
+          return await res.json()
+        }
+      },
+      {
+        queryKey: ["anos"],
+        queryFn: async () => {
+          const res = await request(
+            "/api/admin/anodeclaracao/getPeriodoDeclaracaoVigente"
+          )
+          return await res.json()
+        }
+      }
+    ]
   })
 
   const [ano, setAno] = useState("")
   const [museu, setMuseu] = useState("")
 
-  const { data: declaracao, isLoading } = useQuery<{ _id: string } | null>({
+  const { data: declaracao, isLoading } = useQuery<{
+    _id: string
+    status: string
+  } | null>({
     queryKey: ["declaracao", ano, museu],
     queryFn: async () => {
       try {
@@ -38,7 +58,8 @@ const NovoDeclaracaoPage = () => {
     }
   })
 
-  const retificacao = declaracao !== null
+  const isExist = declaracao !== null
+  const DeclaracaoStatus = declaracao?.status
 
   const { mutate, isPending } = useMutation({
     mutationFn: async (data: {
@@ -82,8 +103,8 @@ const NovoDeclaracaoPage = () => {
         <i className="fas fa-arrow-left" aria-hidden="true"></i>
         Voltar
       </Link>
-      <h2>Nova declaração</h2>
-      {retificacao && (
+      <h2>Enviar nova declaração</h2>
+      {DeclaracaoStatus == "Recebida" && (
         <div className="br-message warning">
           <div className="icon">
             <i className="fas fa-warning fa-lg" aria-hidden="true"></i>
@@ -94,21 +115,48 @@ const NovoDeclaracaoPage = () => {
             role="alert"
           >
             <span className="message-title">
-              Já foi enviada uma declaração de ajuste para o ano {ano}.{" "}
+              Já foi enviada uma declaração para o ano {ano}.{" "}
             </span>
             <span className="message-body">
               Para baixar o recibo correspondente,{" "}
               <a href={`/api/public/recibo/${declaracao?._id}`}>clique aqui</a>.
-              Caso deseje fazer alguma alteração, você deve enviar uma
+              Caso deseje fazer alguma alteração, você pode enviar uma
               declaração retificadora{" "}
               <Link to={`/declaracoes/${declaracao?._id}/retificar`}>
                 clicando aqui
               </Link>
-              .
+              , ou excluir a declaração do museu e ano referente dependendo do
+              nível de alteração.
             </span>
           </div>
         </div>
       )}
+      {isExist &&
+        DeclaracaoStatus !== "Recebida" &&
+        DeclaracaoStatus !== "Excluída" && (
+          <div className="br-message warning">
+            <div className="icon">
+              <i className="fas fa-warning fa-lg" aria-hidden="true"></i>
+            </div>
+            <div
+              className="content"
+              aria-label="Data de início do afastamento inválida. A data não pode ser superior à data atual."
+              role="alert"
+            >
+              <span className="message-title">
+                Esta declaração está em {DeclaracaoStatus} e não pode ser
+                alterada.{" "}
+              </span>
+              <span className="message-body">
+                Para baixar o recibo correspondente,{" "}
+                <a href={`/api/public/recibo/${declaracao?._id}`}>
+                  clique aqui
+                </a>
+                .
+              </span>
+            </div>
+          </div>
+        )}
       <Uploader
         onChangeAno={setAno}
         onChangeMuseu={setMuseu}
@@ -116,7 +164,9 @@ const NovoDeclaracaoPage = () => {
         onSubmit={(data) => mutate(data)}
         isLoading={isPending || isLoading}
         museus={museus}
-        isExist={retificacao}
+        isExist={isExist}
+        DeclaracaoStatus={DeclaracaoStatus}
+        anos={anos.map((ano: { ano: number }) => ano.ano)}
       />
     </DefaultLayout>
   )

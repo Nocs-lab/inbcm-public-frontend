@@ -31,13 +31,17 @@ const LoginPage: React.FC = () => {
 
   const { mutate, error, isError } = useMutation({
     mutationFn: async ({ email, password }: FormData) => {
-      const res = await request("/api/public/auth/login", {
-        method: "POST",
-        data: {
-          email,
-          password
-        }
-      })
+      const res = await request(
+        "/api/public/auth/login",
+        {
+          method: "POST",
+          data: {
+            email,
+            password
+          }
+        },
+        false
+      )
 
       return await res.json()
     },
@@ -66,7 +70,7 @@ const LoginPage: React.FC = () => {
   const navigate = useNavigate()
 
   const onSubmit = async ({ email, password }: FormData) => {
-    mutate({ email, password })
+    mutate({ email: email.toLowerCase(), password })
   }
 
   return (
@@ -104,7 +108,7 @@ const LoginPage: React.FC = () => {
           )}
           <Input
             type="email"
-            label="Email"
+            label="E-mail"
             placeholder="Digite seu email"
             error={errors.email}
             {...register("email")}
@@ -125,6 +129,19 @@ const LoginPage: React.FC = () => {
           >
             Entrar
           </button>
+          <a href="/autenticar">
+            <i className="fa-solid fa-envelope-circle-check p-2 text-lg"></i>
+            Validar recibo
+          </a>
+          <div className="text-center mt-4">
+            <span>
+              Novo usuário?{" "}
+              <a href="/solicitarAcesso" className="inline-flex items-center">
+                <i className="fa-solid fa-user-check p-1"></i>
+                <span>Solicitar acesso</span>
+              </a>
+            </span>
+          </div>
         </form>
       </div>
       <div className="hidden lg:block w-7/12 bg-blue-700"></div>
