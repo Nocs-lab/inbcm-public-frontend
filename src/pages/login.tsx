@@ -133,6 +133,15 @@ const LoginPage: React.FC = () => {
             <i className="fa-solid fa-envelope-circle-check p-2 text-lg"></i>
             Validar recibo
           </a>
+          <div className="text-center mt-4">
+            <span>
+              Novo usuário?{" "}
+              <a href="/solicitarAcesso" className="inline-flex items-center">
+                <i className="fa-solid fa-user-check p-1"></i>
+                <span>Solicitar acesso</span>
+              </a>
+            </span>
+          </div>
         </form>
       </div>
       <div className="hidden lg:block w-7/12 bg-blue-700"></div>
