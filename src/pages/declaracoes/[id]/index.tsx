@@ -24,7 +24,6 @@ export default function DeclaracaoPage() {
   const navigate = useNavigate()
 
   const [modalExcluirAberta, setModalExcluirAberta] = useState(false)
-  const [modalAlertaAberta, setModalAlertaAberta] = useState(false)
   const queryClient = useQueryClient()
 
   const { mutate: deleteDeclaration, isPending: deletingDeclaration } =
@@ -112,7 +111,7 @@ export default function DeclaracaoPage() {
               role="button"
             >
               <i className="fas fa-exclamation-triangle" aria-hidden="true"></i>{" "}
-              Pendências
+              Resumo de pendências
             </a>
             <MismatchsModal
               opened={showModal}
@@ -129,8 +128,9 @@ export default function DeclaracaoPage() {
           <>
             <a
               className="text-xl"
-              href="#"
-              onClick={() => setModalAlertaAberta(true)}
+              href={`/api/public/detalhamento/${id}`}
+              target="_blank"
+              rel="noopener noreferrer"
               role="button"
             >
               <i
@@ -139,32 +139,6 @@ export default function DeclaracaoPage() {
               ></i>{" "}
               Relatório de pendências
             </a>
-            <Modal
-              useScrim
-              showCloseButton
-              title="Tela em desenvolvimento"
-              modalOpened={modalAlertaAberta}
-              onCloseButtonClick={() => setModalAlertaAberta(false)}
-            >
-              <Modal.Body>
-                <div className="flex items-center space-x-2">
-                  <i className="fas fa-exclamation-triangle text-danger fa-3x"></i>
-                  <p className="normal-case text-center">
-                    Essa tela ainda está em desenvolvimento.
-                  </p>
-                </div>
-              </Modal.Body>
-              <Modal.Footer justify-content="center">
-                <Button
-                  primary
-                  small
-                  m={2}
-                  onClick={() => setModalAlertaAberta(false)}
-                >
-                  Voltar
-                </Button>
-              </Modal.Footer>
-            </Modal>
           </>
         )}
         <a
