@@ -128,7 +128,7 @@ export default function DeclaracaoPage() {
           <>
             <a
               className="text-xl"
-              href={`/api/public/detalhamento/${id}`}
+              href={`/api/public/recibo/detalhamento/${id}`}
               target="_blank"
               rel="noopener noreferrer"
               role="button"
