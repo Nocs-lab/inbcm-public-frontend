@@ -424,29 +424,8 @@ const CreateUser: React.FC = () => {
                       <td className="p-2">
                         {selectedMuseusNames.length > 0 ? (
                           <div className="flex flex-wrap gap-2">
-                            {selectedMuseusNames.map((museu, index) => (
-                              <div
-                                key={index}
-                                className="text-blue-950 py-1 px-3 rounded-full flex items-center space-x-2"
-                                style={{ backgroundColor: "#8c9db8" }}
-                              >
-                                <span style={{ color: "#071d41" }}>
-                                  {museu?.nome}
-                                </span>
-                                <i
-                                  className="fa-solid fa-xmark cursor-pointer"
-                                  onClick={() => {
-                                    setSelectedMuseus((prev) =>
-                                      prev.filter(
-                                        (m) => m.split(",")[0] !== museu._id
-                                      )
-                                    )
-                                    setSelectedMuseusNames((prev) =>
-                                      prev.filter((m) => m._id !== museu._id)
-                                    )
-                                  }}
-                                ></i>
-                              </div>
+                            {selectedMuseusNames.map((museu) => (
+                              <span>• {museu?.nome}</span>
                             ))}
                           </div>
                         ) : (
