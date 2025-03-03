@@ -12,7 +12,9 @@ import request from "../utils/request"
 const columnHelper = createColumnHelper<{
   _id: string
   dataCriacao: Date
-  anoDeclaracao: string
+  anoDeclaracao: {
+    ano: number
+  }
   retificacao: boolean
   museu_id: {
     _id: string
@@ -48,7 +50,7 @@ const columns = [
     cell: (info) => format(info.getValue(), "dd/MM/yyyy HH:mm"),
     enableColumnFilter: false
   }),
-  columnHelper.accessor("anoDeclaracao", {
+  columnHelper.accessor("anoDeclaracao.ano", {
     header: "Ano",
     meta: {
       filterVariant: "select"

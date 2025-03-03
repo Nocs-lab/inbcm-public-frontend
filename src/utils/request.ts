@@ -1,8 +1,10 @@
 import { pack, unpack } from "msgpackr"
+import toast from "react-hot-toast"
 
 export default async function request(
   path: string,
-  init?: RequestInit & { data?: { [key: string]: string | number | boolean } }
+  init?: RequestInit & { data?: unknown },
+  showError = true
 ): Promise<Response> {
   const headers = { Accept: "application/x-msgpack", ...init?.headers } as {
     [key: string]: string
@@ -20,7 +22,7 @@ export default async function request(
   })
 
   if (res.status === 401) {
-    const refreshRes = await fetch("/api/public/auth/refresh", {
+    const refreshRes = await fetch("/api/admin/auth/refresh", {
       method: "POST",
       credentials: "include"
     })
@@ -30,10 +32,16 @@ export default async function request(
       location.href = "/login"
     }
   } else if (!res.status.toString().startsWith("2")) {
-    throw new Error(unpack((await res.arrayBuffer()) as Buffer).message)
+    const error = unpack(await res.arrayBuffer()).message
+
+    if (showError) {
+      toast.error(error)
+    }
+
+    throw new Error(error)
   }
 
-  res.json = async () => unpack((await res.arrayBuffer()) as Buffer)
+  res.json = async () => unpack(await res.arrayBuffer())
 
   return res
 }

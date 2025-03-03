@@ -1,7 +1,7 @@
 import {
   useMutation,
   useQueryClient,
-  useSuspenseQueries
+  useSuspenseQuery
 } from "@tanstack/react-query"
 import clsx from "clsx"
 import { format } from "date-fns"
@@ -43,16 +43,12 @@ export default function DeclaracaoPage() {
       }
     })
 
-  const [{ data }] = useSuspenseQueries({
-    queries: [
-      {
-        queryKey: ["declaracao", id],
-        queryFn: async () => {
-          const response = await request(`/api/public/declaracoes/${id}`)
-          return response.json()
-        }
-      }
-    ]
+  const { data } = useSuspenseQuery({
+    queryKey: ["declaracao", id],
+    queryFn: async () => {
+      const response = await request(`/api/public/declaracoes/${id}`)
+      return response.json()
+    }
   })
 
   const [showModal, setShowModal] = useState(false)
@@ -90,7 +86,9 @@ export default function DeclaracaoPage() {
         <a href={`/api/public/recibo/${id}`} className="text-xl">
           <i className="fas fa-file-pdf" aria-hidden="true"></i> Recibo
         </a>
-        {data.status == "Em análise" ? (
+        {data.status == "Em análise" ||
+        data.anoDeclaracao.dataFimRetificacao.getTime() <
+          new Date().getTime() ? (
           <span className="text-xl text-gray-500 cursor-not-allowed">
             <i className="fas fa-edit" aria-hidden="true"></i> Retificar
           </span>
@@ -180,7 +178,7 @@ export default function DeclaracaoPage() {
               <p className="normal-case text-center">
                 Tem certeza que deseja excluir a declaração{" "}
                 {data.retificacao ? "retificadora" : "original"} de{" "}
-                {data.anoDeclaracao} do {data.museu_id.nome}?
+                {data.anoDeclaracao.ano} do {data.museu_id.nome}?
               </p>
             </div>
           </Modal.Body>
@@ -212,7 +210,7 @@ export default function DeclaracaoPage() {
         </span>
         <span>
           <span className="font-bold">Ano: </span>
-          {data.anoDeclaracao}
+          {data.anoDeclaracao.ano}
         </span>
         <span>
           <span className="font-bold">Museu: </span>
@@ -301,7 +299,7 @@ export default function DeclaracaoPage() {
                     </span>
                   </span>
                   <a
-                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao}/museologico`}
+                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/museologico`}
                     className="mb-2"
                   >
                     <i className="fas fa-download" aria-hidden="true"></i>{" "}
@@ -310,7 +308,7 @@ export default function DeclaracaoPage() {
                 </div>
                 <TableItens
                   acervo="museologico"
-                  ano={data.anoDeclaracao}
+                  ano={data.anoDeclaracao._id}
                   museuId={data.museu_id._id}
                 />
               </div>
@@ -333,7 +331,7 @@ export default function DeclaracaoPage() {
                     </span>
                   </span>
                   <a
-                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao}/bibliografico`}
+                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/bibliografico`}
                     className="mb-2"
                   >
                     <i className="fas fa-download" aria-hidden="true"></i>{" "}
@@ -342,7 +340,7 @@ export default function DeclaracaoPage() {
                 </div>
                 <TableItens
                   acervo="bibliografico"
-                  ano={data.anoDeclaracao}
+                  ano={data.anoDeclaracao._id}
                   museuId={data.museu_id._id}
                 />
               </div>
@@ -365,7 +363,7 @@ export default function DeclaracaoPage() {
                     </span>
                   </span>
                   <a
-                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao}/arquivistico`}
+                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/arquivistico`}
                     className="mb-2"
                   >
                     <i className="fas fa-download" aria-hidden="true"></i>{" "}
@@ -374,7 +372,7 @@ export default function DeclaracaoPage() {
                 </div>
                 <TableItens
                   acervo="arquivistico"
-                  ano={data.anoDeclaracao}
+                  ano={data.anoDeclaracao._id}
                   museuId={data.museu_id._id}
                 />
               </div>
