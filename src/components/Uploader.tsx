@@ -49,7 +49,7 @@ const Uploader: React.FC<{
   disabled?: boolean
   onChangeAno?: (ano: string) => void
   onChangeMuseu?: (museu: string) => void
-  anos: number[]
+  anos?: { ano: number; _id: string }[]
 }> = ({
   museus,
   anoDeclaracao,
@@ -61,7 +61,7 @@ const Uploader: React.FC<{
   onChangeAno,
   onChangeMuseu,
   isExist,
-  anos
+  anos = []
 }) => {
   const {
     register,
@@ -74,7 +74,7 @@ const Uploader: React.FC<{
     resolver: zodResolver(schema),
     mode: "onBlur",
     defaultValues: {
-      ano: anoDeclaracao || Math.max(...anos).toString(),
+      ano: anoDeclaracao || anos[anos.length - 1]._id,
       museu: museus[0]?._id,
       museologico: null,
       bibliografico: null,
@@ -96,13 +96,13 @@ const Uploader: React.FC<{
     if (onChangeAno) {
       onChangeAno(ano)
     }
-  }, [ano])
+  }, [ano, onChangeAno])
 
   useEffect(() => {
     if (onChangeMuseu) {
       onChangeMuseu(museu)
     }
-  }, [museu])
+  }, [museu, onChangeMuseu])
 
   const totalFiles = [museologico, bibliografico, arquivistico].filter(
     (file) => file?.length
@@ -364,8 +364,8 @@ const Uploader: React.FC<{
                   label="Ano"
                   className="!w-full"
                   options={anos.map((ano) => ({
-                    label: String(ano),
-                    value: String(ano)
+                    label: ano.ano.toString(),
+                    value: ano._id
                   }))}
                   {...field}
                 />
