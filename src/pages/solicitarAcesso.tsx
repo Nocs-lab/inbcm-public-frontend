@@ -423,11 +423,17 @@ const CreateUser: React.FC = () => {
                       <td className="p-2 font-semibold bg-gray-100">Museus:</td>
                       <td className="p-2">
                         {selectedMuseusNames.length > 0 ? (
-                          <div className="flex flex-wrap gap-2">
+                          <ul className="flex flex-wrap gap-2 list-disc pl-3">
                             {selectedMuseusNames.map((museu) => (
-                              <span>• {museu?.nome}</span>
+                              <li>
+                                {museu.nome}
+                                <br />
+                                <span className="text-xs font-gray-500">
+                                  {museu.endereco.logradouro}
+                                </span>
+                              </li>
                             ))}
-                          </div>
+                          </ul>
                         ) : (
                           "Nenhum museu selecionado."
                         )}
