@@ -1,4 +1,4 @@
-import { useSuspenseQueries } from "@tanstack/react-query"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import clsx from "clsx"
 import { format } from "date-fns"
 import { useState } from "react"
@@ -14,16 +14,12 @@ export default function DeclaracaoPage() {
   const params = useParams()
   const id = params.id!
 
-  const [{ data }] = useSuspenseQueries({
-    queries: [
-      {
-        queryKey: ["declaracao", id],
-        queryFn: async () => {
-          const response = await request(`/api/public/declaracoes/${id}`)
-          return response.json()
-        }
-      }
-    ]
+  const { data } = useSuspenseQuery({
+    queryKey: ["declaracao", id],
+    queryFn: async () => {
+      const response = await request(`/api/public/declaracoes/${id}`)
+      return response.json()
+    }
   })
 
   const getDefaultTab = () => {
@@ -62,7 +58,7 @@ export default function DeclaracaoPage() {
         </span>
         <span>
           <span className="font-bold">Ano: </span>
-          {data.anoDeclaracao}
+          {data.anoDeclaracao.ano}
         </span>
         <span>
           <span className="font-bold">Museu: </span>
@@ -151,7 +147,7 @@ export default function DeclaracaoPage() {
                     </span>
                   </span>
                   <a
-                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao}/museologico`}
+                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/museologico`}
                     className="mb-2"
                   >
                     <i className="fas fa-download" aria-hidden="true"></i>{" "}
@@ -194,7 +190,7 @@ export default function DeclaracaoPage() {
                     </span>
                   </span>
                   <a
-                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao}/bibliografico`}
+                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/bibliografico`}
                     className="mb-2"
                   >
                     <i className="fas fa-download" aria-hidden="true"></i>{" "}
@@ -237,7 +233,7 @@ export default function DeclaracaoPage() {
                     </span>
                   </span>
                   <a
-                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao}/arquivistico`}
+                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/arquivistico`}
                     className="mb-2"
                   >
                     <i className="fas fa-download" aria-hidden="true"></i>{" "}
