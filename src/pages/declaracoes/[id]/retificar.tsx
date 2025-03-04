@@ -56,7 +56,7 @@ export default function RetificarDeclaracao() {
       }
 
       return await request(
-        `/api/public/declaracoes/retificar/${declaracao.museu_id._id}/${declaracao.anoDeclaracao}/${id}`,
+        `/api/public/declaracoes/retificar/${declaracao.museu_id._id}/${declaracao.anoDeclaracao._id}/${id}`,
         {
           method: "PUT",
           body: formData
@@ -68,6 +68,7 @@ export default function RetificarDeclaracao() {
       navigate(`/declaracoes/${data._id}`)
     }
   })
+
   return (
     <DefaultLayout>
       <Link to={`/declaracoes/${id}`} className="text-lg">
@@ -83,7 +84,7 @@ export default function RetificarDeclaracao() {
       <div className="flex gap-10 text-lg mt-5">
         <span>
           <span className="font-bold">Ano: </span>
-          {declaracao.anoDeclaracao}
+          {declaracao.anoDeclaracao.ano}
         </span>
         <span>
           <span className="font-bold">Museu: </span>
@@ -103,7 +104,7 @@ export default function RetificarDeclaracao() {
         }
         isLoading={isPending}
         museus={museus}
-        anoDeclaracao={declaracao.anoDeclaracao}
+        anoDeclaracao={declaracao.anoDeclaracao._id}
         isRetificar={true}
         isExist={isExist}
       />
