@@ -105,10 +105,6 @@ const NovoDeclaracaoPage = () => {
 
   return (
     <DefaultLayout>
-      <Link to="/" className="text-lg">
-        <i className="fas fa-arrow-left" aria-hidden="true"></i>
-        Voltar
-      </Link>
       <h2>Enviar nova declaração</h2>
       {DeclaracaoStatus == "Recebida" && (
         <div className="br-message warning">

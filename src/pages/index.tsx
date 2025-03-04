@@ -106,7 +106,7 @@ export default function Declaracoes() {
   })
 
   return (
-    <DefaultLayout>
+    <DefaultLayout returnLink={false}>
       <div className="flex items-center justify-between">
         <h2>Minhas declarações</h2>
         <div>

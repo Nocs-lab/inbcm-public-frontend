@@ -93,10 +93,6 @@ const PerfilPage = () => {
 
   return (
     <DefaultLayout>
-      <Link to="/" className="text-lg">
-        <i className="fas fa-arrow-left" aria-hidden="true"></i>
-        Voltar
-      </Link>
       <h2>Perfil</h2>
       <div className="container mx-auto p-6 bg-white rounded-lg">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

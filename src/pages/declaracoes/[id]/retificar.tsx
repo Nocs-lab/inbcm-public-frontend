@@ -1,6 +1,5 @@
 import { useMutation, useSuspenseQueries } from "@tanstack/react-query"
 import { useNavigate, useParams } from "react-router"
-import { Link } from "react-router-dom"
 import Uploader from "../../../components/Uploader"
 import DefaultLayout from "../../../layouts/default"
 import request from "../../../utils/request"
@@ -71,10 +70,6 @@ export default function RetificarDeclaracao() {
 
   return (
     <DefaultLayout>
-      <Link to={`/declaracoes/${id}`} className="text-lg">
-        <i className="fas fa-arrow-left" aria-hidden="true"></i>
-        Voltar
-      </Link>
       <h2>
         Retificar declaração{" "}
         {declaracao.retificacao

@@ -71,10 +71,6 @@ export default function DeclaracaoPage() {
 
   return (
     <DefaultLayout>
-      <Link to="/" className="text-lg">
-        <i className="fas fa-arrow-left" aria-hidden="true"></i>
-        Voltar
-      </Link>
       <h2 className="mt-3 mb-0">
         Declaração{" "}
         {data.retificacao ? `retificadora 0${data.versao - 1}` : "original"}
