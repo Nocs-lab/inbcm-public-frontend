@@ -13,6 +13,7 @@ import {
   validate_arquivistico,
   readFile
 } from "inbcm-xlsx-validator"
+import { Link } from "react-router-dom"
 
 const schema = z
   .object({
@@ -272,6 +273,13 @@ const Uploader: React.FC<{
         bibliograficoErrors={bibliograficoErrors}
         arquivisticoErrors={arquivisticoErrors}
       />
+      <Link
+        to="/declaracoes/modelos"
+        className="br-button secondary small mb-1"
+      >
+        Modelos de planilhas
+      </Link>
+      <br />
       As planilhas devem ser preenchidas de acordo com os modelos definidos na{" "}
       <a
         target="_blank"
@@ -279,7 +287,7 @@ const Uploader: React.FC<{
       >
         Resolução Normativa do Ibram nº 6, de 31 de agosto de 2021
       </a>
-      . Você pode enviar até 03 arquivos, sendo um para cada tipo de acervo. Um
+      . Você pode enviar até 3 arquivos, sendo um para cada tipo de acervo. Um
       modelo de planilha, para cada tipo de acervo, pode ser obtido clicando nos
       seguintes hiperlinks: <a href="/INBCM_Museologia.xlsx">Museológico</a>,{" "}
       <a href="/INBCM_Biblioteconomia.xlsx">Bibliográfico</a> e{" "}

@@ -3,7 +3,6 @@ import DefaultLayout from "../../../layouts/default"
 import { useSuspenseQueries } from "@tanstack/react-query"
 import request from "../../../utils/request"
 import { format } from "date-fns"
-import { Link } from "react-router-dom"
 
 const DeclaracaoPage: React.FC = () => {
   const params = useParams()
@@ -30,10 +29,6 @@ const DeclaracaoPage: React.FC = () => {
 
   return (
     <DefaultLayout>
-      <Link to={`/declaracoes/${id}`} className="text-lg">
-        <i className="fas fa-arrow-left" aria-hidden="true"></i>
-        Voltar
-      </Link>
       <h2 className="mt-3 mb-0">
         Histórico da declaração{" "}
         {declaracao.retificacao
