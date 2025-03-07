@@ -274,8 +274,9 @@ const Uploader: React.FC<{
       />
       <Link
         to="/declaracoes/modelos"
-        className="br-button secondary small mb-1"
+        className="br-button secondary small mb-2"
       >
+        <i className="fa-solid fa-table mr-2"></i>
         Modelos de planilhas
       </Link>
       <br />
@@ -286,9 +287,11 @@ const Uploader: React.FC<{
       >
         Resolução Normativa do Ibram nº 6, de 31 de agosto de 2021
       </a>
-      . Você pode enviar até 3 arquivos, sendo um para cada tipo de acervo. Um
-      modelo de planilha, para cada tipo de acervo, pode ser obtido clicando nos
-      seguintes hiperlinks: <a href="/INBCM_Museologia.xlsx">Museológico</a>,{" "}
+      .<br />
+      Você pode enviar até 3 arquivos, sendo um para cada tipo de acervo.
+      <br /> Um modelo de planilha, para cada tipo de acervo, pode ser obtido
+      clicando nos seguintes hiperlinks:{" "}
+      <a href="/INBCM_Museologia.xlsx">Museológico</a>,{" "}
       <a href="/INBCM_Biblioteconomia.xlsx">Bibliográfico</a> e{" "}
       <a href="/INBCM_Arquivologia.xlsx">Arquivístico</a>.
       <form onSubmit={handleSubmit(onSubmit)} className="mt-5">
