@@ -294,22 +294,13 @@ export default function DeclaracaoPage() {
                       {data.museologico?.status}
                     </span>
                   </span>
-                  <div className="grid grid-cols-2 gap-4">
-                    <a
-                      href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/museologico`}
-                      className="mb-2"
-                    >
-                      <i className="fas fa-download" aria-hidden="true"></i>{" "}
-                      Baixar análise Ibram
-                    </a>
-                    <a
-                      href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/museologico`}
-                      className="mb-2"
-                    >
-                      <i className="fas fa-download" aria-hidden="true"></i>{" "}
-                      Baixar planilha
-                    </a>
-                  </div>
+                  <a
+                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/museologico`}
+                    className="mb-2"
+                  >
+                    <i className="fas fa-download" aria-hidden="true"></i>{" "}
+                    Baixar planilha
+                  </a>
                 </div>
                 <TableItens
                   acervo="museologico"
