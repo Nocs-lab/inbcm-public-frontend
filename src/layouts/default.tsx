@@ -3,13 +3,13 @@ import useStore from "../utils/store"
 import Footer from "../components/Footer"
 import Header from "../components/Header"
 import { Navigate } from "react-router"
-import { Link } from "react-router-dom"
+import { Link, Outlet } from "react-router"
+import { useLocation } from "react-router"
 
-const DefaultLayout: React.FC<{
-  children: React.ReactNode
-  returnLink?: boolean
-}> = ({ children, returnLink = true }) => {
+const DefaultLayout: React.FC = () => {
   const { user } = useStore()
+  const location = useLocation()
+  const returnLink = location.pathname !== "/"
 
   if (!user) {
     return <Navigate to="/login" />
@@ -26,7 +26,7 @@ const DefaultLayout: React.FC<{
               Voltar
             </Link>
           )}
-          {children}
+          <Outlet />
         </main>
         <Footer />
       </div>

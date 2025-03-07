@@ -1,5 +1,4 @@
 import { useState } from "react"
-import DefaultLayout from "../../layouts/default"
 import clsx from "clsx"
 
 export default function ModelosDeclaracaoPage() {
@@ -8,7 +7,7 @@ export default function ModelosDeclaracaoPage() {
   >("museologico")
 
   return (
-    <DefaultLayout>
+    <>
       <h2 className="mt-3 mb-0">Download dos modelos de planilhas</h2>
       <div className="br-tab mt-10" data-counter="true">
         <nav className="tab-nav">
@@ -636,6 +635,6 @@ export default function ModelosDeclaracaoPage() {
           </div>
         </div>
       </div>
-    </DefaultLayout>
+    </>
   )
 }

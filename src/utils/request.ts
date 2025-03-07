@@ -1,5 +1,6 @@
 import { pack, unpack } from "msgpackr"
 import toast from "react-hot-toast"
+import router from "./router"
 
 export default async function request(
   path: string,
@@ -22,17 +23,17 @@ export default async function request(
   })
 
   if (res.status === 401) {
-    const refreshRes = await fetch("/api/admin/auth/refresh", {
+    const refreshRes = await fetch("/api/public/auth/refresh", {
       method: "POST",
       credentials: "include"
     })
     if (refreshRes.ok) {
       return request(path, init)
     } else {
-      location.href = "/login"
+      router.navigate("/login")
     }
   } else if (!res.status.toString().startsWith("2")) {
-    const error = unpack(await res.arrayBuffer()).message
+    const error = unpack(new Uint8Array(await res.arrayBuffer())).message
 
     if (showError) {
       toast.error(error)
@@ -41,7 +42,7 @@ export default async function request(
     throw new Error(error)
   }
 
-  res.json = async () => unpack(await res.arrayBuffer())
+  res.json = async () => unpack(new Uint8Array(await res.arrayBuffer()))
 
   return res
 }

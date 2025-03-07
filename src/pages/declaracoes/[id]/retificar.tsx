@@ -1,7 +1,6 @@
 import { useMutation, useSuspenseQueries } from "@tanstack/react-query"
 import { useNavigate, useParams } from "react-router"
 import Uploader from "../../../components/Uploader"
-import DefaultLayout from "../../../layouts/default"
 import request from "../../../utils/request"
 import useStore from "../../../utils/store"
 
@@ -69,7 +68,7 @@ export default function RetificarDeclaracao() {
   })
 
   return (
-    <DefaultLayout>
+    <>
       <h2>
         Retificar declaração{" "}
         {declaracao.retificacao
@@ -103,6 +102,6 @@ export default function RetificarDeclaracao() {
         isRetificar={true}
         isExist={isExist}
       />
-    </DefaultLayout>
+    </>
   )
 }

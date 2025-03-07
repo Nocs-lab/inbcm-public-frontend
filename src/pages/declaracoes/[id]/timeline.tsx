@@ -1,5 +1,4 @@
 import { useParams } from "react-router"
-import DefaultLayout from "../../../layouts/default"
 import { useSuspenseQueries } from "@tanstack/react-query"
 import request from "../../../utils/request"
 import { format } from "date-fns"
@@ -28,7 +27,7 @@ const DeclaracaoPage: React.FC = () => {
   })
 
   return (
-    <DefaultLayout>
+    <>
       <h2 className="mt-3 mb-0">
         Histórico da declaração{" "}
         {declaracao.retificacao
@@ -79,7 +78,7 @@ const DeclaracaoPage: React.FC = () => {
           </div>
         </nav>
       </div>
-    </DefaultLayout>
+    </>
   )
 }
 

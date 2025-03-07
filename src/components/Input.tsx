@@ -9,7 +9,7 @@ import {
 } from "react"
 
 type Props = ComponentProps<"input"> & {
-  label: string
+  label: JSX.Element
   error?: FieldError
   file?: File | null
   setFile?: (file: File | null) => void

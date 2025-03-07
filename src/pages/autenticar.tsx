@@ -1,7 +1,7 @@
 import Header from "../components/HeaderAutenticar"
 import Footer from "../components/Footer"
 import Input from "../components/Input"
-import { Link } from "react-router-dom"
+import { Link } from "react-router"
 import { Button } from "react-dsgov"
 import { useState } from "react"
 import request from "../utils/request"

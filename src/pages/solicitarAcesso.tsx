@@ -7,11 +7,14 @@ import { z } from "zod"
 import { useForm, Controller } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import clsx from "clsx"
-import { Link } from "react-router-dom"
+import { Link } from "react-router"
 import request from "../utils/request"
 import toast from "react-hot-toast"
 import { debounce } from "lodash"
 import Select from "../components/MultiSelect"
+import { useModal } from "../utils/modal"
+import Upload from "../components/Upload"
+import { useHookFormMask } from "use-mask-input"
 
 const validateCPF = (cpf: string): boolean => {
   cpf = cpf.replace(/[^\d]+/g, "")
@@ -41,7 +44,8 @@ const schema = z.object({
     .refine((cpf) => validateCPF(cpf), {
       message: "CPF inválido"
     }),
-  museus: z.array(z.string()).optional()
+  museus: z.array(z.string()).optional(),
+  file: z.instanceof(File).nullable()
 })
 type FormData = z.infer<typeof schema>
 
@@ -94,13 +98,10 @@ const fetchMuseus = async (
 const CreateUser: React.FC = () => {
   const [selectedMuseus, setSelectedMuseus] = useState<string[]>([])
   const [selectedMuseusNames, setSelectedMuseusNames] = useState<Museu[]>([])
-  const [isLoading, setIsLoading] = useState(false)
   const [search, setSearch] = useState("")
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false)
-  const [formData, setFormData] = useState<FormData | null>(null)
   const [page, setPage] = useState(1)
 
-  const { data: museusData } = useQuery<RespostaMuseus>({
+  const { data: museusData, isLoading } = useQuery<RespostaMuseus>({
     queryKey: ["museus", search, page],
     queryFn: () => fetchMuseus(search, page),
     enabled: !!search
@@ -109,13 +110,7 @@ const CreateUser: React.FC = () => {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const museus = museusData?.museus || []
 
-  console.log("selectedMuseus", selectedMuseus)
-  console.log("selectedMuseusNames", selectedMuseusNames)
-  console.log("museus", museus)
-
   const debounceSearch = debounce((value: string) => {
-    console.log(value)
-    setIsLoading(true)
     setSearch(value)
     setPage(1)
   }, 500)
@@ -134,80 +129,142 @@ const CreateUser: React.FC = () => {
 
       setSelectedMuseusNames(museusSelecionados)
     }
-  }, [selectedMuseus, museus])
+  }, [selectedMuseus, museus, selectedMuseusNames])
 
   const {
     register,
     handleSubmit,
     control,
-    formState: { errors, isSubmitting }
+    formState: { errors, isSubmitting },
+    trigger,
+    watch
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    mode: "onBlur"
+    mode: "onBlur",
+    defaultValues: {
+      file: null
+    }
   })
+
+  const registerWithMask = useHookFormMask(register)
 
   const navigate = useNavigate()
 
-  const { mutate } = useMutation({
+  const { mutateAsync } = useMutation({
     mutationFn: async ({
       email,
       nome,
       cpf,
-      museus
+      museus,
+      file
     }: FormData & { museus: string[] }) => {
-      const res = await request("/api/admin/users/registro", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email,
-          nome,
-          cpf,
-          museus: museus
-        })
+      const formData = new FormData()
+      formData.append("email", email)
+      formData.append("nome", nome)
+      formData.append("cpf", cpf)
+      museus.forEach((museu) => {
+        formData.append("museus", museu)
       })
+      formData.append("arquivo", file!)
 
-      if (!res.ok) {
-        const errorData = await res.json()
-        throw new Error(errorData.message || "Erro ao criar usuário")
-      }
+      const res = await request("/api/public/users/registro", {
+        method: "POST",
+        body: formData
+      })
 
       return res.json()
     },
-    onSuccess: (data) => {
+    onSuccess: () => {
       navigate("/login")
-      toast.success(data.message, { duration: 8000 })
-    },
-    onError: (error) => {
-      if (error instanceof Error) {
-        toast.error(error.message, { duration: 8000 })
-      }
     }
   })
 
-  const onSubmit = (data: FormData) => {
-    setFormData(data)
-    setShowConfirmationModal(true)
-  }
+  const formData = watch()
 
-  const handleConfirm = () => {
-    if (formData) {
-      const museusIds = selectedMuseus.map((item) => item.split(",")[0])
-      mutate({
+  const { openModal, closeModal } = useModal((close) => (
+    <Modal
+      title="Confirmar Solicitação"
+      showCloseButton
+      onCloseButtonClick={close}
+    >
+      <Modal.Body>
+        <div className="text-left">
+          <p>Confira atentamente os dados que serão enviados:</p>
+          <table className="w-full border-collapse border border-gray-300">
+            <tbody>
+              <tr className="border-b border-gray-300">
+                <td className="p-2 font-semibold bg-gray-100">CPF:</td>
+                <td className="p-2">{formData.cpf}</td>
+              </tr>
+              <tr className="border-b border-gray-300">
+                <td className="p-2 font-semibold bg-gray-100">Nome:</td>
+                <td className="p-2">{formData.nome}</td>
+              </tr>
+              <tr className="border-b border-gray-300">
+                <td className="p-2 font-semibold bg-gray-100">E-mail:</td>
+                <td className="p-2">{formData.email}</td>
+              </tr>
+              <tr>
+                <td className="p-2 font-semibold bg-gray-100">Museus:</td>
+                <td className="p-2">
+                  {selectedMuseusNames.length > 0 ? (
+                    <ul className="flex flex-wrap gap-2 list-disc pl-3">
+                      {selectedMuseusNames.map((museu) => (
+                        <li>
+                          {museu.nome}
+                          <br />
+                          <span className="text-xs font-gray-500">
+                            {museu.endereco.logradouro}, {museu.endereco.numero}{" "}
+                            - {museu.endereco.municipio}/{museu.endereco.uf}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    "Nenhum museu selecionado."
+                  )}
+                </td>
+              </tr>
+              <tr>
+                <td className="p-2 font-semibold bg-gray-100">Documento:</td>
+                <td className="p-2">{formData.file?.name}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </Modal.Body>
+
+      <Modal.Footer justify-content="end">
+        <Button primary small m={2} onClick={() => handleSubmit(onSubmit)()}>
+          Confirmar
+        </Button>
+        <Button secondary small m={2} onClick={close}>
+          Cancelar
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  ))
+
+  const onSubmit = async (formData: FormData) => {
+    closeModal()
+    const museusIds = selectedMuseus.map((item) => item.split(",")[0])
+    await toast.promise(
+      mutateAsync({
         ...formData,
         museus: museusIds
-      })
-      setShowConfirmationModal(false)
-    }
-  }
-
-  const handleCloseModal = () => {
-    setShowConfirmationModal(false)
+      }),
+      {
+        loading: "Enviando solicitação",
+        success: (data) => data.message,
+        error: (error) => error.message
+      }
+    )
   }
 
   return (
     <>
       <div className="container mx-auto p-8">
-        <Link to="/login" className="text-lg">
+        <Link to={-1 as unknown as string} className="text-lg">
           <i className="fas fa-arrow-left" aria-hidden="true"></i>
           Voltar
         </Link>
@@ -217,9 +274,7 @@ const CreateUser: React.FC = () => {
             className="rounded-lg p-3"
             style={{ border: "2px solid #e0e0e0" }}
           >
-            <legend className="text-lg font-extrabold px-3 m-0">
-              Dados pessoais
-            </legend>
+            <legend className="font-extrabold px-3 m-0">Dados pessoais</legend>
             <div className="grid grid-cols-3 gap-2 w-full p-2">
               <Input
                 type="text"
@@ -230,7 +285,7 @@ const CreateUser: React.FC = () => {
                 }
                 placeholder="000.000.000-00"
                 error={errors.cpf}
-                {...register("cpf")}
+                {...registerWithMask("cpf", ["999.999.999-99"])}
               />
               <Input
                 type="text"
@@ -261,7 +316,7 @@ const CreateUser: React.FC = () => {
             className="rounded-lg p-3"
             style={{ border: "2px solid #e0e0e0" }}
           >
-            <legend className="text-lg font-extrabold px-3 m-0">
+            <legend className="font-extrabold px-3 m-0">
               Museus associados
             </legend>
             <div className="flex flex-col w-full items-center p-2">
@@ -381,80 +436,47 @@ const CreateUser: React.FC = () => {
               </div>
             </div>
           </fieldset>
+          <fieldset
+            className="rounded-lg p-3"
+            style={{ border: "2px solid #e0e0e0" }}
+          >
+            <legend className="font-extrabold px-3 m-0">
+              Documento comprobatório
+            </legend>
+            <div className="grid grid-cols-3 gap-2 w-full p-2">
+              <Controller
+                control={control}
+                name="file"
+                render={({ field }) => (
+                  <Upload
+                    value={field.value}
+                    onChange={field.onChange}
+                    error={errors.file?.message}
+                    accept=".pdf"
+                  />
+                )}
+              />
+            </div>
+          </fieldset>
           <div className="flex justify-end space-x-4">
             <Link to="/login" className="br-button secondary">
               Voltar
             </Link>
             <button
               className={clsx("br-button primary", isSubmitting && "loading")}
-              type="submit"
+              type="button"
+              onClick={async () => {
+                if (await trigger(["cpf", "nome", "email", "museus", "file"])) {
+                  openModal()
+                }
+              }}
+              disabled={isSubmitting}
             >
               Solicitar
             </button>
           </div>
         </form>
       </div>
-      {/* Modal de Confirmação */}
-      {showConfirmationModal && formData && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-800 bg-opacity-50">
-          <Modal
-            title="Confirmar Solicitação"
-            showCloseButton
-            onCloseButtonClick={handleCloseModal}
-          >
-            <Modal.Body>
-              <div className="text-left">
-                <p>Confira atentamente os dados que serão enviados:</p>
-                <table className="w-full border-collapse border border-gray-300">
-                  <tbody>
-                    <tr className="border-b border-gray-300">
-                      <td className="p-2 font-semibold bg-gray-100">CPF:</td>
-                      <td className="p-2">{formData.cpf}</td>
-                    </tr>
-                    <tr className="border-b border-gray-300">
-                      <td className="p-2 font-semibold bg-gray-100">Nome:</td>
-                      <td className="p-2">{formData.nome}</td>
-                    </tr>
-                    <tr className="border-b border-gray-300">
-                      <td className="p-2 font-semibold bg-gray-100">E-mail:</td>
-                      <td className="p-2">{formData.email}</td>
-                    </tr>
-                    <tr>
-                      <td className="p-2 font-semibold bg-gray-100">Museus:</td>
-                      <td className="p-2">
-                        {selectedMuseusNames.length > 0 ? (
-                          <ul className="flex flex-wrap gap-2 list-disc pl-3">
-                            {selectedMuseusNames.map((museu) => (
-                              <li>
-                                {museu.nome}
-                                <br />
-                                <span className="text-xs font-gray-500">
-                                  {museu.endereco.logradouro}
-                                </span>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          "Nenhum museu selecionado."
-                        )}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </Modal.Body>
-
-            <Modal.Footer justify-content="end">
-              <Button primary small m={2} onClick={handleConfirm}>
-                Confirmar
-              </Button>
-              <Button secondary small m={2} onClick={handleCloseModal}>
-                Cancelar
-              </Button>
-            </Modal.Footer>
-          </Modal>
-        </div>
-      )}
     </>
   )
 }

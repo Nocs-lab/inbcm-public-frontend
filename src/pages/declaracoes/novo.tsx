@@ -7,9 +7,8 @@ import {
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { useNavigate } from "react-router"
-import { Link } from "react-router-dom"
+import { Link } from "react-router"
 import Uploader from "../../components/Uploader"
-import DefaultLayout from "../../layouts/default"
 import request from "../../utils/request"
 import useStore from "../../utils/store"
 
@@ -104,7 +103,7 @@ const NovoDeclaracaoPage = () => {
   })
 
   return (
-    <DefaultLayout>
+    <>
       <h2>Enviar nova declaração</h2>
       {DeclaracaoStatus == "Recebida" && (
         <div className="br-message warning">
@@ -170,7 +169,7 @@ const NovoDeclaracaoPage = () => {
         DeclaracaoStatus={DeclaracaoStatus}
         anos={anos}
       />
-    </DefaultLayout>
+    </>
   )
 }
 
