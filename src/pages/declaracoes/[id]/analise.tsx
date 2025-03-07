@@ -3,7 +3,6 @@ import clsx from "clsx"
 import { format } from "date-fns"
 import { useState } from "react"
 import { useParams } from "react-router"
-import DefaultLayout from "../../../layouts/default"
 import { getColorStatus } from "../../../utils/colorStatus"
 import request from "../../../utils/request"
 
@@ -38,7 +37,7 @@ export default function DeclaracaoPage() {
   >(getDefaultTab())
 
   return (
-    <DefaultLayout>
+    <>
       <h2 className="mt-3 mb-0">
         Parecer técnico da declaração{" "}
         {data.retificacao ? `retificadora 0${data.versao - 1}` : "original"}
@@ -255,6 +254,6 @@ export default function DeclaracaoPage() {
             )}
         </div>
       </div>
-    </DefaultLayout>
+    </>
   )
 }

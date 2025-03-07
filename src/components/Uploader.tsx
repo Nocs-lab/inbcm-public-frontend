@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { Controller, FieldError, useForm } from "react-hook-form"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Select, Button, Modal } from "react-dsgov"
 import Input from "../components/Input"
@@ -13,7 +13,6 @@ import {
   validate_arquivistico,
   readFile
 } from "inbcm-xlsx-validator"
-import { Link } from "react-router-dom"
 
 const schema = z
   .object({

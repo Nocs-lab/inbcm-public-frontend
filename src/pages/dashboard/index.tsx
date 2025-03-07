@@ -1,4 +1,3 @@
-import DefaultLayout from "../../layouts/default"
 import { Chart } from "react-google-charts"
 import { Select } from "react-dsgov"
 import { useState, useEffect, SetStateAction } from "react"
@@ -61,7 +60,7 @@ export default function Dashboard() {
   const handleAnoFimChange = (value: SetStateAction<string>) => setAnoFim(value)
 
   return (
-    <DefaultLayout>
+    <>
       <h2>Painel analítico</h2>
 
       <div className="flex items-center justify-center p-3 gap-16">
@@ -187,6 +186,6 @@ export default function Dashboard() {
           }}
         />
       )}
-    </DefaultLayout>
+    </>
   )
 }
