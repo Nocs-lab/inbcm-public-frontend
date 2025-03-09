@@ -45,7 +45,7 @@ const schema = z.object({
       message: "CPF inválido"
     }),
   museus: z.array(z.string()).optional(),
-  file: z.instanceof(File).nullable()
+  file: z.instanceof(File)
 })
 type FormData = z.infer<typeof schema>
 
@@ -140,10 +140,7 @@ const CreateUser: React.FC = () => {
     watch
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    mode: "onBlur",
-    defaultValues: {
-      file: null
-    }
+    mode: "onBlur"
   })
 
   const registerWithMask = useHookFormMask(register)
@@ -449,8 +446,7 @@ const CreateUser: React.FC = () => {
                 name="file"
                 render={({ field }) => (
                   <Upload
-                    value={field.value}
-                    onChange={field.onChange}
+                    onChange={(files) => field.onChange(files[0])}
                     error={errors.file?.message}
                     accept=".pdf"
                   />

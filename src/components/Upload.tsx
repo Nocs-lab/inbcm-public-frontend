@@ -1,8 +1,8 @@
 import { useEffect, useRef, useState, type ComponentProps } from "react"
 
-type Props = Omit<ComponentProps<"input">, "value"> & {
+type Props = Omit<ComponentProps<"input">, "value" | "onChange"> & {
   onChange: (files: File[]) => void
-  value: File[] | File | null
+  value?: File[]
   error?: string
   multiple?: boolean
 }
@@ -14,12 +14,12 @@ const Upload: React.FC<Props> = ({
   multiple = false,
   ...props
 }) => {
-  const [files, setFiles] = useState<File | File[] | null>(value)
+  const [files, setFiles] = useState<File[]>(value || [])
 
   const ref = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    setFiles(value)
+    setFiles(value || [])
   }, [value])
 
   return (
@@ -38,7 +38,7 @@ const Upload: React.FC<Props> = ({
           ref={ref}
           onChange={(e) => {
             const fileList = Array.from(e.target.files || [])
-            setFiles(multiple ? fileList : fileList[0])
+            setFiles(fileList)
             onChange(fileList)
           }}
           {...props}
@@ -70,17 +70,8 @@ const Upload: React.FC<Props> = ({
                   type="button"
                   aria-label={`Remover ${file.name}`}
                   onClick={() => {
-                    setFiles((old) => {
-                      if (Array.isArray(old)) {
-                        return old.filter((f) => f.name !== file.name)
-                      }
-                      return null
-                    })
-                    onChange(
-                      (files as File[]).filter(
-                        (f: File) => f.name !== file.name
-                      )
-                    )
+                    setFiles((old) => old.filter((f) => f.name !== file.name))
+                    onChange(files.filter((f) => f.name !== file.name))
                   }}
                 >
                   <i className="fa fa-trash"></i>
