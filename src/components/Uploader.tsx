@@ -274,7 +274,7 @@ const Uploader: React.FC<{
       />
       <Link
         to="/declaracoes/modelos"
-        className="br-button secondary small mb-2"
+        className="text-lg border-0 p-2 rounded-lg"
       >
         <i className="fa-solid fa-table mr-2"></i>
         Modelos de planilhas
