@@ -332,13 +332,6 @@ export default function DeclaracaoPage() {
                       className="mb-2"
                     >
                       <i className="fas fa-download" aria-hidden="true"></i>{" "}
-                      Baixar análise Ibram
-                    </a>
-                    <a
-                      href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/bibliografico`}
-                      className="mb-2"
-                    >
-                      <i className="fas fa-download" aria-hidden="true"></i>{" "}
                       Baixar planilha
                     </a>
                   </div>
@@ -368,13 +361,6 @@ export default function DeclaracaoPage() {
                     </span>
                   </span>
                   <div className="grid grid-cols-2 gap-4">
-                    <a
-                      href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/arquivistico`}
-                      className="mb-2"
-                    >
-                      <i className="fas fa-download" aria-hidden="true"></i>{" "}
-                      Baixar análise Ibram
-                    </a>
                     <a
                       href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/arquivistico`}
                       className="mb-2"
