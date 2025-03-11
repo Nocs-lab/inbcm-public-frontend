@@ -69,7 +69,7 @@ jobs:
       - name: Create file .env
         env:
           ENVS_UPDATE: ${{ secrets.ENVS_UPDATE }}
-        run: echo "$ENVS_UPDATE" > .env
+        run: echo "$ENVS_UPDATE" > src/scripts/.env
 
       - name: Config Python
         uses: actions/setup-python@v5
