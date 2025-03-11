@@ -141,13 +141,15 @@ export default function DeclaracaoPage() {
                     </span>
                   </span>
                   <div className="flex justify-end gap-4">
-                    <a
-                      href={`/api/public/declaracoes/download/analise/${data._id}/museologico`}
-                      className="mb-2"
-                    >
-                      <i className="fas fa-download" aria-hidden="true"></i>{" "}
-                      Baixar comentários técnicos
-                    </a>
+                    {data.museologico.analiseUrl && (
+                      <a
+                        href={`/api/public/declaracoes/download/analise/${data._id}/museologico`}
+                        className="mb-2"
+                      >
+                        <i className="fas fa-download" aria-hidden="true"></i>{" "}
+                        Baixar comentários técnicos
+                      </a>
+                    )}
                     <a
                       href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/museologico`}
                       className="mb-2"
@@ -193,13 +195,15 @@ export default function DeclaracaoPage() {
                     </span>
                   </span>
                   <div className="flex justify-end gap-4">
-                    <a
-                      href={`/api/public/declaracoes/download/analise/${data._id}/bibliografico`}
-                      className="mb-2"
-                    >
-                      <i className="fas fa-download" aria-hidden="true"></i>{" "}
-                      Baixar comentários técnicos
-                    </a>
+                    {data.bibliografico.analiseUrl && (
+                      <a
+                        href={`/api/public/declaracoes/download/analise/${data._id}/bibliografico`}
+                        className="mb-2"
+                      >
+                        <i className="fas fa-download" aria-hidden="true"></i>{" "}
+                        Baixar comentários técnicos
+                      </a>
+                    )}
                     <a
                       href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/bibliografico`}
                       className="mb-2"
@@ -245,13 +249,15 @@ export default function DeclaracaoPage() {
                     </span>
                   </span>
                   <div className="flex justify-end gap-4">
-                    <a
-                      href={`/api/public/declaracoes/download/analise/${data._id}/arquivistico`}
-                      className="mb-2"
-                    >
-                      <i className="fas fa-download" aria-hidden="true"></i>{" "}
-                      Baixar comentários técnicos
-                    </a>
+                    {data.arquivistico.analiseUrl && (
+                      <a
+                        href={`/api/public/declaracoes/download/analise/${data._id}/arquivistico`}
+                        className="mb-2"
+                      >
+                        <i className="fas fa-download" aria-hidden="true"></i>{" "}
+                        Baixar comentários técnicos
+                      </a>
+                    )}
                     <a
                       href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/arquivistico`}
                       className="mb-2"
