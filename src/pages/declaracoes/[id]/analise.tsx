@@ -1,10 +1,8 @@
-import { useSuspenseQueries } from "@tanstack/react-query"
+import { useSuspenseQuery } from "@tanstack/react-query"
 import clsx from "clsx"
 import { format } from "date-fns"
 import { useState } from "react"
 import { useParams } from "react-router"
-import { Link } from "react-router-dom"
-import DefaultLayout from "../../../layouts/default"
 import { getColorStatus } from "../../../utils/colorStatus"
 import request from "../../../utils/request"
 
@@ -14,16 +12,12 @@ export default function DeclaracaoPage() {
   const params = useParams()
   const id = params.id!
 
-  const [{ data }] = useSuspenseQueries({
-    queries: [
-      {
-        queryKey: ["declaracao", id],
-        queryFn: async () => {
-          const response = await request(`/api/public/declaracoes/${id}`)
-          return response.json()
-        }
-      }
-    ]
+  const { data } = useSuspenseQuery({
+    queryKey: ["declaracao", id],
+    queryFn: async () => {
+      const response = await request(`/api/public/declaracoes/${id}`)
+      return response.json()
+    }
   })
 
   const getDefaultTab = () => {
@@ -43,11 +37,7 @@ export default function DeclaracaoPage() {
   >(getDefaultTab())
 
   return (
-    <DefaultLayout>
-      <Link to={`/declaracoes/${data._id}`} className="text-lg">
-        <i className="fas fa-arrow-left" aria-hidden="true"></i>
-        Voltar
-      </Link>
+    <>
       <h2 className="mt-3 mb-0">
         Parecer técnico da declaração{" "}
         {data.retificacao ? `retificadora 0${data.versao - 1}` : "original"}
@@ -62,7 +52,7 @@ export default function DeclaracaoPage() {
         </span>
         <span>
           <span className="font-bold">Ano: </span>
-          {data.anoDeclaracao}
+          {data.anoDeclaracao.ano}
         </span>
         <span>
           <span className="font-bold">Museu: </span>
@@ -150,13 +140,24 @@ export default function DeclaracaoPage() {
                       {data.museologico?.status}
                     </span>
                   </span>
-                  <a
-                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao}/museologico`}
-                    className="mb-2"
-                  >
-                    <i className="fas fa-download" aria-hidden="true"></i>{" "}
-                    Baixar planilha
-                  </a>
+                  <div className="flex justify-end gap-4">
+                    {data.museologico.analiseUrl && (
+                      <a
+                        href={`/api/public/declaracoes/download/analise/${data._id}/museologico`}
+                        className="mb-2"
+                      >
+                        <i className="fas fa-download" aria-hidden="true"></i>{" "}
+                        Baixar comentários técnicos
+                      </a>
+                    )}
+                    <a
+                      href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/museologico`}
+                      className="mb-2"
+                    >
+                      <i className="fas fa-download" aria-hidden="true"></i>{" "}
+                      Baixar planilha
+                    </a>
+                  </div>
                 </div>
                 {data.museologico.status !== "Recebida" && (
                   <Textarea
@@ -193,13 +194,24 @@ export default function DeclaracaoPage() {
                       {data.bibliografico?.status}
                     </span>
                   </span>
-                  <a
-                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao}/bibliografico`}
-                    className="mb-2"
-                  >
-                    <i className="fas fa-download" aria-hidden="true"></i>{" "}
-                    Baixar planilha
-                  </a>
+                  <div className="flex justify-end gap-4">
+                    {data.bibliografico.analiseUrl && (
+                      <a
+                        href={`/api/public/declaracoes/download/analise/${data._id}/bibliografico`}
+                        className="mb-2"
+                      >
+                        <i className="fas fa-download" aria-hidden="true"></i>{" "}
+                        Baixar comentários técnicos
+                      </a>
+                    )}
+                    <a
+                      href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/bibliografico`}
+                      className="mb-2"
+                    >
+                      <i className="fas fa-download" aria-hidden="true"></i>{" "}
+                      Baixar planilha
+                    </a>
+                  </div>
                 </div>
                 {data.bibliografico.status !== "Recebida" && (
                   <Textarea
@@ -236,13 +248,24 @@ export default function DeclaracaoPage() {
                       {data.arquivistico?.status}
                     </span>
                   </span>
-                  <a
-                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao}/arquivistico`}
-                    className="mb-2"
-                  >
-                    <i className="fas fa-download" aria-hidden="true"></i>{" "}
-                    Baixar planilha
-                  </a>
+                  <div className="flex justify-end gap-4">
+                    {data.arquivistico.analiseUrl && (
+                      <a
+                        href={`/api/public/declaracoes/download/analise/${data._id}/arquivistico`}
+                        className="mb-2"
+                      >
+                        <i className="fas fa-download" aria-hidden="true"></i>{" "}
+                        Baixar comentários técnicos
+                      </a>
+                    )}
+                    <a
+                      href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/arquivistico`}
+                      className="mb-2"
+                    >
+                      <i className="fas fa-download" aria-hidden="true"></i>{" "}
+                      Baixar planilha
+                    </a>
+                  </div>
                 </div>
                 {data.arquivistico.status !== "Recebida" && (
                   <Textarea
@@ -264,6 +287,6 @@ export default function DeclaracaoPage() {
             )}
         </div>
       </div>
-    </DefaultLayout>
+    </>
   )
 }

@@ -1,8 +1,6 @@
 import { useMutation, useSuspenseQueries } from "@tanstack/react-query"
 import { useNavigate, useParams } from "react-router"
-import { Link } from "react-router-dom"
 import Uploader from "../../../components/Uploader"
-import DefaultLayout from "../../../layouts/default"
 import request from "../../../utils/request"
 import useStore from "../../../utils/store"
 
@@ -56,7 +54,7 @@ export default function RetificarDeclaracao() {
       }
 
       return await request(
-        `/api/public/declaracoes/retificar/${declaracao.museu_id._id}/${declaracao.anoDeclaracao}/${id}`,
+        `/api/public/declaracoes/retificar/${declaracao.museu_id._id}/${declaracao.anoDeclaracao._id}/${id}`,
         {
           method: "PUT",
           body: formData
@@ -68,12 +66,9 @@ export default function RetificarDeclaracao() {
       navigate(`/declaracoes/${data._id}`)
     }
   })
+
   return (
-    <DefaultLayout>
-      <Link to={`/declaracoes/${id}`} className="text-lg">
-        <i className="fas fa-arrow-left" aria-hidden="true"></i>
-        Voltar
-      </Link>
+    <>
       <h2>
         Retificar declaração{" "}
         {declaracao.retificacao
@@ -83,7 +78,7 @@ export default function RetificarDeclaracao() {
       <div className="flex gap-10 text-lg mt-5">
         <span>
           <span className="font-bold">Ano: </span>
-          {declaracao.anoDeclaracao}
+          {declaracao.anoDeclaracao.ano}
         </span>
         <span>
           <span className="font-bold">Museu: </span>
@@ -103,10 +98,10 @@ export default function RetificarDeclaracao() {
         }
         isLoading={isPending}
         museus={museus}
-        anoDeclaracao={declaracao.anoDeclaracao}
+        anoDeclaracao={declaracao.anoDeclaracao._id}
         isRetificar={true}
         isExist={isExist}
       />
-    </DefaultLayout>
+    </>
   )
 }

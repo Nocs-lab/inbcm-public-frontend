@@ -1,6 +1,5 @@
-import DefaultLayout from "../layouts/default"
 import Input from "../components/Input"
-import { Link } from "react-router-dom"
+import { Link } from "react-router"
 import Table from "../components/Table"
 import { createColumnHelper, type ColumnDef } from "@tanstack/react-table"
 import { useSuspenseQuery, useMutation } from "@tanstack/react-query"
@@ -92,11 +91,7 @@ const PerfilPage = () => {
   }
 
   return (
-    <DefaultLayout>
-      <Link to="/" className="text-lg">
-        <i className="fas fa-arrow-left" aria-hidden="true"></i>
-        Voltar
-      </Link>
+    <>
       <h2>Perfil</h2>
       <div className="container mx-auto p-6 bg-white rounded-lg">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -150,7 +145,7 @@ const PerfilPage = () => {
           </div>
         </form>
       </div>
-    </DefaultLayout>
+    </>
   )
 }
 

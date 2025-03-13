@@ -7,9 +7,8 @@ import {
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { useNavigate } from "react-router"
-import { Link } from "react-router-dom"
+import { Link } from "react-router"
 import Uploader from "../../components/Uploader"
-import DefaultLayout from "../../layouts/default"
 import request from "../../utils/request"
 import useStore from "../../utils/store"
 
@@ -31,12 +30,18 @@ const NovoDeclaracaoPage = () => {
         queryKey: ["anos"],
         queryFn: async () => {
           const res = await request(
-            "/api/admin/anodeclaracao/getPeriodoDeclaracaoVigente"
+            "/api/public/periodos/getPeriodoDeclaracaoVigente"
           )
           return await res.json()
         }
       }
     ]
+  })
+
+  const anosMap: { [key: string]: number } = {}
+
+  anos.forEach((ano: { _id: string; ano: number }) => {
+    anosMap[ano._id] = ano.ano
   })
 
   const [ano, setAno] = useState("")
@@ -98,11 +103,7 @@ const NovoDeclaracaoPage = () => {
   })
 
   return (
-    <DefaultLayout>
-      <Link to="/" className="text-lg">
-        <i className="fas fa-arrow-left" aria-hidden="true"></i>
-        Voltar
-      </Link>
+    <>
       <h2>Enviar nova declaração</h2>
       {DeclaracaoStatus == "Recebida" && (
         <div className="br-message warning">
@@ -115,7 +116,7 @@ const NovoDeclaracaoPage = () => {
             role="alert"
           >
             <span className="message-title">
-              Já foi enviada uma declaração para o ano {ano}.{" "}
+              Já foi enviada uma declaração para o ano {anosMap[ano]}.{" "}
             </span>
             <span className="message-body">
               Para baixar o recibo correspondente,{" "}
@@ -166,9 +167,9 @@ const NovoDeclaracaoPage = () => {
         museus={museus}
         isExist={isExist}
         DeclaracaoStatus={DeclaracaoStatus}
-        anos={anos.map((ano: { ano: number }) => ano.ano)}
+        anos={anos}
       />
-    </DefaultLayout>
+    </>
   )
 }
 

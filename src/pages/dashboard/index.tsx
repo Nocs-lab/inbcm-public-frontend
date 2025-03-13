@@ -1,26 +1,36 @@
-import DefaultLayout from "../../layouts/default"
 import { Chart } from "react-google-charts"
 import { Select } from "react-dsgov"
 import { useState, useEffect, SetStateAction } from "react"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useSuspenseQueries } from "@tanstack/react-query"
 import request from "../../utils/request"
-import { Link } from "react-router-dom"
 
 export default function Dashboard() {
-  const currentYear = new Date().getFullYear() // Obtém o ano atual
-  const anos = Array.from({ length: 10 }, (_, i) => currentYear - i) // Últimos 10 anos
-
   const [museu, setMuseu] = useState("")
-  const [anoInicio, setAnoInicio] = useState(currentYear.toString())
-  const [anoFim, setAnoFim] = useState(currentYear.toString())
 
-  const { data: museus, isLoading: isLoadingMuseus } = useQuery({
-    queryKey: ["museus"],
-    queryFn: async () => {
-      const res = await request("/api/public/museus")
-      return await res.json()
-    }
+  const [{ data: museus }, { data: anos }] = useSuspenseQueries({
+    queries: [
+      {
+        queryKey: ["museus"],
+        queryFn: async () => {
+          const res = await request("/api/public/museus")
+          return await res.json()
+        }
+      },
+      {
+        queryKey: ["anos"],
+        queryFn: async () => {
+          const res = await request("/api/public/periodos")
+          return await res.json()
+        }
+      }
+    ]
   })
+
+  const currentYear = new Date().getFullYear()
+  const ano = anos.find((ano: { ano: number }) => ano.ano === currentYear)
+
+  const [anoInicio, setAnoInicio] = useState(ano.ano.toString())
+  const [anoFim, setAnoFim] = useState(ano.ano.toString())
 
   const {
     data: dadosGrafico,
@@ -50,11 +60,7 @@ export default function Dashboard() {
   const handleAnoFimChange = (value: SetStateAction<string>) => setAnoFim(value)
 
   return (
-    <DefaultLayout>
-      <Link to="/" className="text-lg">
-        <i className="fas fa-arrow-left" aria-hidden="true"></i>
-        Voltar
-      </Link>
+    <>
       <h2>Painel analítico</h2>
 
       <div className="flex items-center justify-center p-3 gap-16">
@@ -70,12 +76,11 @@ export default function Dashboard() {
           }
           value={museu}
           onChange={handleMuseuChange}
-          disabled={isLoadingMuseus}
         />
         <Select
           label="Início"
           className="!w-full"
-          options={anos.map((ano) => ({
+          options={anos.map(({ ano }: { ano: number }) => ({
             label: ano.toString(),
             value: ano.toString()
           }))}
@@ -85,7 +90,7 @@ export default function Dashboard() {
         <Select
           label="Fim"
           className="!w-full"
-          options={anos.map((ano) => ({
+          options={anos.map(({ ano }: { ano: number }) => ({
             label: ano.toString(),
             value: ano.toString()
           }))}
@@ -112,12 +117,12 @@ export default function Dashboard() {
             ],
             ...(dadosGrafico?.data?.map(
               (item: {
-                anoDeclaracao: unknown
+                ano: number
                 totalMuseologico: number
                 totalArquivistico: number
                 totalBibliografico: number
               }) => [
-                item.anoDeclaracao,
+                item.ano.toString(),
                 item.totalMuseologico,
                 item.totalMuseologico > 0
                   ? item.totalMuseologico.toString()
@@ -181,6 +186,6 @@ export default function Dashboard() {
           }}
         />
       )}
-    </DefaultLayout>
+    </>
   )
 }

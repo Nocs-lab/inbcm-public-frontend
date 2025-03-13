@@ -1,18 +1,18 @@
 import { useSuspenseQuery } from "@tanstack/react-query"
 import { type ColumnDef, createColumnHelper } from "@tanstack/react-table"
 import { format } from "date-fns"
-import { Link } from "react-router-dom"
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router"
 import { Modal, Button } from "react-dsgov"
 import Table from "../components/Table"
-import DefaultLayout from "../layouts/default"
 import request from "../utils/request"
+import { useModal } from "../utils/modal"
 
 const columnHelper = createColumnHelper<{
   _id: string
   dataCriacao: Date
-  anoDeclaracao: string
+  anoDeclaracao: {
+    ano: number
+  }
   retificacao: boolean
   museu_id: {
     _id: string
@@ -48,7 +48,7 @@ const columns = [
     cell: (info) => format(info.getValue(), "dd/MM/yyyy HH:mm"),
     enableColumnFilter: false
   }),
-  columnHelper.accessor("anoDeclaracao", {
+  columnHelper.accessor("anoDeclaracao.ano", {
     header: "Ano",
     meta: {
       filterVariant: "select"
@@ -78,7 +78,6 @@ const columns = [
 
 export default function Declaracoes() {
   const navigate = useNavigate()
-  const [showModal, setShowModal] = useState(false)
 
   const { data: museus } = useSuspenseQuery({
     queryKey: ["museus"],
@@ -88,9 +87,29 @@ export default function Declaracoes() {
     }
   })
 
+  const { openModal } = useModal((close) => (
+    <Modal
+      showCloseButton
+      title="Museu não associado"
+      onCloseButtonClick={close}
+    >
+      <Modal.Body>
+        <p>
+          Não há museus associados ao seu perfil. Entre em contato com o
+          administrador do sistema solicitando esse vínculo.
+        </p>
+      </Modal.Body>
+      <Modal.Footer justify-content="center">
+        <Button primary onClick={close}>
+          Ok
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  ))
+
   const handleNavigation = (path: string) => {
     if (!museus || museus.length === 0) {
-      setShowModal(true)
+      openModal()
     } else {
       navigate(path)
     }
@@ -104,7 +123,7 @@ export default function Declaracoes() {
   })
 
   return (
-    <DefaultLayout>
+    <>
       <div className="flex items-center justify-between">
         <h2>Minhas declarações</h2>
         <div>
@@ -142,27 +161,6 @@ export default function Declaracoes() {
         <Table columns={columns as ColumnDef<unknown>[]} data={data} />
       </div>
       <div className="h-10" />
-
-      {/* Modal */}
-      <Modal
-        useScrim
-        showCloseButton
-        title="Museu não associado"
-        modalOpened={showModal}
-        onCloseButtonClick={() => setShowModal(false)}
-      >
-        <Modal.Body>
-          <p>
-            Não há museus associados ao seu perfil. Entre em contato com o
-            administrador do sistema solicitando esse vínculo.
-          </p>
-        </Modal.Body>
-        <Modal.Footer justify-content="center">
-          <Button primary onClick={() => setShowModal(false)}>
-            Ok
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    </DefaultLayout>
+    </>
   )
 }

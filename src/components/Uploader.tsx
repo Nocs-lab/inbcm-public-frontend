@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { Controller, FieldError, useForm } from "react-hook-form"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Select, Button, Modal } from "react-dsgov"
 import Input from "../components/Input"
@@ -49,7 +49,7 @@ const Uploader: React.FC<{
   disabled?: boolean
   onChangeAno?: (ano: string) => void
   onChangeMuseu?: (museu: string) => void
-  anos: number[]
+  anos?: { ano: number; _id: string }[]
 }> = ({
   museus,
   anoDeclaracao,
@@ -61,7 +61,7 @@ const Uploader: React.FC<{
   onChangeAno,
   onChangeMuseu,
   isExist,
-  anos
+  anos = []
 }) => {
   const {
     register,
@@ -74,7 +74,7 @@ const Uploader: React.FC<{
     resolver: zodResolver(schema),
     mode: "onBlur",
     defaultValues: {
-      ano: anoDeclaracao || Math.max(...anos).toString(),
+      ano: anoDeclaracao || anos[anos.length - 1]._id,
       museu: museus[0]?._id,
       museologico: null,
       bibliografico: null,
@@ -96,13 +96,13 @@ const Uploader: React.FC<{
     if (onChangeAno) {
       onChangeAno(ano)
     }
-  }, [ano])
+  }, [ano, onChangeAno])
 
   useEffect(() => {
     if (onChangeMuseu) {
       onChangeMuseu(museu)
     }
-  }, [museu])
+  }, [museu, onChangeMuseu])
 
   const totalFiles = [museologico, bibliografico, arquivistico].filter(
     (file) => file?.length
@@ -272,6 +272,14 @@ const Uploader: React.FC<{
         bibliograficoErrors={bibliograficoErrors}
         arquivisticoErrors={arquivisticoErrors}
       />
+      <Link
+        to="/declaracoes/modelos"
+        className="text-lg border-0 p-2 rounded-lg"
+      >
+        <i className="fa-solid fa-table mr-2"></i>
+        Modelos de planilhas
+      </Link>
+      <br />
       As planilhas devem ser preenchidas de acordo com os modelos definidos na{" "}
       <a
         target="_blank"
@@ -279,9 +287,11 @@ const Uploader: React.FC<{
       >
         Resolução Normativa do Ibram nº 6, de 31 de agosto de 2021
       </a>
-      . Você pode enviar até 03 arquivos, sendo um para cada tipo de acervo. Um
-      modelo de planilha, para cada tipo de acervo, pode ser obtido clicando nos
-      seguintes hiperlinks: <a href="/INBCM_Museologia.xlsx">Museológico</a>,{" "}
+      .<br />
+      Você pode enviar até 3 arquivos, sendo um para cada tipo de acervo.
+      <br /> Um modelo de planilha, para cada tipo de acervo, pode ser obtido
+      clicando nos seguintes hiperlinks:{" "}
+      <a href="/INBCM_Museologia.xlsx">Museológico</a>,{" "}
       <a href="/INBCM_Biblioteconomia.xlsx">Bibliográfico</a> e{" "}
       <a href="/INBCM_Arquivologia.xlsx">Arquivístico</a>.
       <form onSubmit={handleSubmit(onSubmit)} className="mt-5">
@@ -364,8 +374,8 @@ const Uploader: React.FC<{
                   label="Ano"
                   className="!w-full"
                   options={anos.map((ano) => ({
-                    label: String(ano),
-                    value: String(ano)
+                    label: ano.ano.toString(),
+                    value: ano._id
                   }))}
                   {...field}
                 />

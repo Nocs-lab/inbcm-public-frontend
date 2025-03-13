@@ -1,16 +1,15 @@
 import {
   useMutation,
   useQueryClient,
-  useSuspenseQueries
+  useSuspenseQuery
 } from "@tanstack/react-query"
 import clsx from "clsx"
 import { format } from "date-fns"
 import { useState } from "react"
 import { useNavigate, useParams } from "react-router"
-import { Link } from "react-router-dom"
+import { Link } from "react-router"
 import MismatchsModal from "../../../components/MismatchsModal"
 import TableItens from "../../../components/TableItens"
-import DefaultLayout from "../../../layouts/default"
 import { getColorStatus } from "../../../utils/colorStatus"
 import request from "../../../utils/request"
 import toast from "react-hot-toast"
@@ -24,7 +23,6 @@ export default function DeclaracaoPage() {
   const navigate = useNavigate()
 
   const [modalExcluirAberta, setModalExcluirAberta] = useState(false)
-  const [modalAlertaAberta, setModalAlertaAberta] = useState(false)
   const queryClient = useQueryClient()
 
   const { mutate: deleteDeclaration, isPending: deletingDeclaration } =
@@ -44,16 +42,12 @@ export default function DeclaracaoPage() {
       }
     })
 
-  const [{ data }] = useSuspenseQueries({
-    queries: [
-      {
-        queryKey: ["declaracao", id],
-        queryFn: async () => {
-          const response = await request(`/api/public/declaracoes/${id}`)
-          return response.json()
-        }
-      }
-    ]
+  const { data } = useSuspenseQuery({
+    queryKey: ["declaracao", id],
+    queryFn: async () => {
+      const response = await request(`/api/public/declaracoes/${id}`)
+      return response.json()
+    }
   })
 
   const [showModal, setShowModal] = useState(false)
@@ -75,11 +69,7 @@ export default function DeclaracaoPage() {
   >(getDefaultTab())
 
   return (
-    <DefaultLayout>
-      <Link to="/" className="text-lg">
-        <i className="fas fa-arrow-left" aria-hidden="true"></i>
-        Voltar
-      </Link>
+    <>
       <h2 className="mt-3 mb-0">
         Declaração{" "}
         {data.retificacao ? `retificadora 0${data.versao - 1}` : "original"}
@@ -91,7 +81,9 @@ export default function DeclaracaoPage() {
         <a href={`/api/public/recibo/${id}`} className="text-xl">
           <i className="fas fa-file-pdf" aria-hidden="true"></i> Recibo
         </a>
-        {data.status == "Em análise" ? (
+        {data.status == "Em análise" ||
+        data.anoDeclaracao.dataFimRetificacao.getTime() <
+          new Date().getTime() ? (
           <span className="text-xl text-gray-500 cursor-not-allowed">
             <i className="fas fa-edit" aria-hidden="true"></i> Retificar
           </span>
@@ -112,7 +104,7 @@ export default function DeclaracaoPage() {
               role="button"
             >
               <i className="fas fa-exclamation-triangle" aria-hidden="true"></i>{" "}
-              Pendências
+              Resumo de pendências
             </a>
             <MismatchsModal
               opened={showModal}
@@ -129,8 +121,9 @@ export default function DeclaracaoPage() {
           <>
             <a
               className="text-xl"
-              href="#"
-              onClick={() => setModalAlertaAberta(true)}
+              href={`/api/public/recibo/detalhamento/${id}`}
+              target="_blank"
+              rel="noopener noreferrer"
               role="button"
             >
               <i
@@ -139,32 +132,6 @@ export default function DeclaracaoPage() {
               ></i>{" "}
               Relatório de pendências
             </a>
-            <Modal
-              useScrim
-              showCloseButton
-              title="Tela em desenvolvimento"
-              modalOpened={modalAlertaAberta}
-              onCloseButtonClick={() => setModalAlertaAberta(false)}
-            >
-              <Modal.Body>
-                <div className="flex items-center space-x-2">
-                  <i className="fas fa-exclamation-triangle text-danger fa-3x"></i>
-                  <p className="normal-case text-center">
-                    Essa tela ainda está em desenvolvimento.
-                  </p>
-                </div>
-              </Modal.Body>
-              <Modal.Footer justify-content="center">
-                <Button
-                  primary
-                  small
-                  m={2}
-                  onClick={() => setModalAlertaAberta(false)}
-                >
-                  Voltar
-                </Button>
-              </Modal.Footer>
-            </Modal>
           </>
         )}
         <a
@@ -206,7 +173,7 @@ export default function DeclaracaoPage() {
               <p className="normal-case text-center">
                 Tem certeza que deseja excluir a declaração{" "}
                 {data.retificacao ? "retificadora" : "original"} de{" "}
-                {data.anoDeclaracao} do {data.museu_id.nome}?
+                {data.anoDeclaracao.ano} do {data.museu_id.nome}?
               </p>
             </div>
           </Modal.Body>
@@ -238,7 +205,7 @@ export default function DeclaracaoPage() {
         </span>
         <span>
           <span className="font-bold">Ano: </span>
-          {data.anoDeclaracao}
+          {data.anoDeclaracao.ano}
         </span>
         <span>
           <span className="font-bold">Museu: </span>
@@ -327,7 +294,7 @@ export default function DeclaracaoPage() {
                     </span>
                   </span>
                   <a
-                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao}/museologico`}
+                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/museologico`}
                     className="mb-2"
                   >
                     <i className="fas fa-download" aria-hidden="true"></i>{" "}
@@ -336,7 +303,7 @@ export default function DeclaracaoPage() {
                 </div>
                 <TableItens
                   acervo="museologico"
-                  ano={data.anoDeclaracao}
+                  ano={data.anoDeclaracao._id}
                   museuId={data.museu_id._id}
                 />
               </div>
@@ -358,17 +325,19 @@ export default function DeclaracaoPage() {
                       {data.bibliografico?.status}
                     </span>
                   </span>
-                  <a
-                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao}/bibliografico`}
-                    className="mb-2"
-                  >
-                    <i className="fas fa-download" aria-hidden="true"></i>{" "}
-                    Baixar planilha
-                  </a>
+                  <div className="grid grid-cols-2 gap-4">
+                    <a
+                      href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/bibliografico`}
+                      className="mb-2"
+                    >
+                      <i className="fas fa-download" aria-hidden="true"></i>{" "}
+                      Baixar planilha
+                    </a>
+                  </div>
                 </div>
                 <TableItens
                   acervo="bibliografico"
-                  ano={data.anoDeclaracao}
+                  ano={data.anoDeclaracao._id}
                   museuId={data.museu_id._id}
                 />
               </div>
@@ -390,23 +359,25 @@ export default function DeclaracaoPage() {
                       {data.arquivistico?.status}
                     </span>
                   </span>
-                  <a
-                    href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao}/arquivistico`}
-                    className="mb-2"
-                  >
-                    <i className="fas fa-download" aria-hidden="true"></i>{" "}
-                    Baixar planilha
-                  </a>
+                  <div className="grid grid-cols-2 gap-4">
+                    <a
+                      href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/arquivistico`}
+                      className="mb-2"
+                    >
+                      <i className="fas fa-download" aria-hidden="true"></i>{" "}
+                      Baixar planilha
+                    </a>
+                  </div>
                 </div>
                 <TableItens
                   acervo="arquivistico"
-                  ano={data.anoDeclaracao}
+                  ano={data.anoDeclaracao._id}
                   museuId={data.museu_id._id}
                 />
               </div>
             )}
         </div>
       </div>
-    </DefaultLayout>
+    </>
   )
 }

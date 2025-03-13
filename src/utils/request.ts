@@ -1,8 +1,11 @@
 import { pack, unpack } from "msgpackr"
+import toast from "react-hot-toast"
+import router from "./router"
 
 export default async function request(
   path: string,
-  init?: RequestInit & { data?: { [key: string]: string | number | boolean } }
+  init?: RequestInit & { data?: unknown },
+  showError = true
 ): Promise<Response> {
   const headers = { Accept: "application/x-msgpack", ...init?.headers } as {
     [key: string]: string
@@ -27,13 +30,19 @@ export default async function request(
     if (refreshRes.ok) {
       return request(path, init)
     } else {
-      location.href = "/login"
+      router.navigate("/login")
     }
   } else if (!res.status.toString().startsWith("2")) {
-    throw new Error(unpack((await res.arrayBuffer()) as Buffer).message)
+    const error = unpack(new Uint8Array(await res.arrayBuffer())).message
+
+    if (showError) {
+      toast.error(error)
+    }
+
+    throw new Error(error)
   }
 
-  res.json = async () => unpack((await res.arrayBuffer()) as Buffer)
+  res.json = async () => unpack(new Uint8Array(await res.arrayBuffer()))
 
   return res
 }

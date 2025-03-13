@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from "@testing-library/react"
-import { MemoryRouter } from "react-router-dom"
+import { MemoryRouter } from "react-router"
 import Header from "../Header"
 import { vi, describe, test, expect } from "vitest"
 
@@ -10,8 +10,8 @@ vi.mock("../../utils/store", () => ({
   default: () => ({ setUser: mockSetUser, user: { name: "Test" } })
 }))
 
-vi.mock("react-router-dom", async (importOriginal) => {
-  const actual = (await importOriginal()) as typeof import("react-router-dom")
+vi.mock("react-router", async (importOriginal) => {
+  const actual = (await importOriginal()) as typeof import("react-router")
 
   return {
     ...actual,
