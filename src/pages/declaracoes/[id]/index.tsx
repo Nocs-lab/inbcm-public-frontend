@@ -295,7 +295,8 @@ export default function DeclaracaoPage() {
                   </span>
                   <a
                     href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/museologico`}
-                    className="mb-2"
+                    className="text-xl"
+                    role="button"
                   >
                     <i className="fas fa-download" aria-hidden="true"></i>{" "}
                     Baixar planilha
@@ -325,10 +326,11 @@ export default function DeclaracaoPage() {
                       {data.bibliografico?.status}
                     </span>
                   </span>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="flex justify-end gap-4">
                     <a
                       href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/bibliografico`}
-                      className="mb-2"
+                      className="text-xl"
+                      role="button"
                     >
                       <i className="fas fa-download" aria-hidden="true"></i>{" "}
                       Baixar planilha
@@ -359,10 +361,11 @@ export default function DeclaracaoPage() {
                       {data.arquivistico?.status}
                     </span>
                   </span>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="flex justify-end gap-4">
                     <a
                       href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/arquivistico`}
-                      className="mb-2"
+                      className="text-xl"
+                      role="button"
                     >
                       <i className="fas fa-download" aria-hidden="true"></i>{" "}
                       Baixar planilha
