@@ -137,7 +137,6 @@ export default function DeclaracaoPage() {
         )}
         <a
           className="text-xl"
-          href="#"
           onClick={() => navigate(`/declaracoes/${id}/timeline`)}
         >
           <i className="fas fa-timeline" aria-hidden="true"></i> Histórico
