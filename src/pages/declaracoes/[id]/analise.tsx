@@ -148,7 +148,7 @@ export default function DeclaracaoPage() {
                         role="button"
                       >
                         <i className="fas fa-download" aria-hidden="true"></i>{" "}
-                        Baixar comentários técnicos
+                        Baixar comentários do parecer
                       </a>
                     )}
                     <a
@@ -204,7 +204,7 @@ export default function DeclaracaoPage() {
                         role="button"
                       >
                         <i className="fas fa-download" aria-hidden="true"></i>{" "}
-                        Baixar comentários técnicos
+                        Baixar comentários do parecer
                       </a>
                     )}
                     <a
@@ -260,7 +260,7 @@ export default function DeclaracaoPage() {
                         role="button"
                       >
                         <i className="fas fa-download" aria-hidden="true"></i>{" "}
-                        Baixar comentários técnicos
+                        Baixar comentários do parecer
                       </a>
                     )}
                     <a
