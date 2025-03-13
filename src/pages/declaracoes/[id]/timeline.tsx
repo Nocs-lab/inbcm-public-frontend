@@ -61,20 +61,19 @@ const DeclaracaoPage: React.FC = () => {
           >
             {[...timeline]
               .reverse()
-              .map((item: { dataEvento: Date; nomeEvento: string }) => (
-                <button
+              .map((item: { dataEvento: Date; nomeEvento: string; autorEvento: string }) => (
+                <div
                   key={item.dataEvento.toISOString() + item.nomeEvento}
                   className="step-progress-btn"
                   role="option"
                   aria-posinset={3}
                   aria-setsize={3}
-                  type="button"
                 >
                   <span className="step-info text-left">
                     {item.nomeEvento}
-                    <br /> Em {format(item.dataEvento, "dd/MM/yyyy 'às' HH:mm")}
+                    <br /> Em {format(item.dataEvento, "dd/MM/yyyy 'às' HH:mm")}, por: {item.autorEvento}
                   </span>
-                </button>
+                </div>
               ))}
           </div>
         </nav>
