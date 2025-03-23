@@ -110,95 +110,59 @@ export default function Declaracoes() {
   const { data: anoDeclaracao } = useSuspenseQuery({
     queryKey: ["anoDeclaracao"],
     queryFn: async () => {
-      // Mockando a resposta da API
-      return {
-        _id: "676d672f56847ce3126cb679",
-        ano: 2025,
-        dataInicioSubmissao: new Date("2025-02-16T03:00:00.000Z"),
-        dataFimSubmissao: new Date("2026-01-01T02:59:00.000Z"),
-        dataInicioRetificacao: new Date("2025-03-01T03:00:00.000Z"),
-        dataFimRetificacao: new Date("2026-01-01T02:59:00.000Z"),
-        metaDeclaracoesEnviadas: 23,
-        declaracaoVinculada: true,
-        updatedAt: new Date("2025-02-28T10:49:27.676Z")
-      }
+      const response = await request(
+        "/api/admin/anodeclaracao/getPeriodoDeclaracaoVigente"
+      )
+      return response.json()
     }
   })
 
   const { openModal: openImportantDatesModal } = useModal((close) => (
-    <Modal showCloseButton title="Datas importantes" onCloseButtonClick={close}>
+    <Modal
+      showCloseButton
+      title="Calendário de datas importantes"
+      onCloseButtonClick={close}
+      className="min-w-1/2"
+    >
       <Modal.Body>
         <div className="text-left">
-          <p> Períodos de envio de declarações:</p>
           <table className="w-full border-collapse border border-gray-300">
+            <thead>
+              <tr className="bg-gray-100">
+                <th className="p-2">Ano</th>
+                <th className="p-2">Início submissão</th>
+                <th className="p-2">Fim submissão</th>
+                <th className="p-2">Início retificação</th>
+                <th className="p-2">Fim retificação</th>
+              </tr>
+            </thead>
             <tbody>
-              <tr className="border-b border-gray-300">
-                <td className="p-2 font-semibold bg-gray-100">Ano:</td>
-                <td className="p-2">{anoDeclaracao.ano}</td>
-              </tr>
-              <tr className="border-b border-gray-300">
-                <td className="p-2 font-semibold bg-gray-100">
-                  Início do envio:
-                </td>
-                <td className="p-2">
-                  {anoDeclaracao.dataInicioSubmissao.toLocaleDateString(
-                    "pt-BR",
-                    {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit"
-                    }
-                  )}
-                </td>
-              </tr>
-              <tr className="border-b border-gray-300">
-                <td className="p-2 font-semibold bg-gray-100">Fim do envio:</td>
-                <td className="p-2">
-                  {anoDeclaracao.dataFimSubmissao.toLocaleDateString("pt-BR", {
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                    hour: "2-digit",
-                    minute: "2-digit"
-                  })}
-                </td>
-              </tr>
-              <tr className="border-b border-gray-300">
-                <td className="p-2 font-semibold bg-gray-100">
-                  Início da retificação:
-                </td>
-                <td className="p-2">
-                  {anoDeclaracao.dataInicioRetificacao.toLocaleDateString(
-                    "pt-BR",
-                    {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit"
-                    }
-                  )}
-                </td>
-              </tr>
-              <tr className="border-b border-gray-300">
-                <td className="p-2 font-semibold bg-gray-100">
-                  Fim da retificação:
-                </td>
-                <td className="p-2">
-                  {anoDeclaracao.dataFimRetificacao.toLocaleDateString(
-                    "pt-BR",
-                    {
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit"
-                    }
-                  )}
-                </td>
-              </tr>
+              {anoDeclaracao.map((ano) => (
+                <tr key={ano._id} className="border-b border-gray-300">
+                  <td className="p-2">{ano.ano}</td>
+                  <td className="p-2">
+                    {format(
+                      new Date(ano.dataInicioSubmissao),
+                      "dd/MM/yyyy HH:mm"
+                    )}
+                  </td>
+                  <td className="p-2">
+                    {format(new Date(ano.dataFimSubmissao), "dd/MM/yyyy HH:mm")}
+                  </td>
+                  <td className="p-2">
+                    {format(
+                      new Date(ano.dataInicioRetificacao),
+                      "dd/MM/yyyy HH:mm"
+                    )}
+                  </td>
+                  <td className="p-2">
+                    {format(
+                      new Date(ano.dataFimRetificacao),
+                      "dd/MM/yyyy HH:mm"
+                    )}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>
