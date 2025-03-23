@@ -18,8 +18,22 @@ const Header: React.FC = () => {
     <header className="br-header compact large fixed">
       <div className="container-lg">
         <div className="header-top">
-          <div className="header-logo">
-            <img src={logoIbramSimples} alt="logo" />
+          <div className="header-logo p-2">
+            <Link to="/">
+              <img
+                src={logoIbramSimples}
+                alt="logo"
+                style={{
+                  maxWidth: "100px",
+                  maxHeight: "100px",
+                  width: "auto",
+                  height: "auto"
+                }}
+              />
+            </Link>
+            <div className="header-subtitle">
+              Instituto Brasileiro de Museus
+            </div>
           </div>
           {user && (
             <div className="header-actions">
@@ -76,12 +90,9 @@ const Header: React.FC = () => {
             </div>
           )}
         </div>
-        <div className="header-bottom">
+        <div className="header-bottom p-2">
           <div className="header-menu">
             <div className="header-info">
-              <div className="header-subtitle">
-                Instituto Brasileiro de Museus
-              </div>
               <div className="header-title">
                 Inventário Nacional de Bens Culturais Musealizados
               </div>
