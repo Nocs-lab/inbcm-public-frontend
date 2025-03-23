@@ -24,8 +24,8 @@ const Header: React.FC = () => {
                 src={logoIbramSimples}
                 alt="logo"
                 style={{
-                  maxWidth: "100px",
-                  maxHeight: "100px",
+                  maxWidth: "80px",
+                  maxHeight: "50px",
                   width: "auto",
                   height: "auto"
                 }}
