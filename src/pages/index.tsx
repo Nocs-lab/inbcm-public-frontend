@@ -199,7 +199,7 @@ export default function Declaracoes() {
     <>
       <div className="flex items-center justify-between">
         <h2>Minhas declarações</h2>
-        <div>
+        <div className="flex items-center space-x-2">
           <Link
             to="#"
             className="btn text-xl p-3"
