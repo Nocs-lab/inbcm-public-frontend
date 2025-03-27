@@ -365,7 +365,7 @@ const Uploader: React.FC<{
             </div>
           </div>
         )}
-        <div className="flex gap-2 w-full">
+        <div className="flex flex-wrap gap-2 w-full">
           <Controller
             control={control}
             name="ano"
