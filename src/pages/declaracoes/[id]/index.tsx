@@ -77,7 +77,8 @@ export default function DeclaracaoPage() {
       <span className="br-tag mb-5" style={getColorStatus(data.status)}>
         {data.status}
       </span>
-      <div className="flex gap-4">
+
+      <div className="flex flex-wrap gap-2 text-xl xl:text-xl md:text-xl">
         <a href={`/api/public/recibo/${id}`} className="text-xl">
           <i className="fas fa-file-pdf" aria-hidden="true"></i> Recibo
         </a>

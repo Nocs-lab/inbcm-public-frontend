@@ -63,7 +63,7 @@ export default function Dashboard() {
     <>
       <h2>Painel analítico</h2>
 
-      <div className="flex items-center justify-center p-3 gap-16">
+      <div className="flex flex-wrap items-center justify-center p-3 gap-16">
         <Select
           id="select-simples"
           label="Museu"
