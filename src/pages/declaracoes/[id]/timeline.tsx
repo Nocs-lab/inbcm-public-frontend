@@ -1,7 +1,6 @@
 import { useParams } from "react-router"
 import { useSuspenseQueries } from "@tanstack/react-query"
 import request from "../../../utils/request"
-import { format } from "date-fns"
 
 const DeclaracaoPage: React.FC = () => {
   const params = useParams()
@@ -60,20 +59,26 @@ const DeclaracaoPage: React.FC = () => {
           >
             {[...timeline]
               .reverse()
-              .map((item: { dataEvento: Date; nomeEvento: string; autorEvento: string }) => (
-                <div
-                  key={item.dataEvento.toISOString() + item.nomeEvento}
-                  className="step-progress-btn"
-                  role="option"
-                  aria-posinset={3}
-                  aria-setsize={3}
-                >
-                  <span className="step-info text-left">
-                    {item.nomeEvento}
-                    <br /> Em {format(item.dataEvento, "dd/MM/yyyy 'às' HH:mm")}, por: {item.autorEvento}
-                  </span>
-                </div>
-              ))}
+              .map(
+                (item: {
+                  dataEvento: string
+                  label: string
+                  enumName: string
+                }) => (
+                  <div
+                    key={item.dataEvento + item.label + item.enumName}
+                    className="step-progress-btn"
+                    role="option"
+                    aria-posinset={3}
+                    aria-setsize={3}
+                  >
+                    <span className="step-info text-left">
+                      {item.label}
+                      <br /> Em {item.dataEvento}
+                    </span>
+                  </div>
+                )
+              )}
           </div>
         </nav>
       </div>
