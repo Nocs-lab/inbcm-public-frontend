@@ -1,6 +1,6 @@
 import React, { useState } from "react"
 import { useNavigate, Link } from "react-router"
-import logoIbramSimples from "../images/logo-ibram-simples.png"
+import logoIbramSimples from "../images/Logotipo _IBRAM_Colorida.png"
 import useStore from "../utils/store"
 
 const Header: React.FC = () => {
@@ -24,8 +24,8 @@ const Header: React.FC = () => {
                 src={logoIbramSimples}
                 alt="logo"
                 style={{
-                  maxWidth: "80px",
-                  maxHeight: "50px",
+                  maxWidth: "150px",
+                  maxHeight: "70px",
                   width: "auto",
                   height: "auto"
                 }}
