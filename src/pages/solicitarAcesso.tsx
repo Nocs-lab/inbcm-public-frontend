@@ -44,7 +44,9 @@ const schema = z.object({
       message: "CPF inválido"
     }),
   museus: z.array(z.string()).optional(),
-  file: z.instanceof(File)
+  file: z.custom<File>((value) => value instanceof File, {
+    message: "Este campo é obrigatório"
+  })
 })
 type FormData = z.infer<typeof schema>
 
@@ -177,7 +179,7 @@ const CreateUser: React.FC = () => {
 
   const { openModal, closeModal } = useModal((close) => (
     <Modal
-      title="Confirmar Solicitação de acesso"
+      title="Confirmar solicitação de acesso"
       showCloseButton
       onCloseButtonClick={close}
     >
