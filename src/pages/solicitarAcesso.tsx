@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react"
-import { useNavigate } from "react-router"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import Input from "../components/Input"
 import { Row, Col, Button, Modal } from "react-dsgov"
@@ -145,8 +144,6 @@ const CreateUser: React.FC = () => {
 
   const registerWithMask = useHookFormMask(register)
 
-  const navigate = useNavigate()
-
   const { mutateAsync } = useMutation({
     mutationFn: async ({
       email,
@@ -172,7 +169,7 @@ const CreateUser: React.FC = () => {
       return res.json()
     },
     onSuccess: () => {
-      navigate("/login")
+      window.location.reload()
     }
   })
 
@@ -261,7 +258,7 @@ const CreateUser: React.FC = () => {
   return (
     <>
       <div className="container mx-auto p-8">
-        <Link to={-1 as unknown as string} className="text-lg">
+        <Link to="/login" className="text-lg">
           <i className="fas fa-arrow-left" aria-hidden="true"></i>
           Voltar
         </Link>
