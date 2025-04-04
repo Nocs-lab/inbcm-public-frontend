@@ -63,6 +63,7 @@ const Uploader: React.FC<{
   isExist,
   anos = []
 }) => {
+  const sortedAnos = [...anos].sort((a, b) => b.ano - a.ano)
   const {
     register,
     handleSubmit,
@@ -74,7 +75,7 @@ const Uploader: React.FC<{
     resolver: zodResolver(schema),
     mode: "onBlur",
     defaultValues: {
-      ano: anoDeclaracao || anos[anos.length - 1]._id,
+      ano: anoDeclaracao || sortedAnos[0]?._id,
       museu: museus[0]?._id,
       museologico: null,
       bibliografico: null,
@@ -374,7 +375,7 @@ const Uploader: React.FC<{
                 <Select
                   label="Ano"
                   className="!w-full"
-                  options={anos.map((ano) => ({
+                  options={sortedAnos.map((ano) => ({
                     label: ano.ano.toString(),
                     value: ano._id
                   }))}

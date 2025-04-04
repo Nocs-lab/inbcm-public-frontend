@@ -169,7 +169,7 @@ export default function Declaracoes() {
       </Modal.Body>
       <Modal.Footer justify-content="center">
         <Button primary onClick={close}>
-          Ok
+          Fechar
         </Button>
       </Modal.Footer>
     </Modal>
