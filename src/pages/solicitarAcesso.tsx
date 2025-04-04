@@ -177,7 +177,7 @@ const CreateUser: React.FC = () => {
 
   const { openModal, closeModal } = useModal((close) => (
     <Modal
-      title="Confirmar Solicitação"
+      title="Confirmar Solicitação de acesso"
       showCloseButton
       onCloseButtonClick={close}
     >
@@ -229,11 +229,11 @@ const CreateUser: React.FC = () => {
       </Modal.Body>
 
       <Modal.Footer justify-content="end">
-        <Button primary small m={2} onClick={() => handleSubmit(onSubmit)()}>
-          Confirmar
-        </Button>
         <Button secondary small m={2} onClick={close}>
           Cancelar
+        </Button>
+        <Button primary small m={2} onClick={() => handleSubmit(onSubmit)()}>
+          Confirmar
         </Button>
       </Modal.Footer>
     </Modal>
