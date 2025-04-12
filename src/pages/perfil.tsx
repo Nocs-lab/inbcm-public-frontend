@@ -10,10 +10,21 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import toast from "react-hot-toast"
 
 // Definindo o esquema de validação
-const schema = z.object({
-  email: z.string().min(1, "Este campo é obrigatório").email("Email inválido"),
-  nome: z.string().min(1, "Este campo é obrigatório")
-})
+const schema = z
+  .object({
+    email: z
+      .string()
+      .min(1, "Este campo é obrigatório")
+      .email("E-mail inválido"),
+    nome: z.string().min(1, "Este campo é obrigatório"),
+    password: z.string().min(1, "Este campo é obrigatório"),
+    confirmPassword: z.string().min(1, "Este campo é obrigatório")
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "As senhas não são iguais",
+    path: ["confirmPassword"]
+  })
+
 type FormData = z.infer<typeof schema>
 
 interface Museu {
@@ -64,74 +75,147 @@ const PerfilPage = () => {
     mode: "onBlur",
     defaultValues: {
       email: user.email,
-      nome: user.nome
+      nome: user.nome,
+      password: ""
     }
   })
 
   // Função para enviar os dados atualizados
   const { mutate } = useMutation({
-    mutationFn: async ({ email, nome }: FormData) => {
+    mutationFn: async (updateData: {
+      email: string
+      nome: string
+      senha: string
+    }) => {
+      console.log("Enviando dados:", updateData)
       const res = await request(`/api/admin/users/${user._id}`, {
         method: "PUT",
-        data: { email, nome }
+        data: updateData
       })
       return res.json()
     },
     onSuccess: () => {
-      toast.success("Perfil atualizado com sucesso")
-      window.location.reload()
+      toast.success("Perfil atualizado com sucesso!")
+      setTimeout(() => {
+        window.location.reload()
+      }, 1500)
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Erro na mutation:", error)
       toast.error("Erro ao atualizar perfil")
     }
   })
 
-  const onSubmit = ({ email, nome }: FormData) => {
-    mutate({ email, nome })
+  const onSubmit = (data: FormData) => {
+    const updateData = {
+      email: data.email,
+      nome: data.nome,
+      senha: data.password
+    }
+
+    mutate(updateData)
+  }
+
+  const formatCPF = (cpf: string): string => {
+    cpf = cpf.replace(/\D/g, "")
+    return cpf.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4")
   }
 
   return (
     <>
-      <h2>Perfil</h2>
+      <Link to={"/"} className="text-lg"></Link>
+      <h2>Editar meu perfil</h2>
       <div className="container mx-auto p-6 bg-white rounded-lg">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div>
-            <div className="grid grid-cols-3 gap-2 w-full">
+          <fieldset
+            className="rounded-lg p-3"
+            style={{ border: "2px solid #e0e0e0" }}
+          >
+            <legend className="font-extrabold px-3 m-0">Dados pessoais</legend>
+            <div>
+              <div className="grid grid-cols-3 gap-2 w-full">
+                <Input
+                  label="CPF"
+                  value={
+                    user.cpf
+                      ? formatCPF(user.cpf)
+                      : "Este usuário não possui CPF cadastrado."
+                  }
+                  rows={1}
+                  readOnly
+                  disabled
+                  className="text-gray-500 italic opacity-50"
+                />
+                <Input
+                  type="text"
+                  label="Nome"
+                  placeholder="Digite o nome"
+                  error={errors.nome}
+                  {...register("nome")}
+                  className="w-full"
+                />
+                <Input
+                  type="email"
+                  label="Email"
+                  placeholder="Digite o email"
+                  error={errors.email}
+                  {...register("email")}
+                  className="w-full"
+                />
+              </div>
+            </div>
+          </fieldset>
+
+          <fieldset
+            className="rounded-lg p-3"
+            style={{ border: "2px solid #e0e0e0" }}
+          >
+            <legend className="text-lg font-extrabold px-3 m-0">
+              Controle de acesso
+            </legend>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
               <Input
-                type="text"
-                label="Nome"
-                placeholder="Digite o nome"
-                error={errors.nome}
-                {...register("nome")}
-                className="w-full"
+                type="password"
+                label={
+                  <span>
+                    Senha <span className="text-red-500">*</span>
+                  </span>
+                }
+                placeholder="Digite sua senha"
+                error={errors.password}
+                {...register("password")}
               />
               <Input
-                type="email"
-                label="Email"
-                placeholder="Digite o email"
-                error={errors.email}
-                {...register("email")}
-                className="w-full"
-              />
-              <Input
-                label="CPF"
-                value={user.cpf || "Este usuário não possui CPF cadastrado."}
-                rows={1}
-                readOnly
-                disabled
-                className="text-gray-500 italic opacity-50"
+                type="password"
+                label={
+                  <span>
+                    Confirmar senha <span className="text-red-500">*</span>
+                  </span>
+                }
+                placeholder="Digite sua senha novamente"
+                error={errors.confirmPassword}
+                {...register("confirmPassword")}
               />
             </div>
-          </div>
-          <div className="br-table overflow-auto">
-            <Table
-              data={museus}
-              columns={columns}
-              showSearch={false}
-              showSelectedBar={false}
-              className="justify-center"
-            />
-          </div>
+          </fieldset>
+          <fieldset
+            className="rounded-lg p-3"
+            style={{ border: "2px solid #e0e0e0" }}
+          >
+            <legend className="text-lg font-extrabold px-3 m-0">
+              Museus associados
+            </legend>
+            <div className="br-table overflow-auto">
+              <Table
+                data={museus}
+                columns={columns}
+                showSearch={false}
+                showSelectedBar={false}
+                className="justify-center"
+              />
+            </div>
+          </fieldset>
+
           <div className="flex space-x-4 justify-end">
             <Link to="/" className="br-button secondary mt-5">
               Voltar
