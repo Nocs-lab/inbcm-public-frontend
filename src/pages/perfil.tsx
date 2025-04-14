@@ -18,9 +18,10 @@ const schema = z
       .email("E-mail inválido"),
     nome: z.string().min(1, "Este campo é obrigatório"),
     password: z.string().min(1, "Este campo é obrigatório"),
+    newPassword: z.string().min(1, "Este campo é obrigatório"),
     confirmPassword: z.string().min(1, "Este campo é obrigatório")
   })
-  .refine((data) => data.password === data.confirmPassword, {
+  .refine((data) => data.newPassword === data.confirmPassword, {
     message: "As senhas não são iguais",
     path: ["confirmPassword"]
   })
@@ -76,6 +77,7 @@ const PerfilPage = () => {
     defaultValues: {
       email: user.email,
       nome: user.nome,
+      newPassword: "",
       password: ""
     }
   })
@@ -85,6 +87,7 @@ const PerfilPage = () => {
     mutationFn: async (updateData: {
       email: string
       nome: string
+      senhaAtual: string
       senha: string
     }) => {
       console.log("Enviando dados:", updateData)
@@ -110,7 +113,8 @@ const PerfilPage = () => {
     const updateData = {
       email: data.email,
       nome: data.nome,
-      senha: data.password
+      senhaAtual: data.password,
+      senha: data.newPassword
     }
 
     mutate(updateData)
@@ -173,7 +177,7 @@ const PerfilPage = () => {
             <legend className="text-lg font-extrabold px-3 m-0">
               Controle de acesso
             </legend>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
+            <div className="grid grid-cols-3 gap-2 w-full">
               <Input
                 type="password"
                 label={
@@ -184,6 +188,17 @@ const PerfilPage = () => {
                 placeholder="Digite sua senha"
                 error={errors.password}
                 {...register("password")}
+              />
+              <Input
+                type="password"
+                label={
+                  <span>
+                    Senha <span className="text-red-500">*</span>
+                  </span>
+                }
+                placeholder="Digite sua senha"
+                error={errors.newPassword}
+                {...register("newPassword")}
               />
               <Input
                 type="password"
