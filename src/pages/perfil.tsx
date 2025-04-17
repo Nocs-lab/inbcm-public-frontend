@@ -182,7 +182,7 @@ const PerfilPage = () => {
                 type="password"
                 label={
                   <span>
-                    Senha <span className="text-red-500">*</span>
+                    Senha atual<span className="text-red-500">*</span>
                   </span>
                 }
                 placeholder="Digite sua senha"
