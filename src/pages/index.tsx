@@ -6,6 +6,7 @@ import { Modal, Button } from "react-dsgov"
 import Table from "../components/Table"
 import request from "../utils/request"
 import { useModal } from "../utils/modal"
+import { useEffect, useState } from "react"
 
 const columnHelper = createColumnHelper<{
   _id: string
@@ -78,6 +79,11 @@ const columns = [
 
 export default function Declaracoes() {
   const navigate = useNavigate()
+
+  const [alertMessage, setAlertMessage] = useState<{
+    dias: string
+    ano: string
+  } | null>(null)
 
   const { data: museus } = useSuspenseQuery({
     queryKey: ["museus"],
@@ -195,8 +201,58 @@ export default function Declaracoes() {
     }
   })
 
+  useEffect(() => {
+    if (anoDeclaracao && anoDeclaracao.length > 0) {
+      const periodoVigente = anoDeclaracao[0] // assumindo que retorna um array
+      const dataFimSubmissao = new Date(periodoVigente.dataFimSubmissao)
+      const hoje = new Date()
+
+      // Calcula a diferença em dias
+      const diffTime = dataFimSubmissao.getTime() - hoje.getTime()
+      const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+
+      // Se faltar entre 1 e 30 dias, mostra o alerta
+      if (diffDays > 0 && diffDays <= 30) {
+        setAlertMessage({
+          dias: diffDays.toString(),
+          ano: periodoVigente.ano.toString()
+        })
+      } else {
+        setAlertMessage(null)
+      }
+    }
+  }, [anoDeclaracao])
+
   return (
     <>
+      {alertMessage && (
+        <div className="br-message warning">
+          <div className="icon">
+            <i className="fas fa-warning fa-lg" aria-hidden="true"></i>
+          </div>
+          <div
+            className="content"
+            aria-label="Período para submeter a declaração está se esgotando."
+            role="alert"
+          >
+            <span className="message-title">
+              {" "}
+              ATENÇÃO: Faltam {alertMessage.dias} dia(s) para se encerrar o
+              prazo final de envio das declarações do ano {alertMessage.ano}
+            </span>
+          </div>
+          <div className="close">
+            <button
+              className="br-button circle small"
+              type="button"
+              aria-label="Fechar a messagem"
+              onClick={() => setAlertMessage(null)}
+            >
+              <i className="fas fa-times" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      )}
       <div className="flex items-center justify-between">
         <h2>Minhas declarações</h2>
         <div className="flex items-center space-x-2">
