@@ -50,8 +50,9 @@ const Header: React.FC = () => {
                   >
                     <span className="br-avatar" title={user.name}>
                       <span className="content bg-orange-vivid-30 text-pure-0">
-                        {user.name.charAt(0).toUpperCase()}
+                        {user?.name?.charAt(0)?.toUpperCase() || ""}
                       </span>
+                      {/* testar depois */}
                     </span>
                     <span
                       className="ml-2 mr-1 text-gray-80 text-weight-regular"
