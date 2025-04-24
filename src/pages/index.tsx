@@ -6,6 +6,7 @@ import { Modal, Button } from "react-dsgov"
 import Table from "../components/Table"
 import request from "../utils/request"
 import { useModal } from "../utils/modal"
+import { useEffect, useState } from "react"
 
 const columnHelper = createColumnHelper<{
   _id: string
@@ -76,8 +77,16 @@ const columns = [
   })
 ]
 
+type AlertaPeriodo = {
+  dias: number
+  tipo: "submissão" | "retificação"
+  dataFim: Date
+}
+
 export default function Declaracoes() {
   const navigate = useNavigate()
+
+  const [alertas, setAlertas] = useState<AlertaPeriodo[] | null>(null)
 
   const { data: museus } = useSuspenseQuery({
     queryKey: ["museus"],
@@ -195,8 +204,90 @@ export default function Declaracoes() {
     }
   })
 
+  useEffect(() => {
+    if (!anoDeclaracao?.length) {
+      setAlertas(null)
+      return
+    }
+
+    const calcularAlertas = () => {
+      const hoje = new Date()
+      const novosAlertas: AlertaPeriodo[] = []
+
+      anoDeclaracao.forEach((periodo) => {
+        // Função auxiliar para evitar repetição de código
+        const adicionarAlerta = (
+          tipo: "submissão" | "retificação",
+          dataString: string
+        ) => {
+          const dataFim = new Date(dataString)
+          const diffDias = Math.ceil(
+            (dataFim.getTime() - hoje.getTime()) / (1000 * 60 * 60 * 24)
+          )
+
+          if (diffDias > 0 && diffDias <= 30) {
+            novosAlertas.push({
+              dias: diffDias,
+              ano: periodo.ano.toString(),
+              tipo,
+              dataFim
+            })
+          }
+        }
+
+        adicionarAlerta("submissão", periodo.dataFimSubmissao)
+        adicionarAlerta("retificação", periodo.dataFimRetificacao)
+      })
+
+      // Ordenar por data mais próxima
+      novosAlertas.sort((a, b) => a.dias - b.dias)
+      setAlertas(novosAlertas.length ? novosAlertas : null)
+    }
+
+    calcularAlertas()
+
+    // Atualiza a cada hora para precisão do "HOJE"
+    const intervalId = setInterval(calcularAlertas, 60 * 60 * 1000)
+    return () => clearInterval(intervalId)
+  }, [anoDeclaracao])
+
   return (
     <>
+      {alertas?.map((alerta) => (
+        <div
+          key={`${alerta.ano}-${alerta.tipo}`}
+          className="br-message warning"
+          style={{ marginBottom: "1rem" }}
+        >
+          <div className="icon">
+            <i className="fas fa-warning fa-lg" aria-hidden="true"></i>
+          </div>
+          <div className="content" role="alert">
+            <span className="message-title">
+              {alerta.dias === 1
+                ? `ATENÇÃO: HOJE se encerra o prazo de ${alerta.tipo} do ano ${alerta.ano}`
+                : `ATENÇÃO: Faltam ${alerta.dias} dias para o fim do período de ${alerta.tipo} do ano ${alerta.ano}`}
+            </span>
+          </div>
+          <div className="close">
+            <button
+              className="br-button circle small"
+              type="button"
+              aria-label="Fechar mensagem"
+              onClick={() =>
+                setAlertas(
+                  (prev) =>
+                    prev?.filter(
+                      (a) => a.ano !== alerta.ano || a.tipo !== alerta.tipo
+                    ) || null
+                )
+              }
+            >
+              <i className="fas fa-times" aria-hidden="true"></i>
+            </button>
+          </div>
+        </div>
+      ))}
       <div className="flex items-center justify-between">
         <h2>Minhas declarações</h2>
         <div className="flex items-center space-x-2">
