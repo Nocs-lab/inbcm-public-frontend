@@ -263,10 +263,21 @@ export default function Declaracoes() {
             <i className="fas fa-warning fa-lg" aria-hidden="true"></i>
           </div>
           <div className="content" role="alert">
-            <span className="message-title">
-              {alerta.dias === 1
-                ? `ATENÇÃO: HOJE se encerra o prazo de ${alerta.tipo} do ano ${alerta.ano}`
-                : `ATENÇÃO: Faltam ${alerta.dias} dias para o fim do período de ${alerta.tipo} do ano ${alerta.ano}`}
+            <span>
+              {alerta.dias === 1 ? (
+                <>
+                  <strong>ATENÇÃO</strong>: <strong>Hoje</strong> se encerra o
+                  prazo de <strong>{alerta.tipo}</strong> do ano{" "}
+                  <strong>{alerta.ano}</strong>.
+                </>
+              ) : (
+                <>
+                  <strong>ATENÇÃO</strong>: Faltam{" "}
+                  <strong>{alerta.dias} dias</strong> para o fim do período de{" "}
+                  <strong>{alerta.tipo}</strong> do ano{" "}
+                  <strong>{alerta.ano}</strong>.
+                </>
+              )}
             </span>
           </div>
           <div className="close">
