@@ -27,7 +27,8 @@ export default function Dashboard() {
   })
 
   const currentYear = new Date().getFullYear()
-  const ano = anos.find((ano: { ano: number }) => ano.ano === currentYear)
+  const ano =
+    anos.find((ano: { ano: number }) => ano.ano === currentYear) || anos[0]
 
   const [anoInicio, setAnoInicio] = useState(ano.ano.toString())
   const [anoFim, setAnoFim] = useState(ano.ano.toString())
@@ -100,7 +101,7 @@ export default function Dashboard() {
       </div>
       {isLoadingGrafico ? (
         <p>Carregando...</p>
-      ) : error ? (
+      ) : error || !dadosGrafico?.data?.length ? (
         <p>Não há dados a serem exibidos com os filtros informados.</p>
       ) : (
         <Chart
