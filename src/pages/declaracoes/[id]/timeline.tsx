@@ -1,4 +1,4 @@
-import { useParams } from "react-router"
+import { Link, useParams } from "react-router"
 import { useSuspenseQueries } from "@tanstack/react-query"
 import request from "../../../utils/request"
 
@@ -27,6 +27,10 @@ const DeclaracaoPage: React.FC = () => {
 
   return (
     <>
+      <Link to={`/declaracoes/${id}`} className="text-lg">
+        <i className="fas fa-arrow-left" aria-hidden="true"></i>
+        Voltar
+      </Link>
       <h2 className="mt-3 mb-0">
         Histórico da declaração{" "}
         {declaracao.retificacao

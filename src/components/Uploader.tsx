@@ -273,10 +273,7 @@ const Uploader: React.FC<{
         bibliograficoErrors={bibliograficoErrors}
         arquivisticoErrors={arquivisticoErrors}
       />
-      <Link
-        to="/declaracoes/modelos"
-        className="text-lg border-0 p-2 rounded-lg"
-      >
+      <Link to="/modelos" className="text-lg border-0 p-2 rounded-lg">
         <i className="fa-solid fa-table mr-2"></i>
         Modelos de planilhas
       </Link>
