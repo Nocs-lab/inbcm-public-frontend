@@ -105,7 +105,6 @@ const PerfilPage = () => {
     },
     onError: (error) => {
       console.error("Erro na mutation:", error)
-      toast.error("Erro ao atualizar perfil")
     }
   })
 
