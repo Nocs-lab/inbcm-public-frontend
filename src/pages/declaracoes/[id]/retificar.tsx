@@ -64,6 +64,7 @@ export default function RetificarDeclaracao() {
     onSuccess: async (res) => {
       const data = await res.json()
       navigate(`/declaracoes/${data._id}/retificar`)
+      window.location.reload()
     }
   })
 
