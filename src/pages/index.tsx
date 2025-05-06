@@ -53,6 +53,11 @@ const columns = [
     header: "Ano",
     meta: {
       filterVariant: "select"
+    },
+    filterFn: (row, columnId, filterValue) => {
+      if (!filterValue) return true // Mostra todos se nenhum filtro selecionado
+      const rowValue = row.getValue(columnId)
+      return String(rowValue) === filterValue.toString()
     }
   }),
   columnHelper.accessor("museu_id.nome", {
