@@ -19,7 +19,7 @@ jobs:
 
       - name: Set Docker repository name for main branch
         if: github.ref == 'refs/heads/main'
-        run: echo "DOCKER_REPOSITORY=inbcm-public-main" >> $GITHUB_ENV
+        run: echo "DOCKER_REPOSITORY=inbcm-public-ibram" >> $GITHUB_ENV
 
       - name: Set Docker repository name for development branch
         if: github.ref == 'refs/heads/development'

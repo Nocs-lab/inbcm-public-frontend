@@ -3,6 +3,7 @@ import { Select } from "react-dsgov"
 import { useState, useEffect, SetStateAction } from "react"
 import { useQuery, useSuspenseQueries } from "@tanstack/react-query"
 import request from "../../utils/request"
+import { Link } from "react-router"
 
 export default function Dashboard() {
   const [museu, setMuseu] = useState("")
@@ -62,6 +63,10 @@ export default function Dashboard() {
 
   return (
     <>
+      <Link to="/" className="text-lg">
+        <i className="fas fa-arrow-left" aria-hidden="true"></i>
+        Voltar
+      </Link>
       <h2>Painel analítico</h2>
 
       <div className="flex flex-wrap items-center justify-center p-3 gap-16">
