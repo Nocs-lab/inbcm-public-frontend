@@ -60,15 +60,10 @@ const museologicoColumns = [
   columnHelper.accessor("linha", {
     header: "Linha",
     enableColumnFilter: false,
-    cell: (info) => info.getValue()
+    cell: (info) => info.getValue() + 1
   }),
   columnHelper.accessor("camposComErro", {
-    header: () => (
-      <div className="grid grid-cols-2 gap-2">
-        <span>Nome do campo</span>
-        <span>Pendências</span>
-      </div>
-    ),
+    header: "Nome do campo / Pendências",
     enableColumnFilter: false,
     cell: (info) => (
       <CamposComErroCell campos={info.getValue()} acervo="museologico" />
@@ -80,7 +75,7 @@ const bibliograficoColumns = [
   columnHelper.accessor("linha", {
     header: "Linha",
     enableColumnFilter: false,
-    cell: (info) => info.getValue()
+    cell: (info) => info.getValue() + 1
   }),
   columnHelper.accessor("camposComErro", {
     header: "Nome do campo / Pendências",
@@ -95,7 +90,7 @@ const arquivisticoColumns = [
   columnHelper.accessor("linha", {
     header: "Linha",
     enableColumnFilter: false,
-    cell: (info) => info.getValue()
+    cell: (info) => info.getValue() + 1
   }),
   columnHelper.accessor("camposComErro", {
     header: "Nome do campo / Pendências",
