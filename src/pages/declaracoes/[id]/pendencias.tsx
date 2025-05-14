@@ -46,7 +46,7 @@ export default function DeclaracaoPage() {
         Voltar
       </Link>
       <h2 className="mt-3 mb-0">
-        Listagem de pendências da{" "}
+        Listagem de pendências da declaração{" "}
         {data.retificacao ? `retificadora 0${data.versao - 1}` : "original"}
       </h2>
       <span className="br-tag mb-5" style={getColorStatus(data.status)}>

@@ -41,9 +41,9 @@ const CamposComErroCell = ({
         <col className="w-[50%]" />
         <col className="w-[50%]" />
       </colgroup>
-      <tbody className="">
+      <tbody>
         {Object.entries(campos).map(([campo, erro]) => (
-          <tr key={campo} className="">
+          <tr key={campo}>
             <td className="py-1">
               {fieldMapping[campo as keyof typeof fieldMapping] ||
                 formatarNomeCampo(campo)}
