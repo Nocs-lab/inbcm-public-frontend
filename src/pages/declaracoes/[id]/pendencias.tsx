@@ -6,17 +6,16 @@ import { useParams } from "react-router"
 import { Link } from "react-router"
 import MismatchsModal from "../../../components/MismatchsModal"
 import TablePendencias from "../../../components/TablePendencias"
-import { getColorStatus } from "../../../utils/colorStatus"
 import request from "../../../utils/request"
 
-export default function DeclaracaoPage() {
+export default function PendenciaPage() {
   const params = useParams()
   const id = params.id!
 
   const { data } = useSuspenseQuery({
     queryKey: ["declaracao", id],
     queryFn: async () => {
-      const response = await request(`/api/public/declaracoes/${id}`)
+      const response = await request(`/api/admin/declaracoes/${id}`)
       return response.json()
     }
   })
@@ -49,9 +48,7 @@ export default function DeclaracaoPage() {
         Listagem de pendências da declaração{" "}
         {data.retificacao ? `retificadora 0${data.versao - 1}` : "original"}
       </h2>
-      <span className="br-tag mb-5" style={getColorStatus(data.status)}>
-        {data.status}
-      </span>
+      <span className="br-tag mb-5">{data.status}</span>
 
       <div className="flex flex-wrap gap-2 text-xl xl:text-xl md:text-xl">
         {(data.museologico?.pendencias?.length > 0 ||
@@ -170,12 +167,7 @@ export default function DeclaracaoPage() {
               >
                 <div className="flex items-center justify-between">
                   <span className="mb-3 flex items-center justify-start gap-1">
-                    <span
-                      className="br-tag"
-                      style={getColorStatus(data.museologico?.status)}
-                    >
-                      {data.museologico?.status}
-                    </span>
+                    <span className="br-tag">{data.museologico?.status}</span>
                   </span>
                   <a
                     href={`/api/public/declaracoes/download/${data.museu_id._id}/${data.anoDeclaracao._id}/museologico`}
@@ -199,12 +191,7 @@ export default function DeclaracaoPage() {
               >
                 <div className="flex items-center justify-between">
                   <span className="mb-3 flex items-center justify-start gap-1">
-                    <span
-                      className="br-tag"
-                      style={getColorStatus(data.bibliografico?.status)}
-                    >
-                      {data.bibliografico?.status}
-                    </span>
+                    <span className="br-tag">{data.bibliografico?.status}</span>
                   </span>
                   <div className="flex justify-end gap-4">
                     <a
@@ -233,12 +220,7 @@ export default function DeclaracaoPage() {
               >
                 <div className="flex items-center justify-between">
                   <span className="mb-3 flex items-center justify-start gap-1">
-                    <span
-                      className="br-tag"
-                      style={getColorStatus(data.arquivistico?.status)}
-                    >
-                      {data.arquivistico?.status}
-                    </span>
+                    <span className="br-tag">{data.arquivistico?.status}</span>
                   </span>
                   <div className="flex justify-end gap-4">
                     <a
