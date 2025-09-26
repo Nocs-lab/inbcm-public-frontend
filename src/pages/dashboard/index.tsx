@@ -3,6 +3,7 @@ import { Select } from "react-dsgov"
 import { useState, useEffect, SetStateAction } from "react"
 import { useQuery, useSuspenseQueries } from "@tanstack/react-query"
 import request from "../../utils/request"
+import { Link } from "react-router"
 
 export default function Dashboard() {
   const [museu, setMuseu] = useState("")
@@ -27,7 +28,8 @@ export default function Dashboard() {
   })
 
   const currentYear = new Date().getFullYear()
-  const ano = anos.find((ano: { ano: number }) => ano.ano === currentYear)
+  const ano =
+    anos.find((ano: { ano: number }) => ano.ano === currentYear) || anos[0]
 
   const [anoInicio, setAnoInicio] = useState(ano.ano.toString())
   const [anoFim, setAnoFim] = useState(ano.ano.toString())
@@ -61,9 +63,13 @@ export default function Dashboard() {
 
   return (
     <>
+      <Link to="/" className="text-lg">
+        <i className="fas fa-arrow-left" aria-hidden="true"></i>
+        Voltar
+      </Link>
       <h2>Painel analítico</h2>
 
-      <div className="flex items-center justify-center p-3 gap-16">
+      <div className="flex flex-wrap items-center justify-center p-3 gap-16">
         <Select
           id="select-simples"
           label="Museu"
@@ -100,7 +106,7 @@ export default function Dashboard() {
       </div>
       {isLoadingGrafico ? (
         <p>Carregando...</p>
-      ) : error ? (
+      ) : error || !dadosGrafico?.data?.length ? (
         <p>Não há dados a serem exibidos com os filtros informados.</p>
       ) : (
         <Chart

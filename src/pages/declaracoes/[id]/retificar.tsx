@@ -1,8 +1,9 @@
 import { useMutation, useSuspenseQueries } from "@tanstack/react-query"
-import { useNavigate, useParams } from "react-router"
+import { Link, useNavigate, useParams } from "react-router"
 import Uploader from "../../../components/Uploader"
 import request from "../../../utils/request"
 import useStore from "../../../utils/store"
+import toast from "react-hot-toast"
 
 export default function RetificarDeclaracao() {
   const params = useParams()
@@ -61,14 +62,18 @@ export default function RetificarDeclaracao() {
         }
       )
     },
-    onSuccess: async (res) => {
-      const data = await res.json()
-      navigate(`/declaracoes/${data._id}`)
+    onSuccess: async () => {
+      toast.success("Declaração enviada com sucesso!")
+      navigate("/")
     }
   })
 
   return (
     <>
+      <Link to={`/declaracoes/${id}`} className="text-lg">
+        <i className="fas fa-arrow-left" aria-hidden="true"></i>
+        Voltar
+      </Link>
       <h2>
         Retificar declaração{" "}
         {declaracao.retificacao

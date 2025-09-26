@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form"
 import { useNavigate } from "react-router"
 import { z } from "zod"
 import Input from "../components/Input"
-import logoIbram from "../images/logo-ibram.png"
+import logoIbram from "../images/Logotipo _IBRAM_Colorida.png"
 import request from "../utils/request"
 import useStore from "../utils/store"
 
@@ -80,7 +80,7 @@ const LoginPage: React.FC = () => {
           className="flex flex-col gap-4 justify-center items-center h-full md:w-1/2 lg:w-2/3 xl:w-1/2 p-10 mx-auto"
           onSubmit={handleSubmit(onSubmit)}
         >
-          <img src={logoIbram} alt="Logo do Ibram" className="mb-3" />
+          <img src={logoIbram} alt="Logo do Ibram" />
           {showError && isError && (
             <div className="br-message danger">
               <div className="icon">
@@ -133,6 +133,14 @@ const LoginPage: React.FC = () => {
             <i className="fa-solid fa-envelope-circle-check p-2 text-lg"></i>
             Validar recibo
           </a>
+          <div className="text-center mt-4">
+            <span>
+              <a href="/solicitarSenha" className="inline-flex items-center">
+                <i className="fa-solid fa-unlock-keyhole p-1"></i>
+                <span>Esqueci minha senha</span>
+              </a>
+            </span>
+          </div>
           <div className="text-center mt-4">
             <span>
               Novo usuário?{" "}

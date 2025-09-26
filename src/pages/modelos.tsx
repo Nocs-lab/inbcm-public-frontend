@@ -1,5 +1,6 @@
 import { useState } from "react"
 import clsx from "clsx"
+import { Link } from "react-router"
 
 export default function ModelosDeclaracaoPage() {
   const [currentTab, setCurrentTab] = useState<
@@ -8,6 +9,10 @@ export default function ModelosDeclaracaoPage() {
 
   return (
     <>
+      <Link to="/declaracoes/novo" className="text-lg">
+        <i className="fas fa-arrow-left" aria-hidden="true"></i>
+        Voltar
+      </Link>
       <h2 className="mt-3 mb-0">Download dos modelos de planilhas</h2>
       <div className="br-tab mt-10" data-counter="true">
         <nav className="tab-nav">

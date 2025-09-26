@@ -111,43 +111,248 @@ const Table: React.FC<{
   actions?: JSX.Element
   data: unknown[]
   columns: ColumnDef<unknown>[]
-}> = ({ title, data, columns, actions }) => {
+  itensPagination?: {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+    onPageChange: (page: number) => void
+    onLimitChange: (limit: number) => void
+  }
+}> = ({ title, data, columns, actions, itensPagination }) => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [visibility, setVisibility] = useState<VisibilityState>({})
+  const [frontendPagination, setFrontendPagination] = useState({
+    pageIndex: 0,
+    pageSize: 10 // Define o valor inicial como 10 itens por página
+  })
 
   const table = useReactTable({
     data,
     columns,
+    initialState: {
+      pagination: {
+        pageIndex: itensPagination ? itensPagination.page - 1 : 0,
+        pageSize: itensPagination ? itensPagination.limit : 10
+      }
+    },
     state: {
       columnFilters,
-      columnVisibility: visibility
+      columnVisibility: visibility,
+      pagination: itensPagination
+        ? {
+            pageIndex: itensPagination.page - 1,
+            pageSize: itensPagination.limit
+          }
+        : frontendPagination // Usa o estado de paginação do frontend
     },
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setVisibility,
+    onPaginationChange: !itensPagination
+      ? setFrontendPagination // Atualiza o estado de paginação no frontend
+      : undefined,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues(),
-    getFacetedMinMaxValues: getFacetedMinMaxValues()
+    getFacetedMinMaxValues: getFacetedMinMaxValues(),
+    manualPagination: !!itensPagination,
+    pageCount: itensPagination?.totalPages
   })
 
+  const PaginationFooter = () => {
+    // Modo com paginação do backend
+    if (itensPagination) {
+      return (
+        <div className="table-footer">
+          <nav className="br-pagination" aria-label="paginação">
+            <div className="pagination-per-page">
+              <div className="br-select">
+                <div className="br-input">
+                  <label htmlFor="per-page-selection">Exibir</label>
+                  <select
+                    id="per-page-selection"
+                    value={itensPagination.limit}
+                    onChange={(e) =>
+                      itensPagination.onLimitChange(Number(e.target.value))
+                    }
+                  >
+                    {[10, 20, 30, 50].map((size) => (
+                      <option key={size} value={size}>
+                        {size}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <span className="br-divider d-none d-sm-block mx-3"></span>
+
+            <div className="pagination-information d-none d-sm-flex">
+              <span>
+                {(itensPagination.page - 1) * itensPagination.limit + 1}
+              </span>
+              &ndash;
+              <span>
+                {Math.min(
+                  itensPagination.page * itensPagination.limit,
+                  itensPagination.total
+                )}
+              </span>
+              &nbsp;de&nbsp;<span>{itensPagination.total}</span>
+              &nbsp;itens
+            </div>
+
+            <div className="pagination-go-to-page d-none d-sm-flex ml-auto">
+              <div className="br-input">
+                <label htmlFor="go-to-page">Página</label>
+                <input
+                  id="go-to-page"
+                  type="number"
+                  min="1"
+                  max={itensPagination.totalPages}
+                  value={itensPagination.page}
+                  onChange={(e) => {
+                    const page = Math.max(
+                      1,
+                      Math.min(
+                        Number(e.target.value),
+                        itensPagination.totalPages
+                      )
+                    )
+                    itensPagination.onPageChange(page)
+                  }}
+                />
+              </div>
+            </div>
+
+            <span className="br-divider d-none d-sm-block mx-3"></span>
+
+            <div className="pagination-arrows ml-auto ml-sm-0">
+              <button
+                className="br-button circle"
+                type="button"
+                aria-label="Voltar página"
+                onClick={() =>
+                  itensPagination.onPageChange(itensPagination.page - 1)
+                }
+                disabled={itensPagination.page <= 1}
+              >
+                <i className="fas fa-angle-left" aria-hidden="true"></i>
+              </button>
+              <button
+                className="br-button circle"
+                type="button"
+                aria-label="Página seguinte"
+                onClick={() =>
+                  itensPagination.onPageChange(itensPagination.page + 1)
+                }
+                disabled={itensPagination.page >= itensPagination.totalPages}
+              >
+                <i className="fas fa-angle-right" aria-hidden="true"></i>
+              </button>
+            </div>
+          </nav>
+        </div>
+      )
+    }
+
+    // Modo com paginação do frontend
+    return (
+      <div className="table-footer">
+        <nav className="br-pagination" aria-label="paginação">
+          <div className="pagination-per-page">
+            <div className="br-select">
+              <div className="br-input">
+                <label htmlFor="per-page-selection">Exibir</label>
+                <select
+                  id="per-page-selection"
+                  value={frontendPagination.pageSize}
+                  onChange={(e) =>
+                    setFrontendPagination((prev) => ({
+                      ...prev,
+                      pageSize: Number(e.target.value),
+                      pageIndex: 0 // Reseta para a primeira página
+                    }))
+                  }
+                >
+                  {[10, 20, 30, 50].map((size) => (
+                    <option key={size} value={size}>
+                      {size}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <span className="br-divider d-none d-sm-block mx-3"></span>
+
+          <div className="pagination-go-to-page d-none d-sm-flex ml-auto">
+            <span>
+              {frontendPagination.pageIndex * frontendPagination.pageSize + 1}
+            </span>
+            &ndash;
+            <span>
+              {Math.min(
+                (frontendPagination.pageIndex + 1) *
+                  frontendPagination.pageSize,
+                data.length
+              )}
+            </span>
+            &nbsp;de&nbsp;<span>{data.length}</span>
+            &nbsp;itens
+          </div>
+
+          <div className="pagination-arrows ml-auto ml-sm-0">
+            <button
+              className="br-button circle"
+              type="button"
+              aria-label="Voltar página"
+              onClick={() =>
+                setFrontendPagination((prev) => ({
+                  ...prev,
+                  pageIndex: prev.pageIndex - 1
+                }))
+              }
+              disabled={frontendPagination.pageIndex <= 0}
+            >
+              <i className="fas fa-angle-left" aria-hidden="true"></i>
+            </button>
+            <button
+              className="br-button circle"
+              type="button"
+              aria-label="Página seguinte"
+              onClick={() =>
+                setFrontendPagination((prev) => ({
+                  ...prev,
+                  pageIndex: prev.pageIndex + 1
+                }))
+              }
+              disabled={
+                (frontendPagination.pageIndex + 1) *
+                  frontendPagination.pageSize >=
+                data.length
+              }
+            >
+              <i className="fas fa-angle-right" aria-hidden="true"></i>
+            </button>
+          </div>
+        </nav>
+      </div>
+    )
+  }
+
   return (
-    <div
-      className="br-table overflow-auto"
-      data-search="data-search"
-      data-selection="data-selection"
-      data-collapse="data-collapse"
-      data-random="data-random"
-    >
+    <div className="br-table overflow-auto">
       {(title || actions) && (
         <div className="table-header">
           <div className="top-bar">
             <div className="table-title">{title}</div>
-            {actions && (
-              <div className="actions-trigger text-nowrap">{actions}</div>
-            )}
+            {actions && <div className="actions-trigger">{actions}</div>}
           </div>
         </div>
       )}
@@ -219,169 +424,7 @@ const Table: React.FC<{
           ))}
         </tbody>
       </table>
-      <div className="table-footer">
-        <nav
-          className="br-pagination"
-          aria-label="paginação"
-          data-total="50"
-          data-current="1"
-          data-per-page="20"
-        >
-          <div className="pagination-per-page">
-            <div className="br-select">
-              <div className="br-input">
-                <label htmlFor="per-page-selection-random-90012">Exibir</label>
-                <input
-                  id="per-page-selection-random-90012"
-                  type="text"
-                  placeholder=" "
-                />
-                <button
-                  className="br-button"
-                  type="button"
-                  aria-label="Exibir lista"
-                  tabIndex={-1}
-                  data-trigger="data-trigger"
-                >
-                  <i className="fas fa-angle-down" aria-hidden="true"></i>
-                </button>
-              </div>
-              <div className="br-list" tabIndex={0}>
-                <div className="br-item" tabIndex={-1}>
-                  <div className="br-radio">
-                    <input
-                      id="per-page-10-random-90012"
-                      type="radio"
-                      name="per-page-random-90012"
-                      value="per-page-10-random-90012"
-                      checked
-                    />
-                    <label htmlFor="per-page-10-random-90012">10</label>
-                  </div>
-                </div>
-                <div className="br-item" tabIndex={-1}>
-                  <div className="br-radio">
-                    <input
-                      id="per-page-20-random-90012"
-                      type="radio"
-                      name="per-page-random-90012"
-                      value="per-page-20-random-90012"
-                    />
-                    <label htmlFor="per-page-20-random-90012">20</label>
-                  </div>
-                </div>
-                <div className="br-item" tabIndex={-1}>
-                  <div className="br-radio">
-                    <input
-                      id="per-page-30-random-90012"
-                      type="radio"
-                      name="per-page-random-90012"
-                      value="per-page-30-random-90012"
-                    />
-                    <label htmlFor="per-page-30-random-90012">30</label>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <span className="br-divider d-none d-sm-block mx-3"></span>
-          <div className="pagination-information d-none d-sm-flex">
-            <span className="current">
-              {table.getState().pagination.pageIndex *
-                table.getState().pagination.pageSize +
-                1}
-            </span>
-            &ndash;
-            <span className="per-page">
-              {Math.min(
-                (table.getState().pagination.pageIndex + 1) *
-                  table.getState().pagination.pageSize,
-                data.length
-              )}
-            </span>
-            &nbsp;de&nbsp;<span className="total">{data.length}</span>
-            &nbsp;itens
-          </div>
-          <div className="pagination-go-to-page d-none d-sm-flex ml-auto">
-            <div className="br-select">
-              <div className="br-input">
-                <label htmlFor="go-to-selection-random-55067">Página</label>
-                <input
-                  id="go-to-selection-random-55067"
-                  type="text"
-                  placeholder=" "
-                />
-                <button
-                  className="br-button"
-                  type="button"
-                  aria-label="Exibir lista"
-                  tabIndex={-1}
-                  data-trigger="data-trigger"
-                >
-                  <i className="fas fa-angle-down" aria-hidden="true"></i>
-                </button>
-              </div>
-              <div className="br-list" tabIndex={0}>
-                <div className="br-item" tabIndex={-1}>
-                  <div className="br-radio">
-                    <input
-                      id="go-to-1-random-55067"
-                      type="radio"
-                      name="go-to-random-55067"
-                      value="go-to-1-random-55067"
-                      checked
-                    />
-                    <label htmlFor="go-to-1-random-55067">1</label>
-                  </div>
-                </div>
-                <div className="br-item" tabIndex={-1}>
-                  <div className="br-radio">
-                    <input
-                      id="go-to-2-random-55067"
-                      type="radio"
-                      name="go-to-random-55067"
-                      value="go-to-2-random-55067"
-                    />
-                    <label htmlFor="go-to-2-random-55067">2</label>
-                  </div>
-                </div>
-                <div className="br-item" tabIndex={-1}>
-                  <div className="br-radio">
-                    <input
-                      id="go-to-3-random-55067"
-                      type="radio"
-                      name="go-to-random-55067"
-                      value="go-to-3-random-55067"
-                    />
-                    <label htmlFor="go-to-3-random-55067">3</label>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <span className="br-divider d-none d-sm-block mx-3"></span>
-          <div className="pagination-arrows ml-auto ml-sm-0">
-            <button
-              className="br-button circle"
-              type="button"
-              aria-label="Voltar página"
-              onClick={() => table.previousPage()}
-              disabled={!table.getCanPreviousPage()}
-            >
-              <i className="fas fa-angle-left" aria-hidden="true"></i>
-            </button>
-            <button
-              className="br-button circle"
-              type="button"
-              aria-label="Página seguinte"
-              onClick={() => table.nextPage()}
-              disabled={!table.getCanNextPage()}
-            >
-              <i className="fas fa-angle-right" aria-hidden="true"></i>
-            </button>
-          </div>
-        </nav>
-      </div>
+      <PaginationFooter />
     </div>
   )
 }

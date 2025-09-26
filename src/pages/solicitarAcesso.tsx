@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react"
-import { useNavigate } from "react-router"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import Input from "../components/Input"
 import { Row, Col, Button, Modal } from "react-dsgov"
@@ -35,18 +34,27 @@ const validateCPF = (cpf: string): boolean => {
   return rest(10) === cpfDigits[9] && rest(11) === cpfDigits[10]
 }
 
-const schema = z.object({
-  email: z.string().min(1, "Este campo é obrigatório"),
-  nome: z.string().min(1, "Este campo é obrigatório"),
-  cpf: z
-    .string()
-    .min(1, "Este campo é obrigatório")
-    .refine((cpf) => validateCPF(cpf), {
-      message: "CPF inválido"
-    }),
-  museus: z.array(z.string()).optional(),
-  file: z.instanceof(File)
-})
+const schema = z
+  .object({
+    email: z.string().min(1, "Este campo é obrigatório"),
+    nome: z.string().min(1, "Este campo é obrigatório"),
+    cpf: z
+      .string()
+      .min(1, "Este campo é obrigatório")
+      .refine((cpf) => validateCPF(cpf), {
+        message: "CPF inválido"
+      }),
+    password: z.string().min(1, "Este campo é obrigatório"),
+    confirmPassword: z.string().min(1, "Este campo é obrigatório"),
+    museus: z.array(z.string()).optional(),
+    file: z.custom<File>((value) => value instanceof File, {
+      message: "Este campo é obrigatório"
+    })
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "As senhas não são iguais",
+    path: ["confirmPassword"]
+  })
 type FormData = z.infer<typeof schema>
 
 interface Endereco {
@@ -145,13 +153,12 @@ const CreateUser: React.FC = () => {
 
   const registerWithMask = useHookFormMask(register)
 
-  const navigate = useNavigate()
-
   const { mutateAsync } = useMutation({
     mutationFn: async ({
       email,
       nome,
       cpf,
+      password,
       museus,
       file
     }: FormData & { museus: string[] }) => {
@@ -159,6 +166,7 @@ const CreateUser: React.FC = () => {
       formData.append("email", email)
       formData.append("nome", nome)
       formData.append("cpf", cpf)
+      formData.append("senha", password)
       museus.forEach((museu) => {
         formData.append("museus", museu)
       })
@@ -170,9 +178,6 @@ const CreateUser: React.FC = () => {
       })
 
       return res.json()
-    },
-    onSuccess: () => {
-      navigate("/login")
     }
   })
 
@@ -180,7 +185,7 @@ const CreateUser: React.FC = () => {
 
   const { openModal, closeModal } = useModal((close) => (
     <Modal
-      title="Confirmar Solicitação"
+      title="Confirmar solicitação de acesso"
       showCloseButton
       onCloseButtonClick={close}
     >
@@ -232,11 +237,11 @@ const CreateUser: React.FC = () => {
       </Modal.Body>
 
       <Modal.Footer justify-content="end">
-        <Button primary small m={2} onClick={() => handleSubmit(onSubmit)()}>
-          Confirmar
-        </Button>
         <Button secondary small m={2} onClick={close}>
           Cancelar
+        </Button>
+        <Button primary small m={2} onClick={() => handleSubmit(onSubmit)()}>
+          Confirmar
         </Button>
       </Modal.Footer>
     </Modal>
@@ -252,7 +257,13 @@ const CreateUser: React.FC = () => {
       }),
       {
         loading: "Enviando solicitação",
-        success: (data) => data.message,
+        success: (data) => {
+          // Aqui você pode adicionar um delay antes de recarregar
+          setTimeout(() => {
+            window.location.reload()
+          }, 2000) // 2 segundos para o usuário ver a mensagem
+          return data.message
+        },
         error: (error) => error.message
       }
     )
@@ -261,7 +272,7 @@ const CreateUser: React.FC = () => {
   return (
     <>
       <div className="container mx-auto p-8">
-        <Link to={-1 as unknown as string} className="text-lg">
+        <Link to="/login" className="text-lg">
           <i className="fas fa-arrow-left" aria-hidden="true"></i>
           Voltar
         </Link>
@@ -306,6 +317,38 @@ const CreateUser: React.FC = () => {
                 placeholder="Digite o email do usuário"
                 error={errors.email}
                 {...register("email")}
+              />
+            </div>
+          </fieldset>
+          <fieldset
+            className="rounded-lg p-3"
+            style={{ border: "2px solid #e0e0e0" }}
+          >
+            <legend className="text-lg font-extrabold px-3 m-0">
+              Controle de acesso
+            </legend>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-2">
+              <Input
+                type="password"
+                label={
+                  <span>
+                    Senha <span className="text-red-500">*</span>
+                  </span>
+                }
+                placeholder="Digite sua senha"
+                error={errors.password}
+                {...register("password")}
+              />
+              <Input
+                type="password"
+                label={
+                  <span>
+                    Confirmar senha <span className="text-red-500">*</span>
+                  </span>
+                }
+                placeholder="Digite sua senha novamente"
+                error={errors.confirmPassword}
+                {...register("confirmPassword")}
               />
             </div>
           </fieldset>

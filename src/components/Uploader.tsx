@@ -63,6 +63,7 @@ const Uploader: React.FC<{
   isExist,
   anos = []
 }) => {
+  const sortedAnos = [...anos].sort((a, b) => b.ano - a.ano)
   const {
     register,
     handleSubmit,
@@ -74,7 +75,7 @@ const Uploader: React.FC<{
     resolver: zodResolver(schema),
     mode: "onBlur",
     defaultValues: {
-      ano: anoDeclaracao || anos[anos.length - 1]._id,
+      ano: anoDeclaracao || sortedAnos[0]?._id,
       museu: museus[0]?._id,
       museologico: null,
       bibliografico: null,
@@ -272,10 +273,7 @@ const Uploader: React.FC<{
         bibliograficoErrors={bibliograficoErrors}
         arquivisticoErrors={arquivisticoErrors}
       />
-      <Link
-        to="/declaracoes/modelos"
-        className="text-lg border-0 p-2 rounded-lg"
-      >
+      <Link to="/modelos" className="text-lg border-0 p-2 rounded-lg">
         <i className="fa-solid fa-table mr-2"></i>
         Modelos de planilhas
       </Link>
@@ -365,7 +363,7 @@ const Uploader: React.FC<{
             </div>
           </div>
         )}
-        <div className="flex gap-2 w-full">
+        <div className="flex flex-wrap gap-2 w-full">
           <Controller
             control={control}
             name="ano"
@@ -374,7 +372,7 @@ const Uploader: React.FC<{
                 <Select
                   label="Ano"
                   className="!w-full"
-                  options={anos.map((ano) => ({
+                  options={sortedAnos.map((ano) => ({
                     label: ano.ano.toString(),
                     value: ano._id
                   }))}
