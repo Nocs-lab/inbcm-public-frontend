@@ -86,7 +86,7 @@ const fetchMuseus = async (
   page: number
 ): Promise<RespostaMuseus> => {
   const response = await request(
-    `/api/admin/museus?semVinculoUsuario=true&search=${search}&page=${page}`
+    `/api/public/museus/buscar?search=${search}&page=${page}`
   )
   if (!response.ok) throw new Error("Erro ao carregar museus")
 
@@ -112,11 +112,11 @@ const CreateUser: React.FC = () => {
   const { data: museusData, isLoading } = useQuery<RespostaMuseus>({
     queryKey: ["museus", search, page],
     queryFn: () => fetchMuseus(search, page),
-    enabled: !!search
+    enabled: search.length >= 3
   })
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const museus = museusData?.museus || []
+  const museus = search.length >= 3 ? museusData?.museus || [] : []
 
   const debounceSearch = debounce((value: string) => {
     setSearch(value)
@@ -212,12 +212,11 @@ const CreateUser: React.FC = () => {
                   {selectedMuseusNames.length > 0 ? (
                     <ul className="flex flex-wrap gap-2 list-disc pl-3">
                       {selectedMuseusNames.map((museu) => (
-                        <li>
+                        <li key={museu._id}>
                           {museu.nome}
                           <br />
-                          <span className="text-xs font-gray-500">
-                            {museu.endereco.logradouro}, {museu.endereco.numero}{" "}
-                            - {museu.endereco.municipio}/{museu.endereco.uf}
+                          <span className="text-xs text-gray-500">
+                            {museu.endereco?.municipio}/{museu.endereco?.uf}
                           </span>
                         </li>
                       ))}
@@ -376,11 +375,11 @@ const CreateUser: React.FC = () => {
                                 Nome <span className="text-red-500">*</span>
                               </span>
                             }
-                            placeholder="Digite para buscar..."
+                            placeholder="Digite pelo menos 3 caracteres para buscar..."
                             options={
                               museus.length > 0
                                 ? museus.map((m: Museu) => ({
-                                    label: m.nome,
+                                    label: `${m.nome} - ${m.endereco?.municipio}/${m.endereco?.uf}`,
                                     value: `${m._id},${m.nome}`
                                   }))
                                 : []
